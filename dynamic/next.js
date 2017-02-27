@@ -1,2 +1,2 @@
-ver = 0.11;
-update = "test";
+ver = 0.22;
+update = "nc";

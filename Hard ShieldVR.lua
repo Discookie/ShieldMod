@@ -8,7 +8,7 @@ curveFactorY = 170 -- 65 -- 55
 curveY_Max = 75
 curveY_Min = 17
 curveY_tiltInfluence = .8 -- .75
-minSpacingSeconds = 0.04 -- 0.08 -- .15
+minSpacingSeconds = -0.01 -- 0.08 -- .15
 maxNodeDistShown = 1500
 impactX_Scaler = 1.7 -- this needs to adapt downwards for shorter people (less armspan)
 meteorSpeed = .09 -- .05
@@ -30,10 +30,10 @@ convertPurplesToCrossUps = false
 allowMusicCutOutOnFail=false
 
 maxAccelLeft = 10
-factAccelLeft = 0.6
+factAccelLeft = 0.3
 minAccelLeft = 0 
-maxAccelRight = 16
-factAccelRight = 0.6
+maxAccelRight = 10
+factAccelRight = 0.3
 minAccelRight = 0 
 
 
@@ -287,7 +287,7 @@ function OnTrafficCreated(theTraffic)
 	traffic = theTraffic --store globally
 	
     -- \mod
-	math.randomseed(GetMillisecondsSinceStartup())
+	math.randomseed(math.floor(track[#track].seconds * 10000000000))
 	--math.randomseed(11)
 
 	local minimapMarkers = {}
@@ -925,6 +925,13 @@ function InitMeteors()
                                     else
 									   impactX = minRequiredStrafeForMirroring + .01
                                     end
+                                    if chaintype=='duck' then
+                                        prevBluePosition = -impactX
+                                        prevRedPosition = impactX
+                                    else
+                                        prevBluePosition = impactX
+                                        prevRedPosition = -impactX
+                                    end
 								end
 							end
 							if math.abs(impactX) >= minRequiredStrafeForMirroring then
@@ -934,10 +941,16 @@ function InitMeteors()
 									if chainType=='jump' then
 										mirrorScale = duckScale
 										mirrorColor = duckColor
+                                        prevRedPosition = - impactX
+                                        prevBluePosition = impactX
 									else
 										mirrorScale = jumpScale
 										mirrorColor = jumpColor
+                                        prevBluePosition = - impactX
+                                        prevRedPosition = impactX
 									end
+                                    prevRedTime = myChainEndTime
+                                    prevBlueTime = myChainEndTime
 								end
 							end
 						end
