@@ -3,10 +3,12 @@ var DiffCalc = {
     avgDiff: 7.69,
     multiDiff: 4,
     trillDiff: 0,
-    ver: 0.22,
+    ver: "0.22a",
     mod: "insane",
+    br: "dev",
     recentChanges: [
-        "Fixed timing of starboard hand",
+        "Cleaning code",
+        "Revised difficulty on HTPscreen",
         "Preparing for public release"
     ],
 	create: function(){
@@ -150,13 +152,14 @@ var DiffCalc = {
 
         if(xmlHttp != null)
         {
-            xmlHttp.open( "GET", "https://matekos17.f.fazekas.hu/shield/pings/vercheck?mod="+this.mod, false );
+            xmlHttp.open( "GET", "https://matekos17.f.fazekas.hu/shield/pings/vercheck?mod="+this.mod+"&ver="+this.br, false );
             if (xmlHttp.status==200) {
-            xmlHttp.send( null );
+                xmlHttp.send( null );
                 resp = xmlHttp.responseText;
-                if (resp.localeCompare(this.ver)==0) {
+                if (resp.localeCompare(this.ver)==0 && this.br!="dev") {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
                     t.appendChild(document.createTextNode("LATEST"));
+                    stats.appendChild(document.createTextNode("Thank you for playing!"));
                 } else if (resp.localeCompare(this.ver)<0) {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/yellow.png";
                     t.appendChild(document.createTextNode("UPDATE"));
