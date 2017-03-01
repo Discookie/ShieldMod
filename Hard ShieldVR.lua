@@ -1,6 +1,17 @@
-function fif(test, if_true, if_false)
-  if test then return if_true else return if_false end
-end
+maxAccelLeft = 10    -- Left hand max acceleration => change this if too fast
+factAccelLeft = 0.3  -- Left hand factor - shouldn't touch
+minAccelLeft = 0     -- Left hand min acceleration - mustn't touch
+maxAccelRight = 10   -- Right hand max acceleration => change this if too fast
+factAccelRight = 0.3 -- Right hand factor - shouldn't touch
+minAccelRight = 0    -- Right hand min acceleration - mustn't touch
+
+impactX_Scaler = 1.7 -- Armspan multiplier => change this if too wide
+
+minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
+
+--[[
+Mustn't change anything below this point!
+--]]
 
 chestHeight = 1.3 -- 1.25
 curveFactorX = 100
@@ -8,9 +19,7 @@ curveFactorY = 170 -- 65 -- 55
 curveY_Max = 75
 curveY_Min = 17
 curveY_tiltInfluence = .8 -- .75
-minSpacingSeconds = -0.01 -- 0.08 -- .15
 maxNodeDistShown = 1500
-impactX_Scaler = 1.7 -- this needs to adapt downwards for shorter people (less armspan)
 meteorSpeed = .09 -- .05
 
 blueMaxX = .5
@@ -29,13 +38,9 @@ convertPurplesToCrossUps = false
 
 allowMusicCutOutOnFail=false
 
-maxAccelLeft = 10
-factAccelLeft = 0.3
-minAccelLeft = 0 
-maxAccelRight = 10
-factAccelRight = 0.3
-minAccelRight = 0 
-
+function fif(test, if_true, if_false)
+  if test then return if_true else return if_false end
+end
 
 function MiniTrace(text, level)
 	return (string.rep(">>", level).." "..text.."\n")
@@ -372,282 +377,10 @@ function OnTrafficCreated(theTraffic)
     --end
 
     AddMinimapMarkers(minimapMarkers)
-
---[[
-
-    local playerHeadHeight = GetMaxHMDHeightSinceSceneChange()
-    local baseHeight = 1.8 -- game dev height
-    local playerHeight_impactYCompensator = .5*(playerHeadHeight - baseHeight)
-    --print("playerHeadHeight:"..playerHeadHeight)
-
-
-	local sqrt = math.sqrt --making a local copy of global functions improves performance a bit
-	local rand = math.random
-	local min = math.min
-	local max = math.max
-	local sin = math.sin
-	local cos = math.cos
-	local degreesToRadians = .0174532925
-
-
-    local chainstarter = true
-	local angleD
-	local angle
-	local heading
-	local mag
-	local headingNormalized
-	local impactRadius
-	local impactPosition  
-	local lastSentNode
-	local color = {255,255,255}
-	local scale = {.04,.04,.04}
-	local prevBlockType = "jump"
-	local prevBlockSongTime = 0
-	local prevBlockImpactX = 0
-	local renderThisChain = true
-	local mirrorThisChain = false
-	local mirrorColor
-	local mirrorScale
-	local jumpColor = {53,141,173}
-	local jumpScale = {.035,.035,.035}
-	local duckColor = {176,53,53}
-	local duckScale = {.035,.035,.035}
-	local raveColor = {103,53,176}
-	local raveScale = {.06,.06,.06}
-	local impactX, impactY, impactZ
-	local isGroundTroop = false
-	--local curveFactorX = 100
-	--local curveFactorY = 35
-	local impactY_BeyondChestHeight = 0
-	local tiltFactor = 0
-	local intensityFactor = 0
-	local intensityFactorExp = 0
-    for i=1,#track do
-    	if nodes[i]~=nil and nodes[i]~='run' and nodes[i]~='dirty' then
-    		if chainstarter then -- bring all meteors in this chain from the same direction
-    			tiltFactor = 0
-    			intensityFactor = 0
-    			intensityFactorExp = 0
-
-    			local k=i
-    			while k<=#track and nodes[k]~=nil and nodes[k]~='run' and nodes[k]~='dirty' do --use the biggest intensity found in the span
-    				local maxTiltSpan = maxTilt - minTilt
-    				local myTiltSpan = track[k].tilt - minTilt
-    				tiltFactor = math.max(tiltFactor, myTiltSpan/maxTiltSpan)
-    				intensityFactor = math.max(intensityFactor, track[k].intensity)
-    				k = k + 1
-    			end
-
-    			intensityFactorExp = intensityFactor*intensityFactor*intensityFactor
-
-				--heading = {-.5*rand() + .5, -.5*rand(), -2*rand()}
-				heading = {0, 0, -1}
-				headingNormalized = heading
-
-				if nodes[i] == 'duck' then
-					--impactX = -.5*rand() + .75
-					impactX = redMinX + rand() * redSpanX
-				elseif nodes[i] == 'jump' then
-					--impactX = .5 - rand() * .75
-					impactX = blueMaxX + rand() * blueSpanX
-				else
-					impactX = purpleSpanX*rand() + purpleMaxX
-				end
-
-				impactX = impactX * impactX_Scaler -- 1.7
-				
-				--impactY_BeyondChestHeight = rand()*yImpactSpan
-				impactY_BeyondChestHeight = tiltFactor*tiltFactor*yImpactSpan + rand()*yImpactSpan_MaxRandomExtra
-				impactY = chestHeight + impactY_BeyondChestHeight
-
-				local impactDir = {impactX, impactY_BeyondChestHeight, 0}
-
-				local targetMagSq = zImpact * zImpact
-				impactZ = zImpact
-				local impactXSq=impactX*impactX;
-				local impactYSq = impactY_BeyondChestHeight*impactY_BeyondChestHeight
-				for k=1, 9 do
-					local mag = impactXSq + impactYSq + impactZ*impactZ
-					if mag <= targetMagSq then
-						break
-					else
-						impactZ = impactZ - .05
-					end
-				end
-				--impactZ = zImpact -- .5 -- the player's arm reach ideally
-
-				--impactMag = sqrt(impactX*impactX + impactY*impactY + impactY*impactY)
-				--impactNormalized = {impactX / impactMag, impactY / impactMag, impactZ / impactMag}
-				--headingNormalized = {heading[1] / mag, heading[2] / mag, heading[3] / mag}
-				--impactRadius = -1 -- this should be the player's arm reach
-				--impactPosition = {headingNormalized[1]*impactRadius, headingNormalized[2]*impactRadius, headingNormalized[3]*impactRadius} 
-
-				--local armsReach = .5
-				--local impactAbsolute = deepcopy(impactNormalized)
-				--impactAbsolute[1] = impactAbsolute[1] * armsReach;
-				--impactAbsolute[2] = impactAbsolute[2] * armsReach;
-				--impactAbsolute[3] = impactAbsolute[3] * armsReach;
-				--impactAbsolute[2] = impactAbsolute[2]+chestHeight
-				--impactPosition = impactAbsolute
-
-				--impactPosition = {impactX, impactY, impactZ}
-
-				local minSameBlockTypeSpacing = 0.3
-
-				local chainType = nodes[i]
-
-				renderThisChain = true
-				mirrorThisChain = false
-				isGroundTroop = false
-
-				--if track[i].intensity < .5 and rand()>.4 then
-				--if chainType == 'rave' then
-				--	--this one is a ground troop
-				--	isGroundTroop = true
-				--	impactY = chestHeight - .1
-				--	if chainType == 'jump' then
-				--		impactX = -1*math.abs(impactX)
-				--	elseif chainType == 'duck' then
-				--		impactX = math.abs(impactX)
-				--	end
-				--end
-
-				local minSpacingAfterRaveBlock = 0.3
-
-				--if i<1000 then
-				--	print(chainType.."."..track[i].seconds.." prevTime:"..prevBlockSongTime)
-				--end
-
-				if prevBlockType == 'rave' then
-					if  not ((track[i].seconds - prevBlockSongTime) >= minSpacingAfterRaveBlock) then
-						renderThisChain = false -- don't render anything too close right after a rave
-					elseif not ((track[i].seconds - prevBlockSongTime) >= 1.5) then
-						--if we follow a rave, make sure we're not hidden behind it
-						if chainType == 'rave' then
-							impactX = prevBlockImpactX
-						elseif chainType == 'jump' then
-							if prevBlockImpactX < .2 then
-								impactX = .35
-							else
-								impactX = 0
-							end
-						elseif chainType == 'duck' then
-							if prevBlockImpactX > -.2 then
-								impactX = -.35
-							else
-								impactX = 0
-							end
-						end
-					end
-				end
-
-				if  not ((track[i].seconds - prevBlockSongTime) >= minSameBlockTypeSpacing) then
-					--needs to change to the other type, these two are too close together
-					if prevBlockType == 'rave' then
-						--renderThisChain = false -- don't render anything too close right after a rave
-					elseif prevBlockType == 'jump' then
-						chainType = 'jump'
-						impactX = prevBlockImpactX
-					elseif prevBlockType == 'duck' then
-						chainType = 'duck'
-						impactX = prevBlockImpactX
-					end
-				else
-					if chainType ~= 'rave' then
-						if intensityFactor > .75 then
-							if math.abs(impactX) > .25 then
-								if rand() > .8 then
-									mirrorThisChain = true
-									if chainType=='jump' then
-										impactX = -1 * math.abs(impactX) -- make sure the blue is on the left
-										mirrorScale = duckScale
-										mirrorColor = duckColor
-									else
-										impactX = math.abs(impactX) -- make sure the red is on the right
-										mirrorScale = jumpScale
-										mirrorColor = jumpColor
-									end
-								end
-							end
-						end
-					end
-				end
-
-				if chainType=='jump' then
-					color = jumpColor
-					scale = jumpScale
-				elseif chainType=='duck' then
-					color = duckColor
-					scale = duckScale
-				elseif chainType=='rave' then
-					color = raveColor
-					scale = raveScale
-				end
-
-				chainstarter = false
-    		end
-
-    		local yCurve = impactY_BeyondChestHeight*curveFactorY
-    		yCurve = math.min(yCurve, curveY_Max)
-    		yCurve = math.max(yCurve, curveY_Min)
-    		--yCurve = curveY_Max
-    		--local yCurve = impactY*curveFactorY
-    		--local yCurve = impactY*curveFactorY*((1.0-curveY_tiltInfluence)+curveY_tiltInfluence*tiltFactor)
-    		--local yCurve = impactY*curveFactorY*((1.0-curveY_tiltInfluence)+curveY_tiltInfluence*intensityFactorExp)
-
-    		if renderThisChain then
-	    		prevBlockSongTime = track[i].seconds
-	    		prevBlockType = chainType -- nodes[i]
-	    		prevBlockImpactX = impactX
-
-	    		local adjustedImpactY = impactY + playerHeight_impactYCompensator
-
-	        	meteorNodes[#meteorNodes+1] = i
-	        	lastSentNode = i
-	    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-	    		meteorImpacts[#meteorImpacts+1] = {impactX, adjustedImpactY, impactZ}
-	    		meteorScales[#meteorScales+1] = scale
-	    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, impactY*curveFactorY, 0})--impactY*60
-	    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, yCurve, 0})--impactY*60
-	    		meteorColors[#meteorColors+1] = color
-	    		meteorSpeeds[#meteorSpeeds+1] = .05 -- fif(isGroundTroop, .025,.05)
-
-	    		if mirrorThisChain then
-		        	meteorNodes[#meteorNodes+1] = i
-		    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-		    		meteorImpacts[#meteorImpacts+1] = {-1*impactX, adjustedImpactY, impactZ}
-		    		meteorScales[#meteorScales+1] = mirrorScale
-		    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{-1*impactX*curveFactorX, impactY*curveFactorY, 0})
-		    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{-1*impactX*curveFactorX, yCurve, 0})
-		    		meteorColors[#meteorColors+1] = mirrorColor
-		    		meteorSpeeds[#meteorSpeeds+1] = .05 -- fif(isGroundTroop, .025,.05)
-	    		end
-    		end
-    	else
-    		chainstarter = true
-    	end
-    end
-
-    print("...............................")
-    print("track length:"..#track)
-    print("last meteor node"..lastSentNode)
-
-    --]]
 end
 
 function InitMeteors()
-    --local playerHeadHeight = GetMaxHMDHeightSinceSceneChange()
-    --local baseHeight = 1.71 -- 1.8 -- dev
-    --local normalImpactPointAsPercentOfBodyHeight = .8
-    --local baseExpectedImpactHeight = baseHeight * normalImpactPointAsPercentOfBodyHeight
-    --local playerHeightRatio = playerHeadHeight/baseHeight
-    --local thisPlayer_DesiredImpactHeight = baseExpectedImpactHeight * playerHeightRatio
-    --local playerHeight_impactYCompensator = thisPlayer_DesiredImpactHeight - baseExpectedImpactHeight
     local playerHeight_impactYCompensator = 0 -- this is now handled in c#
-
-    --local playerHeight_impactYCompensator = .5*(playerHeadHeight - baseHeight)
-    --print("playerHeadHeight:"..playerHeadHeight)
-    --print("playerHeight_CompensationDist:"..playerHeight_impactYCompensator)
 
 
 	local sqrt = math.sqrt --making a local copy of global functions improves performance a bit
@@ -801,12 +534,6 @@ function InitMeteors()
 				end
                 
 				impactX = impactX * impactX_Scaler -- 1.7
-
-				--[[ local maxAllowedX = prevBlockImpactX + maxNeighborXspan
-				local minAllowedX = prevBlockImpactX - maxNeighborXspan
-				impactX = max(impactX, minAllowedX)
-				impactX = min(impactX, maxAllowedX)
-                --]]
 				
 				--impactY_BeyondChestHeight = rand()*yImpactSpan
 				impactY_BeyondChestHeight = tiltFactor*tiltFactor*yImpactSpan + rand()*yImpactSpan_MaxRandomExtra
@@ -826,25 +553,8 @@ function InitMeteors()
 						impactZ = impactZ - .05
 					end
 				end
-				--impactZ = zImpact -- .5 -- the player's arm reach ideally
 
-				--impactMag = sqrt(impactX*impactX + impactY*impactY + impactY*impactY)
-				--impactNormalized = {impactX / impactMag, impactY / impactMag, impactZ / impactMag}
-				--headingNormalized = {heading[1] / mag, heading[2] / mag, heading[3] / mag}
-				--impactRadius = -1 -- this should be the player's arm reach
-				--impactPosition = {headingNormalized[1]*impactRadius, headingNormalized[2]*impactRadius, headingNormalized[3]*impactRadius} 
-
-				--local armsReach = .5
-				--local impactAbsolute = deepcopy(impactNormalized)
-				--impactAbsolute[1] = impactAbsolute[1] * armsReach;
-				--impactAbsolute[2] = impactAbsolute[2] * armsReach;
-				--impactAbsolute[3] = impactAbsolute[3] * armsReach;
-				--impactAbsolute[2] = impactAbsolute[2]+chestHeight
-				--impactPosition = impactAbsolute
-
-				--impactPosition = {impactX, impactY, impactZ}
-
-				local minSameBlockTypeSpacing = 0.01
+				local minSameBlockTypeSpacing = 0.00
 
 				local chainType = nodes[i]
 
@@ -867,7 +577,7 @@ function InitMeteors()
 				--	end
 				--end
 
-				local minSpacingAfterRaveBlock = 0.01
+				local minSpacingAfterRaveBlock = 0.00
 
 				--if i<1000 then
 				--	print(chainType.."."..track[i].seconds.." prevTime:"..prevBlockSongTime)
@@ -1268,26 +978,6 @@ score = score or 10000
 
 skinHasLoaded = skinHasLoaded or false
 function OnSkinLoaded()-- called after OnTrafficCreated
---[[
-    BatchRenderEveryFrame{prefabName="Meteor",
-    						locations = meteorNodes,
-    						maxShown = 1000,
-    						emissivecolors = deepcopy(meteorColors), -- "nodecolor", -- "highway" for them to all be the same shifting color
-    						colors = meteorColors, -- "nodecolor", -- "highway" for them to all be the same shifting color
-    						scales = meteorScales,
-    						maxDistanceShown = maxNodeDistShown,
-    						broadcastimpactvelocities = true,
-    						--songspeedratio = .05, -- amount of speed compression
-    						songspeedratios = meteorSpeeds,
-    						afternodereached_numbernodesrendered = 9,
-    						override_impactpositions = meteorImpacts,
-    						override_velocities = meteorDirections,
-    						sinCurvePositionDistortionPeaks = meteorCurveMaximums,
-    						override_velocities_scaledbytrackspeed = true}
---]]
-
-
-
 	HideBuiltinPlayerObjects()
 
 	SetCamera{ -- calling this function (even just once) overrides the camera settings from the skin script
@@ -1330,68 +1020,9 @@ updatesRun = updatesRun or 0
 hasInitedMeteors = hasInitedMeteors or false
 --[[
 function Update(dt, tracklocation, strafe, input, jumpheight) --called every frame by the game engine
-	local paused = (dt==0)
-	--if (not paused) and (updatesRun > 20) and (not hasInitedMeteors) and skinHasLoaded then
-	if (updatesRun > 4) and (not hasInitedMeteors) and skinHasLoaded then
-		--InitMeteors()
-		--hasInitedMeteors = true
-	end
-
-	local iCurrentRing = math.floor(tracklocation)
-
-	local input = GetInput()
-	local player1input = input.players[1]
-	local keyHorizontal = player1input["Horizontal"]
-
-	dinoAngle = dinoAngle + 150 * keyHorizontal * dt
-
-	timeTotal = timeTotal + dt
-	if math.abs(keyHorizontal) > .5 then
-		timeMoving = timeMoving + dt
-	end
-
-	quarterSecondCounter = quarterSecondCounter + dt
-	if quarterSecondCounter>.25 then
-		quarterSecondCounter = quarterSecondCounter - .25
-		UpdateEachQuarterSecond()
-	end	
-
-	updatesRun = updatesRun + 1
 end
 --]]
 
 function OnRequestFinalScoring()
 		AssignBuiltInAudioshieldScoring()
-	--[[
-    local numMisses = GetNumShieldMisses()
-	local numSuccesses = (#meteorNodes)-numMisses
-	local scoref = GetScore()
-	local numErroneousPurpleOverlapsOnSuccessfulBlocks = GetNumRaveShieldOverlaps()
-	local numErroneousWrongShieldOverlapsOnSuccessfulBlocks = GetNumOtherSingleShieldOverlaps()
-
-	--local efficiencyBonus = math.max(0,50 - numErroneousPurpleOverlapsOnSuccessfulBlocks - numErroneousWrongShieldOverlapsOnSuccessfulBlocks);
-	local efficiencyBonus = math.max(0,50 - numErroneousWrongShieldOverlapsOnSuccessfulBlocks);
-
-	local maxShieldPunchSpeed = GetMaxPunchStrength();
-	local averagePunchSpeed = GetAveragePunchStrength();
-	local styleBonus = math.floor(.5 + (maxShieldPunchSpeed/2 + averagePunchSpeed*2))
-
-	return {
-		rawscore = scoref,
-		bonuses = {
-            "This score will not be submitted.",
-			"Misses: "..numMisses.." / "..#traffic,
-			"Avg punch strength: "..averagePunchSpeed,
-			"Style bonus:"..styleBonus,
-			" ",
-			"--- And now... ---",
-			" ",
-			"Thanks for helping me test this out!",
-			"This was version .01 of Insane mod!",
-			"Any bugs, suggestions, etc. please",
-			"let me know! :3 Thanks again!"
-		},
-		finalscore = -1 -- efficiencyBonus
-	}
-    --]]
 end
