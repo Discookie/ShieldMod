@@ -1,20 +1,18 @@
 var DiffCalc = {
-    maxDiff: 10,
-    avgDiff: 7.69,
-    multiDiff: 4,
-    trillDiff: 0,
-    ver: "0.22a",
+    // NO TOUCHY HERE
+
+    ver: "0.30",
     mod: "insane",
     br: "dev",
     recentChanges: [
-        "Cleaning code",
-        "Revised difficulty on HTPscreen",
-        "Preparing for public release"
+        "PUBLIC RELEASE",
+        "Reorganized diff parameters",
+        "Cleaned up unused code"
     ],
-	create: function(){
+	create: function () {
 		return this;
 	},
-	album: function(el){
+	album: function (el) {
         el.getElementsByTagName("img")[0].src = "dynamic/imgs/uigraphic.jpg";
 		var limg = document.createElement("img");
 		limg.className = "mapperLogo";
@@ -38,14 +36,23 @@ var DiffCalc = {
         t.appendChild(document.createTextNode("And more..."));
 		dv.appendChild(t);
 	},
-	difficulties: function(el){
+	difficulties: function (el) {
 		var diffs = document.createElement("div");
 		diffs.className = "diffWindow";
 		el.appendChild(diffs);
 		
 		var overall = document.createElement("h1");
-		overall.className = "yd diff";
-		var t = document.createTextNode((Math.round(this.maxDiff*this.avgDiff*(2+this.multiDiff/10)*10/(this.trillDiff/10+1))/100).toFixed(2));
+        var oaVal = (Math.round(diff.maxDiff * diff.avgDiff * (2 + diff.multiDiff / 10) * 10 / (Math.pow(diff.trillDiff*4, 3)  + 1)) / 100).toFixed(2);
+        if (oaVal < 15) {
+            overall.className = "gd diff";
+        } else if (oaVal < 21) {
+		    overall.className = "yd diff";
+        } else if (oaVal < 27) {
+		    overall.className = "rd diff";
+        } else {
+            overall.className = "pd diff";
+        }
+		var t = document.createTextNode(oaVal);
         var y = document.createElement("small");
         y.appendChild(document.createTextNode("overall: "));
         overall.appendChild(y);
@@ -71,30 +78,30 @@ var DiffCalc = {
 		diffs.appendChild(trillSlider);
 		
 		var maxDisplay = document.createElement("div");
-		t = document.createTextNode(this.maxDiff);
+		t = document.createTextNode(diff.maxDiff);
 		maxDisplay.className = "maxinner slin";
-		maxDisplay.style = "width: "+Math.floor(this.maxDiff*250/16)+"px;";
+		maxDisplay.style = "width: " + Math.floor(diff.maxDiff * 250 / 16) + "px;";
 		maxDisplay.appendChild(t);
 		maxSlider.appendChild(maxDisplay);
 		
 		var avgDisplay = document.createElement("div");
-		t = document.createTextNode(this.avgDiff);
+		t = document.createTextNode(diff.avgDiff);
 		avgDisplay.className = "avginner slin";
-		avgDisplay.style = "width: "+Math.floor(this.avgDiff*250/10)+"px;";
+		avgDisplay.style = "width: " + Math.floor(diff.avgDiff * 250 / 10) + "px;";
 		avgDisplay.appendChild(t);
 		avgSlider.appendChild(avgDisplay);
 		
 		var multiDisplay = document.createElement("div");
-		t = document.createTextNode(this.multiDiff);
+		t = document.createTextNode(diff.multiDiff);
 		multiDisplay.className = "multiinner slin";
-		multiDisplay.style = "width: "+Math.floor(this.multiDiff*250/10)+"px;";
+		multiDisplay.style = "width: " + Math.floor(diff.multiDiff * 250 / 10) + "px;";
 		multiDisplay.appendChild(t);
 		multiSlider.appendChild(multiDisplay);
 		
 		var trillDisplay = document.createElement("div");
-		t = document.createTextNode(this.trillDiff);
+		t = document.createTextNode(diff.trillDiff);
 		trillDisplay.className = "trillinner slin";
-		trillDisplay.style = "width: "+Math.floor((10-(this.trillDiff)*50)*250/10)+"px;";
+		trillDisplay.style = "width: " + Math.floor((10 - (diff.trillDiff) * 50) * 250 / 10) + "px;";
 		trillDisplay.appendChild(t);
 		trillSlider.appendChild(trillDisplay);
         
@@ -123,47 +130,41 @@ var DiffCalc = {
         trillSlider.appendChild(t);
 		
 		var stats = document.createElement("p");
-		t = document.createElement("br");
-		stats.appendChild(t);
-		t = document.createTextNode("length: "+this.formattedLength);
-		stats.appendChild(t);
-		t = document.createElement("br");
-		stats.appendChild(t);
-		t = document.createTextNode("total notes: "+this.totalNotes);
-		stats.appendChild(t);
-		t = document.createElement("br");
-		stats.appendChild(t);
-		t = document.createTextNode("- doubles: "+this.doubles);
-		stats.appendChild(t);
-		t = document.createElement("br");
-		stats.appendChild(t);
-		t = document.createTextNode("- purples: "+this.purples);
-		stats.appendChild(t);
+		stats.appendChild(document.createElement("br"));
+		stats.appendChild(document.createTextNode("Keep in mind that these aren't synced to the LUA file!"));
+		stats.appendChild(document.createElement("br"));
+		stats.appendChild(document.createTextNode("To get your difficulty, change values in"));
+		stats.appendChild(document.createElement("br"));
+		stats.appendChild(document.createTextNode("dynamic/htp.js!"));
 		el.appendChild(stats);
 	},
     testMsgs: {test: "TESTING", nc: "NO CHANGE", nw: "NOT WORKING"},
-	density: function(el){
-        var resp  = '' ;
+	density: function (el) {
+        var resp  = '';
         var xmlHttp = new XMLHttpRequest();
         
         var t = document.createElement("h1");
         t.className = "modtext";
 		var stats = document.createElement("p");
 
-        if(xmlHttp != null)
-        {
-            xmlHttp.open( "GET", "https://matekos17.f.fazekas.hu/shield/pings/vercheck?mod="+this.mod+"&ver="+this.br, false );
+        if (xmlHttp !== null) {
+            xmlHttp.open( "GET", "http://matekos17.f.fazekas.hu/shield/pings/vercheck?mod="+this.mod+"&ver="+this.br, false );
+                xmlHttp.send();
             if (xmlHttp.status==200) {
-                xmlHttp.send( null );
                 resp = xmlHttp.responseText;
                 if (resp.localeCompare(this.ver)==0 && this.br!="dev") {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
                     t.appendChild(document.createTextNode("LATEST"));
                     stats.appendChild(document.createTextNode("Thank you for playing!"));
-                } else if (resp.localeCompare(this.ver)<0) {
+                } else if (resp.localeCompare(this.ver)>0) {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/yellow.png";
                     t.appendChild(document.createTextNode("UPDATE"));
-                    stats.appendChild(document.createTextNode("New version: "+resp));
+                    stats.appendChild(document.createTextNode("New version: "));
+                    var link = document.createElement("a");
+                    link.className = "button";
+                    link.appendChild(document.createTextNode(resp));
+                    link.href = "https://matekos17.f.fazekas.hu/shield/download?ver="+this.br;
+                    stats.appendChild(link);
                 } else {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/blue.png";
                     t.appendChild(document.createTextNode("DEV"));
@@ -179,6 +180,7 @@ var DiffCalc = {
         }
 
         el.appendChild(t);
+        stats.appendChild(document.createElement("br"));
 		stats.appendChild(document.createTextNode("Version "+this.ver));
 		stats.appendChild(document.createElement("br"));
 		stats.appendChild(document.createElement("b").appendChild(document.createTextNode("CHANGELOG:")));

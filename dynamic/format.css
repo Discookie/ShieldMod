@@ -159,7 +159,7 @@ img
 }
 .pd
 {
-	color: #85f;
+	color: #a8f;
 }
 .rd
 {
@@ -175,4 +175,14 @@ img
     position: absolute;
     text-align: center;
     top: 233px;
+}
+
+.button {
+    background-color: gold;
+    color: white;
+    font-size: 125%;
+    font-family: "Silkscreen-Ruirize";
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    border-radius: 10px;
+    padding: 10px 24px;
 }
