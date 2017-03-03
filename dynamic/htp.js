@@ -6,8 +6,8 @@ var DiffCalc = {
     br: "dev",
     recentChanges: [
         "PUBLIC RELEASE",
-        "Reorganized diff parameters",
-        "Cleaned up unused code"
+        "Cleaned up code, HTP",
+        "Updated graphics"
     ],
 	create: function () {
 		return this;
@@ -154,7 +154,7 @@ var DiffCalc = {
                 resp = xmlHttp.responseText;
                 if (resp.localeCompare(this.ver)==0 && this.br!="dev") {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
-                    t.appendChild(document.createTextNode("LATEST"));
+                    t.appendChild(document.createTextNode("NO UPDATE"));
                     stats.appendChild(document.createTextNode("Thank you for playing!"));
                 } else if (resp.localeCompare(this.ver)>0) {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/yellow.png";
