@@ -1,3 +1,22 @@
+--[[
+
+INSANE MOD - created by Discookie
+
+Based on Normal ShieldVR and Expert mods
+
+Released under CC-BY-SA 4.0
+
+https://matekos17.f.fazekas.hu/shield/
+
+---
+
+Branch placeholder, Version placeholder
+
+Last commit: 2017.03.04.
+--]]
+
+
+
 maxAccelLeft = 7      -- Left hand max acceleration => change this if too fast
 factAccelLeft = 0.6   -- Left hand factor - shouldn't touch
 minAccelLeft = 0      -- Left hand min acceleration - mustn't touch
