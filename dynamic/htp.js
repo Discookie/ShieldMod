@@ -42,7 +42,7 @@ var DiffCalc = {
 		el.appendChild(diffs);
 		
 		var overall = document.createElement("h1");
-        var oaVal = (Math.round((Math.pow(diff.maxDiff, 0.85)+3) * Math.pow(diff.avgDiff/10, 0.6) * (2 + diff.multiDiff / 10) * 100 / (Math.pow(diff.trillDiff*4, 3)  + 1)) / 100).toFixed(2);
+        var oaVal = (Math.round((Math.pow((diff.maxDiff*(diff.armspan-1.7)), 0.85)+3) * Math.pow(diff.avgDiff/10, 0.6) * (2 + diff.multiDiff / 10) * 100 / (Math.pow(diff.trillDiff*4, 3)  + 1)) / 100).toFixed(2);
         if (oaVal < 15) {
             overall.className = "gd diff";
         } else if (oaVal < 21) {

@@ -1,42 +1,48 @@
-maxAccelLeft = 10    -- Left hand max acceleration => change this if too fast
-factAccelLeft = 0.3  -- Left hand factor - shouldn't touch
-minAccelLeft = 0     -- Left hand min acceleration - mustn't touch
-maxAccelRight = 10   -- Right hand max acceleration => change this if too fast
-factAccelRight = 0.3 -- Right hand factor - shouldn't touch
-minAccelRight = 0    -- Right hand min acceleration - mustn't touch
+maxAccelLeft = 7      -- Left hand max acceleration => change this if too fast
+factAccelLeft = 0.6   -- Left hand factor - shouldn't touch
+minAccelLeft = 0      -- Left hand min acceleration - mustn't touch
+maxAccelRight = 7     -- Right hand max acceleration => change this if too fast
+factAccelRight = 0.6  -- Right hand factor - shouldn't touch
+minAccelRight = 0     -- Right hand min acceleration - mustn't touch
 
-impactX_Scaler = 1.7 -- Armspan multiplier => change this if too wide
+impactX_Scaler = 1.7  -- Armspan multiplier => change this if too wide
 
 minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
+
+
+
+--[[
+Other values - not recommended to change them
+--]]
+
+chestHeight = 1.3           -- If notes aren't hitting your chest height
+curveFactorX = 100          -- Shouldn't change this
+curveFactorY = 170          -- Shouldn't change this
+curveY_Max = 75             -- If notes are coming from too high
+curveY_Min = 17             -- If notes are coming from too low
+curveY_tiltInfluence = .8   -- If notes are too steep
+maxNodeDistShown = 1500     -- If lagging like hell
+meteorSpeed = .09           -- If meteors are coming too fast
+
+blueMaxX = .5               -- Shouldn't change this
+blueSpanX = -1              -- Shouldn't change this
+redMinX = -.5               -- Shouldn't change this
+redSpanX = 1                -- Shouldn't change this
+purpleMaxX = .5             -- Shouldn't change this
+purpleSpanX = -1            -- Shouldn't change this
+yImpactSpan = .5            -- Shouldn't change this yet
+yImpactSpan_MaxRandomExtra = .1 -- Shouldn't change this yet
+zImpact = .7                -- Mustn't change this
+maxNeighborXspan = 1        -- Shouldn't change this
+maxMirroredX = .5           -- Shouldn't change this
+
+convertPurplesToCrossUps = false    -- Mustn't change this
+
+allowMusicCutOutOnFail=false    -- If you like to hear when you miss
 
 --[[
 Mustn't change anything below this point!
 --]]
-
-chestHeight = 1.3 -- 1.25
-curveFactorX = 100
-curveFactorY = 170 -- 65 -- 55
-curveY_Max = 75
-curveY_Min = 17
-curveY_tiltInfluence = .8 -- .75
-maxNodeDistShown = 1500
-meteorSpeed = .09 -- .05
-
-blueMaxX = .5
-blueSpanX = -1
-redMinX = -.5
-redSpanX = 1
-purpleMaxX = .5
-purpleSpanX = -1
-yImpactSpan = .5
-yImpactSpan_MaxRandomExtra = .1
-zImpact = .7 -- .35 -- .7
-maxNeighborXspan = 1
-maxMirroredX = .5
-
-convertPurplesToCrossUps = false
-
-allowMusicCutOutOnFail=false
 
 function fif(test, if_true, if_false)
   if test then return if_true else return if_false end
@@ -63,25 +69,23 @@ end
 
 GameplaySettings{
 		allowmusicdroponfail = allowMusicCutOutOnFail,
-		--track generation settings
 		jumpmode="none",
 		gravity=-.45,
-        playerminspeed = 0.1,--so the player is always moving somewhat
-        playermaxspeed = 2.9,--2.5
-        minimumbestjumptime = 2.5,--massage the track until a jump of at least this duration is possible
-        uphilltiltscaler = 0.8,--set to 1 for normal track. higher for steeper
-        downhilltiltscaler = 1.55,--set to 1 for normal track. higher for steeper
+        playerminspeed = 0.1,
+        playermaxspeed = 2.9,
+        minimumbestjumptime = 2.5,
+        uphilltiltscaler = 0.8,
+        downhilltiltscaler = 1.55,
         uphilltiltsmoother = 0.03,
         downhilltiltsmoother = 0.06,
-        useadvancedsteepalgorithm = true,--set false for a less extreme track
+        useadvancedsteepalgorithm = true,
         alldownhill = false,
         usepuzzlegrid = false,
         usetraffic = false,
         towropes = false
-		--end track generation settings
 }
 
-nodes = nodes or {} --create the array of node markers ("jump", "duck", "rave" or "dirty") only if it doesn't exist yet
+nodes = nodes or {} 
 nodechaincount = nodechaincount or {}
 
 function FindTrackSpan(start, preseconds, postseconds)
