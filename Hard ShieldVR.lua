@@ -10,9 +10,9 @@ https://matekos17.f.fazekas.hu/shield/
 
 ---
 
-Branch placeholder, Version placeholder
+Branch dev, Version 0.30a
 
-Last commit: 2017.03.04.
+Last commit: 2017.03.06.
 --]]
 
 
