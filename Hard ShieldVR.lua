@@ -10,7 +10,7 @@ https://matekos17.f.fazekas.hu/shield/
 
 ---
 
-Branch dev, Version 0.30a
+Branch stable, Version 0.30
 
 Last commit: 2017.03.06.
 --]]
