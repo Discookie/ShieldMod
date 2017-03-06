@@ -29,7 +29,7 @@ impactX_Scaler = 1.7  -- Armspan multiplier => change this if too wide
 minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
 
 
-
+doubleFactor = 0.2
 --[[
 Other values - not recommended to change them
 --]]
@@ -668,7 +668,7 @@ function InitMeteors()
 								end
 							end
 							if math.abs(impactX) >= minRequiredStrafeForMirroring then
-								if (rand() > .8) or forceMirrorOn then
+								if (rand() < doubleFactor) or forceMirrorOn then
 									mirrorThisChain = true
 									impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
 									if chainType=='jump' then
