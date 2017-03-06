@@ -554,6 +554,10 @@ function InitMeteors()
 					--impactX = blueMaxX + rand() * blueSpanX
 				else
 					impactX = purpleSpanX*rand() + purpleMaxX
+                    prevBluePosition = impactX
+                    prevRedPosition = impactX
+                    prevBlueTime = myChainEndTime
+                    prevRedTime = myChainEndTime
 				end
                 
 				impactX = impactX * impactX_Scaler -- 1.7
