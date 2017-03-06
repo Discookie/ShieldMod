@@ -28,8 +28,8 @@ impactX_Scaler = 1.7  -- Armspan multiplier => change this if too wide
 
 minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
 
-
 doubleFactor = 0.2
+
 --[[
 Other values - not recommended to change them
 --]]
