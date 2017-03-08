@@ -1,11 +1,7 @@
 var DiffCalc = {
     // NO TOUCHY HERE
 
-<<<<<<< 28d48f61e822cc4652987b69c242563139bb62b9
     ver: "0.31a",
-=======
-    ver: "0.30a",
->>>>>>> RELEASE 0.30a
     mod: "insane",
     br: "dev",
     recentChanges: [
