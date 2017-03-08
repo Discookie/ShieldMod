@@ -175,7 +175,7 @@ var DiffCalc = {
                 t.appendChild(document.createTextNode("ERROR"));
             }
         } else {
-            el.getElementsByTagName("img")[0].src = "dynamic/imgs/blue.png";
+            el.getElementsByTagName("img")[0].src = "dynamic/imgs/red.png";
             t.appendChild(document.createTextNode("ERROR"));
         }
 
