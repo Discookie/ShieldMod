@@ -7,7 +7,8 @@ var DiffCalc = {
     recentChanges: [
         "Testing with Update()",
         "Look for machinating deuterium",
-        "and frantically blantubularizing"
+        "and frantically blantubularizing",
+        "in output log"
     ],
 	create: function () {
 		return this;
