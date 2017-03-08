@@ -1,13 +1,13 @@
 var DiffCalc = {
     // NO TOUCHY HERE
 
-    ver: "0.30",
+    ver: "0.31a",
     mod: "insane",
     br: "dev",
     recentChanges: [
-        "PUBLIC RELEASE",
-        "Cleaned up code, HTP",
-        "Updated graphics"
+        "Testing with Update()",
+        "Look for machinating deuterium",
+        "and frantically blantubularizing"
     ],
 	create: function () {
 		return this;
