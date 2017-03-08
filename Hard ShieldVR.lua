@@ -1045,10 +1045,33 @@ end
 
 updatesRun = updatesRun or 0
 hasInitedMeteors = hasInitedMeteors or false
---[[
-function Update(dt, tracklocation, strafe, input, jumpheight) --called every frame by the game engine
+
+doesntwork = true
+deltadt = 0
+output1 = true
+output2 = true
+
+function Update(dt, tracklocation, strafe, input, jumpheight)
+    if doesntwork then
+        doesntwork = false
+        print("frantically blantubularizing")
+    end
+    if output1 then
+        if deltadt < 5 then
+            deltadt = deltadt + dt
+        else
+            output1 = false
+            print("machinating deuterium 1.0 - " .. deltadt .. " - " .. dt)
+        end
+    end
+    if output2 then
+        if dt >= 5 then
+            output2 = false
+            print("machinating deuterium 2.0 - " .. dt)
+        end
+    end
 end
---]]
+
 
 function OnRequestFinalScoring()
 		AssignBuiltInAudioshieldScoring()
