@@ -152,7 +152,7 @@ var DiffCalc = {
                 xmlHttp.send();
             if (xmlHttp.status==200) {
                 resp = xmlHttp.responseText;
-                if (resp.localeCompare(this.ver)==0 && this.br!="dev") {
+                if (resp.localeCompare(this.ver)==0 && this.br=="stable") {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
                     t.appendChild(document.createTextNode("NO UPDATE"));
                     stats.appendChild(document.createTextNode("Thank you for playing!"));
