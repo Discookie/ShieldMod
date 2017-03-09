@@ -623,12 +623,14 @@ function InitMeteors()
                             else
                                 impactX = 0
                             end
+                            prevBluePosition = impactX
                         elseif chainType == 'duck' then
                             if prevBlockImpactX > -.2 then
                                 impactX = -.35
                             else
                                 impactX = 0
                             end
+                            prevRedPosition = impactX
                         end
                     end
                 end
