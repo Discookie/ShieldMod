@@ -1046,6 +1046,7 @@ end
 updatesRun = updatesRun or 0
 hasInitedMeteors = hasInitedMeteors or false
 
+--[[
 doesntwork = true
 deltadt = 0
 output1 = true
@@ -1071,7 +1072,7 @@ function Update(dt, tracklocation, strafe, input, jumpheight)
         end
     end
 end
-
+--]]
 
 function OnRequestFinalScoring()
 		AssignBuiltInAudioshieldScoring()
