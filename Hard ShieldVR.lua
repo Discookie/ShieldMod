@@ -638,23 +638,8 @@ function InitMeteors()
                 local timeGapUntilNextChain = nextChainStartTime - myChainEndTime
                 local minRequiredStrafeForMirroring = .25
                 local forceMirrorOn = (nextChainStartTime<0) or ((intensityFactor > .5) and (timeGapUntilNextChain>2.0)) or (timeGapUntilNextChain>4.0)
-                local tooClose = false
 
-                if  not ((track[i].seconds - prevBlockSongTime) >= minSameBlockTypeSpacing) then
-                    tooClose = true;
-                    --needs to change to the other type, these two are too close together
-                    if prevBlockType == 'rave' then
-                        --renderThisChain = false -- don't render anything too close right after a rave
-                    elseif prevBlockType == 'jump' then
-                        chainType = 'jump'
-                        impactX = prevBlockImpactX
-                    elseif prevBlockType == 'duck' then
-                        chainType = 'duck'
-                        impactX = prevBlockImpactX
-                    end
-                end
-
-                if (not tooClose) or forceMirrorOn then
+                if forceMirrorOn then
                     if chainType ~= 'rave' then
                         if (intensityFactor > .75) or forceMirrorOn then -- big hit, end of song, or before a gap
                             if forceMirrorOn then
