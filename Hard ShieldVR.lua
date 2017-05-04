@@ -838,7 +838,7 @@ function InitMeteors()
 		if forceMirrorOn then 
 			lg:log("Is natural mirror"..tostring(naturalMirror))
 		end
-		if (intensityFactors[i] > .75) or forceMirrorOn then -- big hit, end of song, or before a gap
+		--[[if (intensityFactors[i] > .75) or forceMirrorOn then -- big hit, end of song, or before a gap
 			if not naturalMirror and forceMirrorOn then
 				if math.abs(impactX)< minRequiredStrafeForMirroring then
 					if (impactX < 0) then
@@ -862,10 +862,44 @@ function InitMeteors()
 				lg:log("Node 2: "..i.." Mirroring wth chainType: "..chainType) 
 				AssignImpactMirror(chainType,  impactX)
 				-- since this is a mirror both previous red and blue should be the same
-				prevRedTime = myChainEndTimes[nodeLeaders[i]]
-				prevBlueTime = myChainEndTimes[nodeLeaders[i]]
+				prevRedTime = myChainEndTimes[nodeLeaders[i] ]
+				prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
 			end
 		end
+        --]]
+        if forceMirrorOn then
+            if not naturalMirror then
+				if math.abs(impactX)< minRequiredStrafeForMirroring then
+					if (impactX < 0) then
+					   impactX = - minRequiredStrafeForMirroring - .01
+					else
+					   impactX = minRequiredStrafeForMirroring + .01
+					end
+					--if chainType == 'red' then
+						lg:log("Type 1 Mirroring chain: "..i) 
+						lg:log("Node 1: "..i.." Mirroring with chainType: "..chainType) 
+						AssignImpactMirror(chainType, impactX)
+					--else
+--						AssignImpactMirror('red', impactX)
+					--end
+				end
+            end
+            mirrorThisChain = true
+            impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
+            lg:log("Type 2 Force mirroring chain: "..i) 
+            lg:log("Node 2: "..i.." Force mirroring wth chainType: "..chainType) 
+            AssignImpactMirror(chainType,  impactX)
+            -- since this is a mirror both previous red and blue should be the same
+            prevRedTime = myChainEndTimes[nodeLeaders[i] ]
+            prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
+        else
+            if chainType=='blue' then
+                prevRedPosition, prevRedTime = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+            else
+                prevBluePosition, prevBlueTime = 
+                CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+            end
+        end
 		return impactX
 	end
 	function AdjustChainXPositionByPreviousChain(chainType, distanceToPreviousChain, minSpacingAfterRaveBlock, prevBlockType,prevBlockImpactX,impactX)
