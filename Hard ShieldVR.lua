@@ -532,7 +532,7 @@ function InitMeteors()
   
 	local degreesToRadians = .0174532925
 
-  local chainstarter = true
+    local chainstarter = true
 	local heading
 	local headingNormalized
 	local lastSentNode
@@ -690,10 +690,10 @@ function InitMeteors()
 		xMirrorOffset = 0
 		idInThisChain = 1
     end
-	function CalculateImpactForNormalChainStarter(i, prevNodeTime, preNodePosition, colorMinX,colorSpanX, impactX)
+	function CalculateImpactForNormalChainStarter(i, prevNodeTime, prevNodePosition, colorMinX,colorSpanX, impactX)
         local delta = math.pow(track[i].seconds - prevNodeTime, 2)
         prevNodeTime = myChainEndTimes[nodeLeaders[i]]
-        impactX = preNodePosition
+        impactX = prevNodePosition
         local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
         local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
         local modRand = rand()*(bound1+bound2)-bound1
@@ -703,8 +703,8 @@ function InitMeteors()
         else
             impactX = impactX + (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
         end
-        preNodePosition = impactX
-		return preNodePosition, prevNodeTime, impactX
+        prevNodePosition = impactX
+		return prevNodePosition, prevNodeTime, impactX
     end
 	function CalculateImpactForRaveChainStarter(i, prevRedTime, prevRedPosition,prevBlueTime, prevBluePosition, impactX)
         impactX = purpleSpanX*rand() + purpleMaxX
