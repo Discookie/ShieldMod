@@ -833,6 +833,44 @@ function InitMeteors()
 				mirrorColor = blueColor
 			end
 		end
+        
+    	function CalculateNaturalMirror(i, prevNodeTime, prevNodePosition, colorMinX,colorSpanX, otherBlock)
+            local delta = math.pow(track[i].seconds - prevNodeTime, 2)
+            prevNodeTime = myChainEndTimes[nodeLeaders[i]]
+            local impactX = prevNodePosition
+            local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+            local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+            local oB1 = math.pow(( (math.abs(otherBlock + 0.05 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
+            local oBS1 = (otherBlock + 0.05 - impactX) / math.abs(otherBlock + 0.05 - impactX)
+            local oB2 = math.pow(( (math.abs(otherBlock + 0.05 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
+            local oBS2 = (otherBlock + 0.05 - impactX) / math.abs(otherBlock + 0.05 - impactX)
+            local modRand = rand()*(bound1+bound2)-bound1
+            if (oB1>bound1 and oBS1<0 and oB2>bound2 and oBS2>0) then 
+                return false, 0, 0, 0
+            end
+            
+            if (oB1>bound1) then
+                bound1 = min(oB2, bound1)
+            elseif (oB2>bound2) then
+                bound2 = min(oB1, bound2)
+            else
+                modRand = rand()*(bound1+bound2 - 0.1)-bound1 + 0.05
+                if (modRand < oB1*oBS1) then
+                    modRand = modRand - 0.05 
+                end
+                if (modRand > oB2*oBS2) then
+                    modRand = modRand + 0.05
+                end
+            end
+            
+            if (modRand < 0) then
+                impactX = impactX - (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+            else
+                impactX = impactX + (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+            end
+            prevNodePosition = impactX
+	        return true, prevNodePosition, prevNodeTime, impactX
+        end
 		
 		local naturalMirror = math.abs(impactX) >= minRequiredStrafeForMirroring	
 		if forceMirrorOn then 
@@ -876,8 +914,6 @@ function InitMeteors()
 					   impactX = minRequiredStrafeForMirroring + .01
 					end
 					--if chainType == 'red' then
-						lg:log("Type 1 Mirroring chain: "..i) 
-						lg:log("Node 1: "..i.." Mirroring with chainType: "..chainType) 
 						AssignImpactMirror(chainType, impactX)
 					--else
 --						AssignImpactMirror('red', impactX)
@@ -886,18 +922,17 @@ function InitMeteors()
             end
             mirrorThisChain = true
             impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
-            lg:log("Type 2 Force mirroring chain: "..i) 
+            lg:log("Force mirroring chain: "..i) 
             lg:log("Node 2: "..i.." Force mirroring wth chainType: "..chainType) 
             AssignImpactMirror(chainType,  impactX)
             -- since this is a mirror both previous red and blue should be the same
             prevRedTime = myChainEndTimes[nodeLeaders[i] ]
             prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
-        else
+        elseif (intensityFactors[i] > .75) and ((rand() < doubleFactor) then 
             if chainType=='blue' then
-                prevRedPosition, prevRedTime = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+                mirrorThisChain, prevRedPosition, prevRedTime = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
             else
-                prevBluePosition, prevBlueTime = 
-                CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+                mirrorThisChain, prevBluePosition, prevBlueTime = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
             end
         end
 		return impactX
