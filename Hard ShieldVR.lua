@@ -926,9 +926,9 @@ function InitMeteors()
             prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
         elseif (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
             if chainType=='blue' then
-                mirrorThisChain, prevRedPosition, prevRedTime = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+                mirrorThisChain, prevRedPosition, prevRedTime = CalculateNaturalMirror(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
             else
-                mirrorThisChain, prevBluePosition, prevBlueTime = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+                mirrorThisChain, prevBluePosition, prevBlueTime = CalculateNaturalMirror(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
             end
         end
 		return impactX
