@@ -4,18 +4,135 @@ INSANE MOD - created by Discookie
 
 Based on Normal ShieldVR and Expert mods
 
-Released under CC-BY-SA 4.0
+Released under the MIT license
 
 https://matekos17.f.fazekas.hu/shield/
 
----
-
-Branch dev, Version 0.30a
-
-Last commit: 2017.03.06.
+Special thanks to: /u/Zerkses, /u/Flatlander57
 --]]
 
 
+function CreateLogger (logLevel)
+	if logLevel == nil then
+		logLevel = 5
+	end
+	-- Declarations:
+
+	Logger = {}
+	Logger.__index = Logger
+
+	--Defining a constructor, for custom printing
+	setmetatable(Logger, {
+			__call = function(cls, ...)
+				return cls.init(...)
+			end,
+	})
+
+	-- Get system date
+	function Logger:getDate()
+		return Logger.getDate()
+	end
+
+	function Logger.getDate()
+		return ""
+		--return os.date("%c ") -- %c prints full "d/a/te t:i:me" and an extra space
+	end
+
+	-- Using log4j error levels, refer to self.enabled = true 
+	-- https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/Level.html
+	function Logger:exc(msg)
+		self:fatal(msg)
+	end
+	function Logger:exception(msg)
+		self:fatal(msg)
+	end
+	function Logger:fatal(msg)
+		if logLevel > 0 then
+			print(self:getDate() .. " [FATAL] <" .. self.name .. ">: " .. msg)
+		end
+		return false
+	end
+
+	function Logger:err(msg)
+		self:error(msg)
+		return false
+	end
+	function Logger:error(msg)
+		if logLevel > 1 then
+			print(self:getDate() .. " [ERROR] <" .. self.name .. ">: " .. msg)
+		end
+		return false
+	end
+
+	function Logger:warning(msg)
+		return self:warn(msg)
+	end
+	function Logger:warn(msg)
+		if logLevel > 2 then
+			print(self:getDate() .. " [WARN] <" .. self.name .. ">: " .. msg)
+		end
+		return false
+	end
+
+	function Logger:log(msg)
+		if self.enabled then 
+			return self:info(msg)
+		end
+	end
+	function Logger:info(msg)
+		if logLevel > 3 then
+			--print(self:getDate() .. " [INFO] <" .. self.name .. ">: " .. msg)
+			print(msg)
+		end
+		return false
+	end
+
+	function Logger:dbg(msg)
+		return self:debug(msg)
+	end
+	function Logger:debug(msg)
+		if logLevel > 4 then
+			print(self:getDate() .. " [DEBUG] <" .. self.name .. ">: " .. msg)
+		end
+		return false
+	end
+
+	function Logger:trace(msg, lvl)
+		if (lvl == nil and logLevel > 7) or logLevel > 4+lvl then
+			print(self:getDate() .. " [TRACE] <" .. self.name .. ">: " .. msg)
+		end
+		return false
+	end
+
+	function Logger:cName(name)
+		return self:changeName(name)
+	end
+	function Logger:changeName(name)
+		if type(name) ~= "string" then
+			self.name = "unknown"
+			return true
+		else
+			self.name = name
+			return false
+		end
+	end
+
+	function Logger.init(name)
+		local self = setmetatable({}, Logger)
+		self.type = "Logger"
+		self.enabled = true
+		
+		if type(name) ~= "string" then
+			self.name = "unknown"
+		else
+			self.name = name
+		end
+		
+		return self
+	end
+	lg = Logger("MyLogger")
+	return lg
+end
 
 maxAccelLeft = 7      -- Left hand max acceleration => change this if too fast
 factAccelLeft = 0.6   -- Left hand factor - shouldn't touch
@@ -24,7 +141,7 @@ maxAccelRight = 7     -- Right hand max acceleration => change this if too fast
 factAccelRight = 0.6  -- Right hand factor - shouldn't touch
 minAccelRight = 0     -- Right hand min acceleration - mustn't touch
 
-impactX_Scaler = 1.7  -- Armspan multiplier => change this if too wide
+impactX_Scaler = 1.6  -- Armspan multiplier => change this if too wide
 
 minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
 
@@ -42,7 +159,6 @@ curveY_Min = 17             -- If notes are coming from too low
 curveY_tiltInfluence = .8   -- If notes are too steep
 maxNodeDistShown = 1500     -- If lagging like hell
 meteorSpeed = .09           -- If meteors are coming too fast
-
 blueMaxX = .5               -- Shouldn't change this
 blueSpanX = -1              -- Shouldn't change this
 redMinX = -.5               -- Shouldn't change this
@@ -313,7 +429,8 @@ meteorTypes_tails = {}
 
 function OnTrafficCreated(theTraffic)
 	traffic = theTraffic --store globally
-	
+	lg = CreateLogger()
+	lg.enabled = true
     -- \mod
 	math.randomseed(math.floor(track[#track].seconds * 10000000000))
 	--math.randomseed(11)
@@ -326,11 +443,11 @@ function OnTrafficCreated(theTraffic)
 				local spanDist = traffic[i].chainend - traffic[i].chainstart
 				if spanDist > 5 then -- never make a tiny chain into a rave
 					--if traffic[i].chainstart <= powernodes[j] then
-					TryMarkSpan(traffic[i].chainstart, traffic[i].chainend, 'rave')
+					TryMarkSpan(traffic[i].chainstart, traffic[i].chainend, 'purple')
 					--else
 					--	local strt = math.max(1,powernodes[j]-3)
 					--	local bnd = math.min(#track-1, powernodes[j]+3)
-					--	TryMarkSpan(strt, bnd, 'rave')
+					--	TryMarkSpan(strt, bnd, 'purple')
 					--end
 					prev = i
 					table.insert(minimapMarkers, {tracknode=powernodes[j], startheight=0, endheight=fif(j==1, 15, 11), color={233,233,233}})
@@ -354,22 +471,22 @@ function OnTrafficCreated(theTraffic)
         end
         if spanDist > 2 then
             if spanDist > 10 then --long ones are more likely ducks
-            	local spanType = (math.random() > 0.5) and 'jump' or 'duck'
+            	local spanType = (math.random() > 0.5) and 'blue' or 'red'
             	--if (traffic[i].strength > .95) and (math.random()>.9) then -- high speed areas may get additional rave sections
-            	--	spanType = 'rave'
+            	--	spanType = 'purple'
             	--	table.insert(minimapMarkers, {tracknode=traffic[i].chainstart, startheight=0, endheight=11, color={233,233,233}})
             	--end
                 TryMarkSpan(traffic[i].chainstart, traffic[i].chainend, spanType)
             else --shorter ones are more likely jumps
-                TryMarkSpan(traffic[i].chainstart, traffic[i].chainend, (math.random() > 0.5) and 'jump' or 'duck')
+                TryMarkSpan(traffic[i].chainstart, traffic[i].chainend, (math.random() > 0.5) and 'blue' or 'red')
             end
         end
     end
 
     --if longestSpan > 0 then
 	--    for i=longestSpanStart, longestSpanEnd do -- turn the longest span into a rave (if it isn't already)
-	--    	if nodes[i]=='jump' or nodes[i]=='duck' then
-	--    		nodes[i] = 'rave'
+	--    	if nodes[i]=='blue' or nodes[i]=='red' then
+	--    		nodes[i] = 'purple'
 	--    	end
 	--    end
 	--
@@ -381,13 +498,13 @@ function OnTrafficCreated(theTraffic)
 
     for i = 1,#straffic do --mark these in their own loop. they're lower priority. place them in strength order to make sure the most important ones aren't overlapped and removed
         if (straffic[i].chainend - straffic[i].chainstart) < 3 then
-            TryMarkSpan(straffic[i].impactnode, straffic[i].impactnode, (math.random() > 0.5) and 'jump' or 'duck')
+            TryMarkSpan(straffic[i].impactnode, straffic[i].impactnode, (math.random() > 0.5) and 'blue' or 'red')
         end
     end
 
     for i=1,#traffic do
     	--if nodes[i]==nil or nodes[i]=='dirty'
-    	if (nodes[i] ~= 'jump') and (nodes[i]~='duck') and (nodes[i]~='rave') then
+    	if (nodes[i] ~= 'blue') and (nodes[i]~='red') and (nodes[i]~='purple') then
     		nodes[i] = 'run' -- all non-action nodes get marked as 'run' in order to track the player's efficiency bonus
     	end
     end
@@ -412,44 +529,38 @@ function InitMeteors()
 	local max = math.max
 	local sin = math.sin
 	local cos = math.cos
+  
 	local degreesToRadians = .0174532925
 
     local chainstarter = true
-	local angleD
-	local angle
 	local heading
-	local mag
 	local headingNormalized
-	local impactRadius
-	local impactPosition  
 	local lastSentNode
 	local color = {255,255,255}
 	local typeID
 	local mirrorTypeID
 	local scale = {.04,.04,.04}
-	local prevBlockType = "jump"
+	local prevBlockType = 'blue'
 	local prevBlockSongTime = 0
 	local prevBlockImpactX = 0
 	local renderThisChain = true
 	local mirrorThisChain = false
-	local yDuplicateThisChain = false;
 	local yDupOffset = 0;
 	local xMirrorOffset = 0;
 	local mirrorColor
 	local mirrorScale
-	local jumpColor = {53,141,255} -- {53,141,173}
-	local jumpScale = {.035,.035,.035}
-	--local duckColor = {255,53,53} -- {176,53,53}
-	local duckColor = {255,52,0} 
-	local duckScale = {.035,.035,.035}
-	local raveColor = {103,53,176}
-	local raveScale = {.06,.06,.06}
-	local impactX, impactY, impactZ
+	local blueColor = {53,141,255} -- {53,141,173}
+	local blueScale = {.035,.035,.035}
+	--local redColor = {255,53,53} -- {176,53,53}
+	local redColor = {255,52,0} 
+	local redScale = {.035,.035,.035}
+	local purpleColor = {103,53,176}
+	local purpleScale = {.06,.06,.06}
+	local impactX, impactY
 	local isGroundTroop = false
 	--local curveFactorX = 100
 	--local curveFactorY = 35
 	local impactY_BeyondChestHeight = 0
-	local tiltFactor = 0
 	local intensityFactor = 0
 	local intensityFactorExp = 0
 
@@ -458,9 +569,9 @@ function InitMeteors()
 	local impactProxyScale = {.005,.005,.005}
 	local idInThisChain = 1
 
-	local myChainStarTime = 0
-	local myChainEndTime = 0
 	local nextChainStartTime = 0
+	local yCurve = 0;
+	local adjustedImpactY = 0
 
 	local isBallChain = false
 	local isExtraLongBallChain = false
@@ -473,295 +584,531 @@ function InitMeteors()
     local prevRedPosition = 0
     local prevBlueTime = -5
     local prevRedTime = -5
-    
+	local dumpEnvironment = true
+	local minRequiredStrafeForMirroring = .25
+	local forceMirrorOn 
+	local minSpacingAfterRaveBlock = 0.00
+	local chainType 
+	local impactDir
+  local nodeLeaders =  {}
+	local nodeValidity=  {}
+	local chainLengths=  {}
+	local tiltFactors= {}
+	local intensityFactors=  {}
+	local myChainEndTimes=  {}
+	local nextChainStarters=  {}
+	-- //////////////////////////////////////////////////
+	-- AUXILIARY FUNCTION BLOCK. READ BELOW FOR MAIN LOOP
+	-- //////////////////////////////////////////////////
+	local nodeTypes = {}
+	nodeTypes.blue = {}
+	nodeTypes.red = {}
+	nodeTypes.purple = {}
+	nodeTypes['blue'].color = blueColor
+	nodeTypes['blue'].scale = blueScale
+	nodeTypes['blue'].typeID = 0
+	nodeTypes['blue'].mirrorTypeID = 1
+	
+	nodeTypes['red'].color = redColor
+	nodeTypes['red'].scale = redScale
+	nodeTypes['red'].typeID = 1
+	nodeTypes['red'].mirrorTypeID = 0
+	
+	nodeTypes['purple'].color = purpleColor
+	nodeTypes['purple'].scale = purpleScale
+	nodeTypes['purple'].typeID = 2
+	nodeTypes['purple'].mirrorTypeID = 2
+	local adjustedZImpact
+	function ValidNode(nodeIndex)
+		local result = nodes[nodeIndex]~=nil and nodes[nodeIndex]~='run' and nodes[nodeIndex]~='dirty'
+		--local result = false
+		return result
+	end
+	function CalculateChainsAndIntensities()
+		local k=1
+		local chainLength = 0
+		local nextValidNodeIsChainStater = true
+		local currentLeader = -1
+		local tiltFactor = 0
+		local maxTiltSpan = maxTilt - minTilt
+		local chainlength
+		while k<=#track  do --use the biggest intensity found in the span
+			chainLengths[k] = 0
+			if ValidNode(k) then
+				nodeValidity[k]	= true
+				if nextValidNodeIsChainStater == true then
+					if currentLeader ~= -1 then
+						nextChainStarters[currentLeader] = k
+					end
+					chainlength = 0
+					currentLeader = k
+					nextValidNodeIsChainStater = false
+				end
+				local myTiltSpan = track[k].tilt - minTilt
+				tiltFactor = max(tiltFactor, myTiltSpan/maxTiltSpan)
+				tiltFactors[k] = tiltFactor
+				tiltFactors[currentLeader] = tiltFactor
+				intensityFactor = max(intensityFactor, track[k].intensity)
+				intensityFactors[currentLeader] = intensityFactor
+				intensityFactors[k] = intensityFactor
+				myChainEndTimes[k] = track[k].seconds -- above 1 line?
+				myChainEndTimes[currentLeader] = track[k].seconds -- above 1 line?
+				chainLength=chainLength + 1
+				chainLengths[currentLeader] = chainLength
+				nodeLeaders[k] = currentLeader
+			else
+				nodeValidity[k]	= false
+				nextValidNodeIsChainStater = true
+				tiltFactor = 0
+				chainLength = 0
+				intensityFactors[k] = 0
+				intensityFactor=0
+				nodeLeaders[k] = -1
+			end
+			k = k + 1
+		end
+		nextChainStarters[#nextChainStarters+1] = -1
+		do return end
+	end
+	
+	function InitNewChain(i)
+        isBallChain = false -- most of them are squids, not ball chains
+        isExtraLongBallChain = false
+        if nodeLeaders[i] > 0 and nodeLeaders[i] < #track and nextChainStarters[nodeLeaders[i]] ~= nil and  nextChainStarters[nodeLeaders[i]] > 0 then
+			nextChainStartTime = track[nextChainStarters[nodeLeaders[i]]].seconds
+			--print("Node: "..i.." Leader: "..nodeLeaders[i].." Next chain starter: "..nextChainStarters[nodeLeaders[i]].." Time: "..track[nextChainStarters[nodeLeaders[i]]].seconds)
+		else
+			nextChainStartTime =-1
+		end
+		--nextChainStartTime = track[nextChainStarters[nodeLeaders[i]]].seconds
+        heading = {0, 0, -1}
+		headingNormalized = heading 
+		renderThisChain = true
+		mirrorThisChain = false
+		isGroundTroop = false
+		yDupOffset = 0
+		xMirrorOffset = 0
+		idInThisChain = 1
+    end
+	function CalculateImpactForNormalChainStarter(i, prevNodeTime, prevNodePosition, colorMinX,colorSpanX, impactX)
+        local delta = math.pow(track[i].seconds - prevNodeTime, 2)
+        prevNodeTime = myChainEndTimes[nodeLeaders[i]]
+        impactX = prevNodePosition
+        local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+        local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+        local modRand = rand()*(bound1+bound2)-bound1
+
+        if (modRand < 0) then
+            impactX = impactX - (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+        else
+            impactX = impactX + (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+        end
+        prevNodePosition = impactX
+		return prevNodePosition, prevNodeTime, impactX
+    end
+	function CalculateImpactForRaveChainStarter(i, prevRedTime, prevRedPosition,prevBlueTime, prevBluePosition, impactX)
+        impactX = purpleSpanX*rand() + purpleMaxX
+        prevBluePosition = impactX
+        prevRedPosition = impactX
+        prevBlueTime = myChainEndTimes[nodeLeaders[i]]
+        prevRedTime = myChainEndTimes[nodeLeaders[i]]
+		return impactX,prevBluePosition,prevRedPosition,prevBlueTime,prevRedTime
+    end
+	
+	
+	
+	--function AssignMeteor(i,impactX, typeId, scale,adjustedImpactY, adjustedZImpact, curveFactorX,  color,yCurve)
+	function AssignMeteor(i,impactX, typeID, scale,adjustedImpactY, adjustedZImpact, curveFactorX,  innerColor,yCurve)
+		meteorNodes[#meteorNodes+1] = i
+		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
+		meteorImpacts[#meteorImpacts+1] = {impactX, adjustedImpactY, adjustedZImpact}
+		meteorScales[#meteorScales+1] = scale
+		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, yCurve, 0})--impactY*60
+		meteorColors[#meteorColors+1] = innerColor
+		meteorAlbedoColors[#meteorAlbedoColors+1] = {255,255,255}
+		meteorSpeeds[#meteorSpeeds+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
+		meteorTypes[#meteorTypes+1] = typeID
+
+		impactProxyScales[#impactProxyScales+1] = impactProxyScale
+		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
+	end
+	
+	function AssignMeteorTail(i,impactX, typeID, scale,adjustedImpactY, adjustedZImpact, curveFactorX,  mirrorColor,yCurve)
+		meteorNodes_tails[#meteorNodes_tails+1] = i
+		meteorDirections_tails[#meteorDirections_tails+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
+		meteorImpacts_tails[#meteorImpacts_tails+1] = {impactX, adjustedImpactY, adjustedZImpact}
+		meteorScales_tails[#meteorScales_tails+1] = scale
+		meteorCurveMaximums_tails[#meteorCurveMaximums_tails+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, yCurve, 0})--impactY*60
+		meteorColors_tails[#meteorColors_tails+1] = mirrorColor
+		meteorAlbedoColors_tails[#meteorAlbedoColors_tails+1] = {255,255,255}
+		meteorSpeeds_tails[#meteorSpeeds_tails+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
+		meteorTypes_tails[#meteorTypes_tails+1] = typeID
+
+		impactProxyScales[#impactProxyScales+1] = impactProxyScale
+		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
+	end
+	
+	function AssignMeteorAndMirror(assignMeteorFunc,i, adjustedImpactY, adjustedZImpact, curveFactorX, yCurve,
+										impactX, typeID, scale, color,
+										mirrorTypeID, mirrorScale, mirrorColor)
+		--print("IX"..impactX)
+		assignMeteorFunc(i, impactX, typeID, scale,adjustedImpactY, adjustedZImpact, curveFactorX,color,yCurve)
+		if mirrorThisChain then
+			local mirrorImpactX = -1*impactX
+			if xMirrorOffset ~= 0 then
+				mirrorImpactX = impactX + xMirrorOffset
+			end
+			lg:log("Creating a mirror node "..i.." of color: ("..mirrorColor[1].." "..mirrorColor[2].." "..mirrorColor[3]..") ")
+			assignMeteorFunc(i, mirrorImpactX, mirrorTypeID, mirrorScale,adjustedImpactY, adjustedZImpact, curveFactorX, mirrorColor,yCurve)
+		end
+	end
+	function ValidNodeInLongChain(isExtraLongBallChain,idInThisChain, divisionFactor)
+		return not (isExtraLongBallChain and (idInThisChain>1) and (idInThisChain%divisionFactor==0))
+	end
+	
+	function ProcessFirstNodeOrBallChain(i,adjustedImpactY, adjustedZImpact, curveFactorX, yCurve,
+								impactX,typeID,scale,color,
+								mirrorTypeID,mirrorScale,mirrorColor) 
+	
+		local allowRender = not (isExtraLongBallChain and (idInThisChain>1) and (idInThisChain%2==0))
+		if not allowRender then
+			return
+		end
+		
+		--local additionalX_SweepAcross = 0 -- -.005 + idInThisChain * .0015
+		local sweptImpactX = impactX
+		if isBallChain then
+			sweepPosX = sweepPosX + .025 * sweepDir
+			if sweepPosX > 1 then
+				sweepPosX = 1
+				sweepDir = -1
+			elseif sweepPosX < -1 then
+				sweepPosX = -1
+				sweepDir = 1
+			end
+			sweptImpactX = sweepPosX
+
+			prevBlockImpactX = sweptImpactX
+		end
+		-- for clarity those assignments have been moved into generalized function
+		AssignMeteorAndMirror(AssignMeteor, i,adjustedImpactY, adjustedZImpact, curveFactorX, yCurve,
+								sweptImpactX,typeID,scale,color,
+								mirrorTypeID,mirrorScale,mirrorColor)
+	
+		return prevBlockImpactX
+	end
+	function AssignBallChain(i,mirrorThisChain,chainType, chainLength, intensityFactor)	
+		if (not mirrorThisChain) and (chainType~='purple') then
+			-- intentionally blank
+			if (chainLength>11) and (intensityFactor<.6) then
+				isBallChain = true
+			end
+			if (chainLength>22) and (intensityFactor<.9) then
+				isBallChain = true
+			end
+		end
+		
+		if isBallChain and chainLengths[nodeLeaders[i]]>66 then
+			isExtraLongBallChain = true
+		end
+		return isBallChain,isExtraLongBallChain
+	end
+	
+	function DoMirror(i, forceMirrorOn, chainType, impactX)
+		if chainType == 'purple' then
+			return impactX
+		end
+		--local prevRedPosition, prevRedTime, prevBlueTime, prevBluePosition,mirrorScale,mirrorColor
+		function AssignImpactMirror(chainType, impactX)
+			if chainType=='blue' then
+				prevBluePosition = impactX
+				prevRedPosition = -impactX
+				mirrorScale = redScale
+				mirrorColor = redColor
+				
+			else
+				prevBluePosition = -impactX
+				prevRedPosition = impactX
+				mirrorScale = blueScale
+				mirrorColor = blueColor
+			end
+		end
+        
+    	function CalculateNaturalMirror(i, prevNodeTime, prevNodePosition, colorMinX,colorSpanX, otherBlock)
+            local delta = math.pow(track[i].seconds - prevNodeTime, 2)
+            prevNodeTime = myChainEndTimes[nodeLeaders[i]]
+            local impactX = prevNodePosition
+            local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+            local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
+            local oB1 = math.pow(( (math.abs(otherBlock + 0.05 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
+            local oBS1 = (otherBlock + 0.05 - impactX) / math.abs(otherBlock + 0.05 - impactX)
+            local oB2 = math.pow(( (math.abs(otherBlock + 0.05 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
+            local oBS2 = (otherBlock + 0.05 - impactX) / math.abs(otherBlock + 0.05 - impactX)
+            local modRand = rand()*(bound1+bound2)-bound1
+            if (oB1>bound1 and oBS1<0 and oB2>bound2 and oBS2>0) then 
+                return false, 0, 0, 0
+            end
+            
+            if (oB1>bound1) then
+                bound1 = min(oB2, bound1)
+            elseif (oB2>bound2) then
+                bound2 = min(oB1, bound2)
+            else
+                modRand = rand()*(bound1+bound2 - 0.1)-bound1 + 0.05
+                if (modRand < oB1*oBS1) then
+                    modRand = modRand - 0.05 
+                end
+                if (modRand > oB2*oBS2) then
+                    modRand = modRand + 0.05
+                end
+            end
+            
+            if (modRand < 0) then
+                impactX = impactX - (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+            else
+                impactX = impactX + (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
+            end
+            prevNodePosition = impactX
+	        return true, prevNodePosition, prevNodeTime, impactX
+        end
+		
+		local naturalMirror = math.abs(impactX) >= minRequiredStrafeForMirroring	
+		if forceMirrorOn then 
+			lg:log("Is natural mirror"..tostring(naturalMirror))
+		end
+		--[[if (intensityFactors[i] > .75) or forceMirrorOn then -- big hit, end of song, or before a gap
+			if not naturalMirror and forceMirrorOn then
+				if math.abs(impactX)< minRequiredStrafeForMirroring then
+					if (impactX < 0) then
+					   impactX = - minRequiredStrafeForMirroring - .01
+					else
+					   impactX = minRequiredStrafeForMirroring + .01
+					end
+					--if chainType == 'red' then
+						lg:log("Type 1 Mirroring chain: "..i) 
+						lg:log("Node 1: "..i.." Mirroring with chainType: "..chainType) 
+						AssignImpactMirror(chainType, impactX)
+					--else
+--						AssignImpactMirror('red', impactX)
+					--end
+				end
+			end
+			if naturalMirror and ((rand() < doubleFactor) or forceMirrorOn) then
+				mirrorThisChain = true
+				impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
+				lg:log("Type 2 Mirroring chain: "..i) 
+				lg:log("Node 2: "..i.." Mirroring wth chainType: "..chainType) 
+				AssignImpactMirror(chainType,  impactX)
+				-- since this is a mirror both previous red and blue should be the same
+				prevRedTime = myChainEndTimes[nodeLeaders[i] ]
+				prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
+			end
+		end
+        --]]
+        if forceMirrorOn then
+            if not naturalMirror then
+                if (impactX < 0) then
+                   impactX = - minRequiredStrafeForMirroring - .01
+                else
+                   impactX = minRequiredStrafeForMirroring + .01
+                end
+                AssignImpactMirror(chainType, impactX)
+            end
+            mirrorThisChain = true
+            impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
+            lg:log("Force mirroring chain: "..i) 
+            lg:log("Node 2: "..i.." Force mirroring wth chainType: "..chainType) 
+            AssignImpactMirror(chainType,  impactX)
+            -- since this is a mirror both previous red and blue should be the same
+            prevRedTime = myChainEndTimes[nodeLeaders[i] ]
+            prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
+        elseif (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
+            if chainType=='blue' then
+                mirrorThisChain, prevRedPosition, prevRedTime = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+            else
+                mirrorThisChain, prevBluePosition, prevBlueTime = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+            end
+        end
+		return impactX
+	end
+	function AdjustChainXPositionByPreviousChain(chainType, distanceToPreviousChain, minSpacingAfterRaveBlock, prevBlockType,prevBlockImpactX,impactX)
+		if prevBlockType == 'purple' then
+			if  not (distanceToPreviousChain >= minSpacingAfterRaveBlock) then
+				renderThisChain = false -- don't render anything too close right after a rave
+			elseif not (distanceToPreviousChain >= 1.5) then
+				--if we follow a rave, make sure we're not hidden behind it
+				if chainType == 'purple' then
+					impactX = prevBlockImpactX
+				elseif chainType == 'blue' then
+					if prevBlockImpactX < .2 then
+						impactX = .35
+					else
+						impactX = 0
+					end
+				elseif chainType == 'red' then
+					if prevBlockImpactX > -.2 then
+						impactX = -.35
+					else
+						impactX = 0
+					end
+				end
+			end
+		end
+		return impactX
+	end
+	function AdjustZImpactToSphere(impactX, impactY_BeyondChestHeight, zImpact, adjustedZImpact)
+		local targetMagSq = zImpact * zImpact
+			adjustedZImpact = zImpact
+			local impactXSq=impactX*impactX;
+			local impactYSq = impactY_BeyondChestHeight*impactY_BeyondChestHeight
+			for k=1, 9 do
+				local mag = impactXSq + impactYSq + adjustedZImpact*adjustedZImpact
+				if mag <= targetMagSq then
+					break
+				else
+					adjustedZImpact = adjustedZImpact - .05
+				end
+			end
+			return adjustedZImpact
+	end
+	-- //////////////////////////////////////////////////
+	-- END OF AUXILIARY FUNCTION BLOCK. 
+	-- //////////////////////////////////////////////////
+	CalculateChainsAndIntensities()
+--	for i=1,#chainLengths do
+--		local nodeLeaderIsNil = nodeLeaders[i] == nil
+--		if nodeLeaders[i] < 0 then
+--			print("Node: "..i.."Node Leader is -1")
+--		else
+--			local chainLengthIsNil = chainLengths[nodeLeaders[i]] == nil
+--			print("Node: "..i.."Node Leader is nil: "..tostring(nodeLeaderIsNil))
+--			print("Node: "..i.."Chain Length is nil: "..tostring(chainLengthIsNil))
+--			print("Node: "..i.."Node Leader: "..nodeLeaders[i].."Chain length: "..chainLengths[nodeLeaders[i]])
+--		end
+--	end
+	function pad(s, width, padder)
+	  if lg.enabled == false then
+		return ""
+	  end
+	  if s == nil then
+		return "                      "
+	  end
+	  
+	  --doesntwork
+	  --padder = strrep(padder or " ", width)
+	  --if width < 0 then return strsub(padder .. s, width) end
+	  --return strsub(s .. padder, 1, width)
+		local stringRep = tostring(s)
+		if width - string.len(stringRep)> 0 then
+			local padLength =width - string.len(stringRep)
+			if s > 0 then
+				padLength= padLength - 1
+				stringRep = padder..stringRep
+			end
+			for i = 1, padLength do
+				stringRep = stringRep..padder
+			end
+		end
+        return stringRep
+	end
+
     for i=1,#track do
     	if nodes[i]~=nil and nodes[i]~='run' and nodes[i]~='dirty' then
     		if chainstarter then -- bring all meteors in this chain from the same direction
-    			tiltFactor = 0
-    			intensityFactor = 0
-    			intensityFactorExp = 0
+				-- init some local variables
+				InitNewChain(i)
+				-- calculate impacts for chain starters
+				if nodes[i] == 'red' then
+					lg:log("In data red Node: "..i.." prevRedTime:"..pad(prevRedTime,25," ").." prevRedPosition: "..pad(prevRedPosition,25," ").." impactX: "..pad(impactX,15," "))
+                    prevRedPosition, prevRedTime, impactX = CalculateImpactForNormalChainStarter(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+					--print("Node: "..i.."ImpactX:"..impactX.."Pre Node: "..prevRedPosition)
+					--lg::log("Node: "..i.."ImpactX:"..impactX.."Pre Node: "..prevRedPosition)
+					lg:log("Node: "..i.." ImpactX:"..pad(impactX,25," ").." Pre Node: "..pad(prevRedPosition,25," ").." Pre time: "..pad(prevRedTime,15," "))
+				elseif nodes[i] == 'blue' then
+                    lg:log("In data blue Node: "..i.." prevRedTime:"..pad(prevBlueTime,25," ").." prevRedPosition: "..pad(prevBluePosition,25," ").." impactX: "..pad(impactX,15," "))
+					prevBluePosition, prevBlueTime, impactX = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,-1*blueMaxX, -1*blueSpanX,impactX)
+					--print("Node: "..i.."ImpactX:"..impactX.."Pre Node: "..prevBluePosition)
+					--lg:log("Node: "..i.." ImpactX:"..impactX.." Pre Node: "..prevBluePosition.." Pre time: "..prevBlueTime)
+					lg:log("Node: "..i.." ImpactX:"..pad(impactX,25," ").." Pre Node: "..pad(prevBluePosition,25," ").." Pre time: "..pad(prevBlueTime,15," "))
+				else
+					lg:log("In data doing rave")
+					impactX,prevBluePosition,prevRedPosition,prevBlueTime,prevRedTime = CalculateImpactForRaveChainStarter(i,prevRedTime, prevRedPosition,prevBlueTime,prevBluePosition,impactX)
+				end
+				
+				
     			idInThisChain = 1
-    			isBallChain = false -- most of them are squids, not ball chains
-    			isExtraLongBallChain = false
-    			local chainLength = 0
-    			myChainStarTime = track[i].seconds
 
-    			local k=i
-    			while k<=#track and nodes[k]~=nil and nodes[k]~='run' and nodes[k]~='dirty' do --use the biggest intensity found in the span
-    				local maxTiltSpan = maxTilt - minTilt
-    				local myTiltSpan = track[k].tilt - minTilt
-    				tiltFactor = max(tiltFactor, myTiltSpan/maxTiltSpan)
-    				intensityFactor = max(intensityFactor, track[k].intensity)
-    				myChainEndTime = track[k].seconds
-    				chainLength = chainLength + 1
-    				k = k + 1
-    			end
+    			intensityFactorExp = intensityFactors[i]*intensityFactors[i]*intensityFactors[i]
 
-    			nextChainStartTime = -1
-    			local kk = k
-    			for kk=k,#track do
-    				if nodes[kk]~=nil and nodes[kk]~='run' and nodes[kk]~='dirty' then
-    					nextChainStartTime = track[kk].seconds
-    					break
-    				end
-    			end
-
-    			--if i<500 then
-    			--	print("myChainStart:"..myChainStarTime.." myChainEnd:"..myChainEndTime.." nextChainStart:"..nextChainStartTime)
-    			--end
-
-    			intensityFactorExp = intensityFactor*intensityFactor*intensityFactor
-
-				--heading = {-.5*rand() + .5, -.5*rand(), -2*rand()}
 				heading = {0, 0, -1}
 				headingNormalized = heading
-                
-				if nodes[i] == 'duck' then
-                    local delta = math.pow(track[i].seconds - prevRedTime, 2)
-                    prevRedTime = myChainEndTime
-                    
-                    impactX = prevRedPosition
-                    local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - redMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
-                    local bound2 = math.max(0, math.min(1, math.pow(( ((redSpanX + redMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
-                    local modRand = rand()*(bound1+bound2)-bound1
-                    
-                    if (modRand < 0) then
-                        impactX = impactX - (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
-                    else
-                        impactX = impactX + (minAccelRight + maxAccelRight * math.pow(math.abs(modRand), factAccelRight)) * delta
-                    end
-                    prevRedPosition = impactX
-                    
-					--impactX = -.5*rand() + .75
-					--impactX = redMinX + rand() * redSpanX
-				elseif nodes[i] == 'jump' then
-                    local delta = math.pow(track[i].seconds - prevBlueTime, 2)
-                    prevBlueTime = myChainEndTime
-                    
-                    impactX = prevBluePosition
-                    local bound1 = math.max(0, math.min(1, math.pow(( ((blueMaxX - impactX) / delta) - minAccelLeft) / maxAccelLeft, 1/factAccelLeft) ))
-                    local bound2 = math.max(0, math.min(1, math.pow(( ((impactX - blueSpanX - blueMaxX ) / delta) - minAccelLeft) / maxAccelLeft, 1/factAccelLeft) ))
-                    local modRand = rand()*(bound1+bound2)-bound2
-                    
-                    if (modRand < 0) then
-                        impactX = impactX - (minAccelLeft + maxAccelLeft * math.pow(math.abs(modRand), factAccelLeft)) * delta
-                    else
-                        impactX = impactX + (minAccelLeft + maxAccelLeft * math.pow(math.abs(modRand), factAccelLeft)) * delta
-                    end
-                    prevBluePosition = impactX
-                    
-					--impactX = .5 - rand() * .75
-					--impactX = blueMaxX + rand() * blueSpanX
-				else
-					impactX = purpleSpanX*rand() + purpleMaxX
-                    prevBluePosition = impactX
-                    prevRedPosition = impactX
-                    prevBlueTime = myChainEndTime
-                    prevRedTime = myChainEndTime
-				end
-                
-				impactX = impactX * impactX_Scaler -- 1.7
 				
-				--impactY_BeyondChestHeight = rand()*yImpactSpan
-				impactY_BeyondChestHeight = tiltFactor*tiltFactor*yImpactSpan + rand()*yImpactSpan_MaxRandomExtra
+				-- scale horizontal impacts by armspan
+				impactX = impactX * impactX_Scaler -- 1.7
+				-- adjust calculated y impact point to be above chest height
+				impactY_BeyondChestHeight = (tiltFactors[i])*(tiltFactors[i])*yImpactSpan + rand()*yImpactSpan_MaxRandomExtra
 				impactY = chestHeight + impactY_BeyondChestHeight
-
-				local impactDir = {impactX, impactY_BeyondChestHeight, 0}
-
-				local targetMagSq = zImpact * zImpact
-				impactZ = zImpact
-				local impactXSq=impactX*impactX;
-				local impactYSq = impactY_BeyondChestHeight*impactY_BeyondChestHeight
-				for k=1, 9 do
-					local mag = impactXSq + impactYSq + impactZ*impactZ
-					if mag <= targetMagSq then
-						break
-					else
-						impactZ = impactZ - .05
-					end
+				
+				impactDir = {impactX, impactY_BeyondChestHeight, 0}
+				
+				-- adjust impact Z of impact points so togetehr with x and y they form points on a sphere of constant radius
+				adjustedZImpact = AdjustZImpactToSphere(impactX, impactY_BeyondChestHeight, zImpact, adjustedZImpact)
+				 --AdjustZImpactToSphere(impactX, impactY_BeyondChestHeight, zImpact, adjustedZImpact)
+				
+				chainType = nodes[i]				
+        local distanceToNextChain
+				if nextChainStarters[i] ~=nil and nextChainStarters[i] > 0  then
+					distanceToNextChain = track[nextChainStarters[i]].seconds - myChainEndTimes[i] -- was track[i].seconds - prevBlockSongTime
+					lg:log("Node: "..i.." Leader starts at: "..track[i].seconds.." Leader ends at: "..myChainEndTimes[i].."Distance: "..distanceToNextChain.." Next chain: "..nextChainStarters[i].." Starts at:"..track[nextChainStarters[i]].seconds)
+				else
+					lg:log("Nil chain starter for: "..i)
+					distanceToNextChain = 0
 				end
-
-				local minSameBlockTypeSpacing = 0.00
-
-				local chainType = nodes[i]
-
-				renderThisChain = true
-				mirrorThisChain = false
-				isGroundTroop = false
-				yDuplicateThisChain = false
-				yDupOffset = 0
-				xMirrorOffset = 0
-
-				--if track[i].intensity < .5 and rand()>.4 then
-				--if chainType == 'rave' then
-				--	--this one is a ground troop
-				--	isGroundTroop = true
-				--	impactY = chestHeight - .1
-				--	if chainType == 'jump' then
-				--		impactX = -1*math.abs(impactX)
-				--	elseif chainType == 'duck' then
-				--		impactX = math.abs(impactX)
-				--	end
-				--end
-
-				local minSpacingAfterRaveBlock = 0.00
-
-				--if i<1000 then
-				--	print(chainType.."."..track[i].seconds.." prevTime:"..prevBlockSongTime)
-				--end
-
-				if prevBlockType == 'rave' then
-					if  not ((track[i].seconds - prevBlockSongTime) >= minSpacingAfterRaveBlock) then
-						renderThisChain = false -- don't render anything too close right after a rave
-					elseif not ((track[i].seconds - prevBlockSongTime) >= 1.5) then
-						--if we follow a rave, make sure we're not hidden behind it
-						if chainType == 'rave' then
-							impactX = prevBlockImpactX
-						elseif chainType == 'jump' then
-							if prevBlockImpactX < .2 then
-								impactX = .35
-							else
-								impactX = 0
-							end
-						elseif chainType == 'duck' then
-							if prevBlockImpactX > -.2 then
-								impactX = -.35
-							else
-								impactX = 0
-							end
-						end
-					end
+				
+				forceMirrorOn = (nextChainStartTime<0) or ((intensityFactors[i] > .5) and (distanceToNextChain>2.0)) or (distanceToNextChain>4.0)				
+				if  distanceToNextChain < 4 and ((intensityFactors[i] > .5) and (distanceToNextChain>2.0)) then
+					lg:log("Node: "..i.." Intensity is at: "..intensityFactors[i])
 				end
+				--forceMirrorOn = (nextChainStartTime<0) or  (distanceToPreviousChain>4.0)				
+				-- make sure chains aren't too close to each other
+				impactX = AdjustChainXPositionByPreviousChain(chainType, distanceToNextChain, minSpacingAfterRaveBlock, prevBlockType,prevBlockImpactX,impactX)
+				--AdjustChainXPositionByPreviousChain(chainType, distanceToPreviousChain, minSpacingAfterRaveBlock, prevBlockType,prevBlockImpactX,impactX)
 
-				local timeGapUntilNextChain = nextChainStartTime - myChainEndTime
-				local minRequiredStrafeForMirroring = .25
-				local forceMirrorOn = (nextChainStartTime<0) or ((intensityFactor > .5) and (timeGapUntilNextChain>2.0)) or (timeGapUntilNextChain>4.0)
-				local tooClose = false
-
-				if  not ((track[i].seconds - prevBlockSongTime) >= minSameBlockTypeSpacing) then
-					tooClose = true;
-					--needs to change to the other type, these two are too close together
-					if prevBlockType == 'rave' then
-						--renderThisChain = false -- don't render anything too close right after a rave
-					elseif prevBlockType == 'jump' then
-						chainType = 'jump'
-						impactX = prevBlockImpactX
-					elseif prevBlockType == 'duck' then
-						chainType = 'duck'
-						impactX = prevBlockImpactX
-					end
-				end
-
-				if (not tooClose) or forceMirrorOn then
-					if chainType ~= 'rave' then
-						if (intensityFactor > .75) or forceMirrorOn then -- big hit, end of song, or before a gap
-							if forceMirrorOn then
-								if math.abs(impactX)< minRequiredStrafeForMirroring then
-                                    if (impactX < 0) then
-									   impactX = - minRequiredStrafeForMirroring - .01
-                                    else
-									   impactX = minRequiredStrafeForMirroring + .01
-                                    end
-                                    if chaintype=='duck' then
-                                        prevBluePosition = -impactX
-                                        prevRedPosition = impactX
-                                    else
-                                        prevBluePosition = impactX
-                                        prevRedPosition = -impactX
-                                    end
-								end
-							end
-							if math.abs(impactX) >= minRequiredStrafeForMirroring then
-								if (rand() < doubleFactor) or forceMirrorOn then
-									mirrorThisChain = true
-									impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
-									if chainType=='jump' then
-										mirrorScale = duckScale
-										mirrorColor = duckColor
-                                        prevRedPosition = - impactX
-                                        prevBluePosition = impactX
-									else
-										mirrorScale = jumpScale
-										mirrorColor = jumpColor
-                                        prevBluePosition = - impactX
-                                        prevRedPosition = impactX
-									end
-                                    prevRedTime = myChainEndTime
-                                    prevBlueTime = myChainEndTime
-								end
-							end
-						end
-					end
-				end
-
-				if chainType=='jump' then
-					color = jumpColor
-					scale = jumpScale
-					typeID = 0
-					mirrorTypeID = 1
-				elseif chainType=='duck' then
-					color = duckColor
-					scale = duckScale
-					typeID = 1
-					mirrorTypeID = 0
-				elseif chainType=='rave' then
-					color = raveColor
-					scale = raveScale
-					typeID = 2
-					mirrorTypeID = 2
-				end
+				-- here was an attempt to rebind the chain so that it isnt on the opposite side when too close
+				-- deleted if block here
+				-- ....
+				-- end deleted block
+				-- mirror this chain if its time for it or song is too slow
+		
+			
+				impactX = DoMirror(i, forceMirrorOn, chainType, impactX)
+				lg:log("Node: "..i.." MImpactX: ".. pad(impactX,25," "))
+		
+				--DoMirror(i, forceMirrorOn, chainType, impactX)
+				-- assign some aprameters based on chain leader node type
+				color = nodeTypes[chainType].color
+				scale = nodeTypes[chainType].scale
+				typeID = nodeTypes[chainType].typeID
+				mirrorTypeID = nodeTypes[chainType].mirrorTypeID
 
 
 				--if i <1000 then
 				--	print("intensity:"..intensityFactor)
 				--end
-
-				if (not mirrorThisChain) and (chainType~='rave') then
-					--if (rand()>.9) and (chainLength>7) then
-					--	isBallChain = true
-					--end
-					if (chainLength>11) and (intensityFactor<.6) then
-						isBallChain = true
-					end
-					if (chainLength>22) and (intensityFactor<.9) then
-						isBallChain = true
-					end
-					--if chainLength>22 then
-					--	isBallChain = true
-					--end
-				end
+				-- check if this chain is a ball chain
+				isBallChain,isExtraLongBallChain = AssignBallChain(i,mirrorThisChain,chainType, chainLengths[i], intensityFactors[i])
 
 				sweepDir = 1
 				if impactX > 0 then sweepDir = -1 end
 				sweepPosX = impactX
 
-				if isBallChain and chainLength>66 then
-					isExtraLongBallChain = true
-				end
-
-				if convertPurplesToCrossUps then
-					if chainType=='rave' then -- try turning purples into double vertical hits
-						impactX = math.abs(impactX)
-						chainType = 'duck'
-						color = duckColor
-						typeID = 1
-						mirrorTypeID = 0
-						scale = duckScale
-						mirrorThisChain = true
-						mirrorScale = jumpScale
-						mirrorColor = jumpColor
-						--yDuplicateThisChain = true
-						--yDupOffset = .2
-						xMirrorOffset = .5 --put the blues on the wrong side
-					end
-				end
 
 				chainstarter = false
     		else
     			idInThisChain = idInThisChain + 1
     		end
 
-    		local yCurve = impactY_BeyondChestHeight*curveFactorY
+    		yCurve = impactY_BeyondChestHeight*curveFactorY
     		yCurve = math.min(yCurve, curveY_Max)
     		yCurve = math.max(yCurve, curveY_Min)
     		--yCurve = curveY_Max
@@ -771,113 +1118,26 @@ function InitMeteors()
 
     		--if renderThisChain and ((idInThisChain%2)==1) then -- only render every other ball in the chain
     		if renderThisChain then
+				-- only interested in these filled out once for first rendered chainStarter 
 	    		prevBlockSongTime = track[i].seconds
 	    		prevBlockType = chainType -- nodes[i]
 	    		prevBlockImpactX = impactX
 	    		prevBlockIsBallChain = isBallChain
 	    		prevBallChainDirection = 1
 
-	    		local adjustedImpactY = impactY + playerHeight_impactYCompensator
-
+				-- this does nothing as playerHeight_impactYCompensator is always 0
+	    		adjustedImpactY = impactY + playerHeight_impactYCompensator
+				-- last rendered node
 	        	lastSentNode = i
+				
+				-- removed yDuplicateThisChain check because it was always false
+	        	if idInThisChain==1 or isBallChain then --this is the head of a chain or a strafe chain (ballChain)
+					-- I have no idea why I have to pass all these instad of capturing them in closures and using as needed inside
+					-- the result of such usage differs for some reason
 
-	        	if idInThisChain==1 or isBallChain or yDuplicateThisChain then --this is the head of a chain or a strafe chain (ballChain)
-	        		local allowRender =  true
-	        		if isExtraLongBallChain and (idInThisChain>1) and (idInThisChain%2==0) then
-	        			allowRender = false -- for extra long chains, render only every other orb
-	        		end
-	        		
-	        		if allowRender then
-		        		local additionalX_SweepAcross = 0 -- -.005 + idInThisChain * .0015
-		        		local sweptImpactX = impactX
-		        		if isBallChain then
-		        			--additionalX_SweepAcross = -.025 + idInThisChain * .025
-		        			--if impactX > 0 then -- always move the trail towards center
-		        			--	additionalX_SweepAcross = additionalX_SweepAcross * -1
-		        			--	prevBallChainDirection = -1
-		        			--end
-		        			--sweptImpactX = sweptImpactX + additionalX_SweepAcross
-		        			--sweptImpactX = math.max(-1, math.min(sweptImpactX, 1)) -- contain them to a reseonable field size
-
-		        			sweepPosX = sweepPosX + .025 * sweepDir
-		        			if sweepPosX > 1 then
-		        				sweepPosX = 1
-		        				sweepDir = -1
-		        			elseif sweepPosX < -1 then
-		        				sweepPosX = -1
-		        				sweepDir = 1
-		        			end
-		        			sweptImpactX = sweepPosX
-
-		        			prevBlockImpactX = sweptImpactX
-		        		end
-
-		        		meteorNodes[#meteorNodes+1] = i
-			    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-			    		meteorImpacts[#meteorImpacts+1] = {sweptImpactX, adjustedImpactY, impactZ}
-			    		meteorScales[#meteorScales+1] = scale
-			    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, impactY*curveFactorY, 0})--impactY*60
-			    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{sweptImpactX*curveFactorX, yCurve, 0})--impactY*60
-			    		meteorColors[#meteorColors+1] = color
-			    		meteorAlbedoColors[#meteorAlbedoColors+1] = {255,255,255}
-			    		meteorSpeeds[#meteorSpeeds+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-			    		meteorTypes[#meteorTypes+1] = typeID
-
-			    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-			    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-
-			    		if yDuplicateThisChain then
-			        		meteorNodes[#meteorNodes+1] = i
-				    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-				    		meteorImpacts[#meteorImpacts+1] = {sweptImpactX, adjustedImpactY+yDupOffset, impactZ}
-				    		meteorScales[#meteorScales+1] = scale
-				    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, impactY*curveFactorY, 0})--impactY*60
-				    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{sweptImpactX*curveFactorX, yCurve, 0})--impactY*60
-				    		meteorColors[#meteorColors+1] = color
-				    		meteorAlbedoColors[#meteorAlbedoColors+1] = {255,255,255}
-				    		meteorSpeeds[#meteorSpeeds+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-				    		meteorTypes[#meteorTypes+1] = typeID
-
-				    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-				    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-			    		end
-
-			    		if mirrorThisChain then
-			    			local mirrorImpactX = -1*impactX
-			    			if xMirrorOffset ~= 0 then
-			    				mirrorImpactX = impactX + xMirrorOffset
-			    			end
-				        	meteorNodes[#meteorNodes+1] = i
-				    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-				    		meteorImpacts[#meteorImpacts+1] = {mirrorImpactX, adjustedImpactY, impactZ}
-				    		meteorScales[#meteorScales+1] = mirrorScale
-				    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{-1*impactX*curveFactorX, impactY*curveFactorY, 0})
-				    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{mirrorImpactX*curveFactorX, yCurve, 0})
-				    		meteorColors[#meteorColors+1] = mirrorColor
-				    		meteorAlbedoColors[#meteorAlbedoColors+1] = {255,255,255}
-				    		meteorSpeeds[#meteorSpeeds+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-				    		meteorTypes[#meteorTypes+1] = mirrorTypeID
-
-				    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-				    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-
-				    		if yDuplicateThisChain then
-					    		meteorNodes[#meteorNodes+1] = i
-					    		meteorDirections[#meteorDirections+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-					    		meteorImpacts[#meteorImpacts+1] = {mirrorImpactX, adjustedImpactY+yDupOffset, impactZ}
-					    		meteorScales[#meteorScales+1] = mirrorScale
-					    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{-1*impactX*curveFactorX, impactY*curveFactorY, 0})
-					    		meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{mirrorImpactX*curveFactorX, yCurve, 0})
-					    		meteorColors[#meteorColors+1] = mirrorColor
-					    		meteorAlbedoColors[#meteorAlbedoColors+1] = {255,255,255}
-					    		meteorSpeeds[#meteorSpeeds+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-					    		meteorTypes[#meteorTypes+1] = mirrorTypeID
-
-					    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-					    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-				    		end
-			    		end
-		    		end
+					prevBlockImpactX = ProcessFirstNodeOrBallChain(i,adjustedImpactY, adjustedZImpact, curveFactorX, yCurve,
+								impactX,typeID,scale,color,
+								mirrorTypeID,mirrorScale,mirrorColor)
 	    		else -- this is part of a chain tail
 	    			--.035 -> .06
 	    			local additionalScale = -.005 + idInThisChain * .0015
@@ -886,46 +1146,10 @@ function InitMeteors()
 	    			tailScale[1] = scale[1] + additionalScale
 	    			tailScale[2] = scale[2] + additionalScale
 	    			tailScale[3] = scale[3] + additionalScale
-
-	    			--if i<1000 then
-	    			--	print("idInThisChain "..idInThisChain)
-	    			--	print("additionalScale "..additionalScale)
-	    			--	print("scaleX "..tailScale[1])
-	    			--end
-
-	        		meteorNodes_tails[#meteorNodes_tails+1] = i
-		    		meteorDirections_tails[#meteorDirections_tails+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-		    		meteorImpacts_tails[#meteorImpacts_tails+1] = {impactX, adjustedImpactY, impactZ}
-		    		meteorScales_tails[#meteorScales_tails+1] = tailScale
-		    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, impactY*curveFactorY, 0})--impactY*60
-		    		meteorCurveMaximums_tails[#meteorCurveMaximums_tails+1] = fif(isGroundTroop,{0,0,0},{impactX*curveFactorX, yCurve, 0})--impactY*60
-		    		meteorColors_tails[#meteorColors_tails+1] = color
-		    		meteorAlbedoColors_tails[#meteorAlbedoColors_tails+1] = {255,255,255}
-		    		meteorSpeeds_tails[#meteorSpeeds_tails+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-		    		meteorTypes_tails[#meteorTypes_tails+1] = typeID
-
-		    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-		    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-
-		    		if mirrorThisChain then
-		    			local mirrorImpactX = -1*impactX
-		    			if xMirrorOffset ~= 0 then
-		    				mirrorImpactX = impactX + xMirrorOffset
-		    			end
-			        	meteorNodes_tails[#meteorNodes_tails+1] = i
-			    		meteorDirections_tails[#meteorDirections_tails+1] = headingNormalized -- {math.random() - .5, 0, math.random() - .5} -- the game normalizes these for us
-			    		meteorImpacts_tails[#meteorImpacts_tails+1] = {mirrorImpactX, adjustedImpactY, impactZ}
-			    		meteorScales_tails[#meteorScales_tails+1] = tailScale -- mirrorScale
-			    		--meteorCurveMaximums[#meteorCurveMaximums+1] = fif(isGroundTroop,{0,0,0},{-1*impactX*curveFactorX, impactY*curveFactorY, 0})
-			    		meteorCurveMaximums_tails[#meteorCurveMaximums_tails+1] = fif(isGroundTroop,{0,0,0},{mirrorImpactX*curveFactorX, yCurve, 0})
-			    		meteorColors_tails[#meteorColors_tails+1] = mirrorColor
-			    		meteorAlbedoColors_tails[#meteorAlbedoColors_tails+1] = {255,255,255}
-			    		meteorSpeeds_tails[#meteorSpeeds_tails+1] = meteorSpeed -- fif(isGroundTroop, .025,.05)
-			    		meteorTypes_tails[#meteorTypes_tails+1] = mirrorTypeID
-
-			    		impactProxyScales[#impactProxyScales+1] = impactProxyScale
-			    		impactProxyVelocities[#impactProxyVelocities+1] = {0,0,0}
-		    		end
+					-- for clarity those assignments have been moved into generalized function
+					AssignMeteorAndMirror(AssignMeteorTail, i,adjustedImpactY, adjustedZImpact, curveFactorX, yCurve,
+							impactX,typeID,tailScale,color,
+							mirrorTypeID,tailScale,mirrorColor)
 	    		end
     		end
     	else
@@ -1046,32 +1270,12 @@ end
 updatesRun = updatesRun or 0
 hasInitedMeteors = hasInitedMeteors or false
 
-doesntwork = true
-deltadt = 0
-output1 = true
-output2 = true
-
-function Update(dt, tracklocation, strafe, input, jumpheight)
-    if doesntwork then
-        doesntwork = false
-        print("frantically blantubularizing")
-    end
-    if output1 then
-        if deltadt < 5 then
-            deltadt = deltadt + dt
-        else
-            output1 = false
-            print("machinating deuterium 1.0 - " .. deltadt .. " - " .. dt)
-        end
-    end
-    if output2 then
-        if dt >= 5 then
-            output2 = false
-            print("machinating deuterium 2.0 - " .. dt)
-        end
-    end
-end
-
+--function Update(dt, tracklocation, strafe, input, jumpheight) --called every frame by the game engine
+    --if keys["q"] then
+  --      SendCommand({["command"] = "SongEnded"})
+        --SendCommand({["command"] = "GameplayEnd"})
+    --end
+--end
 
 function OnRequestFinalScoring()
 		AssignBuiltInAudioshieldScoring()
