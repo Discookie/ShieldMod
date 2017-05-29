@@ -7,8 +7,7 @@ var DiffCalc = {
     recentChanges: [
         "Added Noncentered Doubles",
         "Refactored source",
-        "Thanks /u/Zerkses",
-        "in output log"
+        "Thanks /u/Zerkses"
     ],
     create: function () {
         return this;
