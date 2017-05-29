@@ -907,18 +907,12 @@ function InitMeteors()
         --]]
         if forceMirrorOn then
             if not naturalMirror then
-				if math.abs(impactX)< minRequiredStrafeForMirroring then
-					if (impactX < 0) then
-					   impactX = - minRequiredStrafeForMirroring - .01
-					else
-					   impactX = minRequiredStrafeForMirroring + .01
-					end
-					--if chainType == 'red' then
-						AssignImpactMirror(chainType, impactX)
-					--else
---						AssignImpactMirror('red', impactX)
-					--end
-				end
+                if (impactX < 0) then
+                   impactX = - minRequiredStrafeForMirroring - .01
+                else
+                   impactX = minRequiredStrafeForMirroring + .01
+                end
+                AssignImpactMirror(chainType, impactX)
             end
             mirrorThisChain = true
             impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
