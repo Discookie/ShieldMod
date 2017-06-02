@@ -707,11 +707,11 @@ function InitMeteors()
         return prevNodePosition, prevNodeTime, impactX
     end
     function CalculateImpactForRaveChainStarter(i, prevRedTime, prevRedPosition,prevBlueTime, prevBluePosition, impactX)
-        impactX = purpleSpanX*rand() + purpleMaxX
-        prevBluePosition = impactX
-        prevRedPosition = impactX
-        prevBlueTime = myChainEndTimes[nodeLeaders[i]]
-        prevRedTime = myChainEndTimes[nodeLeaders[i]]
+        local blueImpact = 0
+        local redImpact = 0
+        prevBluePosition, prevBlueTime, blueImpact = CalculateImpactForNormalChainStarter(i, prevBlueTime, prevBluePosition, blueMinX, blueSpanX, impactX)
+        prevRedPosition, prevRedTime, redImpact = CalculateImpactForNormalChainStarter(i, prevRedTime, prevRedPosition, redMinX, redSpanX, impactX)
+        impactX = blueImpact + redImpact / 2
         return impactX,prevBluePosition,prevRedPosition,prevBlueTime,prevRedTime
     end
     
