@@ -159,8 +159,8 @@ curveY_Min = 17             -- If notes are coming from too low
 curveY_tiltInfluence = .8   -- If notes are too steep
 maxNodeDistShown = 1500     -- If lagging like hell
 meteorSpeed = .09           -- If meteors are coming too fast
-blueMaxX = .5               -- Shouldn't change this
-blueSpanX = -1              -- Shouldn't change this
+blueMinX = -.5               -- Shouldn't change this
+blueSpanX = 1              -- Shouldn't change this
 redMinX = -.5               -- Shouldn't change this
 redSpanX = 1                -- Shouldn't change this
 purpleMaxX = .5             -- Shouldn't change this
@@ -1026,7 +1026,7 @@ function InitMeteors()
                     lg:log("Node: "..i.." ImpactX:"..pad(impactX,25," ").." Pre Node: "..pad(prevRedPosition,25," ").." Pre time: "..pad(prevRedTime,15," "))
                 elseif nodes[i] == 'blue' then
                     lg:log("In data blue Node: "..i.." prevRedTime:"..pad(prevBlueTime,25," ").." prevRedPosition: "..pad(prevBluePosition,25," ").." impactX: "..pad(impactX,15," "))
-                    prevBluePosition, prevBlueTime, impactX = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition,-1*blueMaxX, -1*blueSpanX,impactX)
+                    prevBluePosition, prevBlueTime, impactX = CalculateImpactForNormalChainStarter(i,prevBlueTime,prevBluePosition, blueMinX, blueSpanX,impactX)
                     --print("Node: "..i.."ImpactX:"..impactX.."Pre Node: "..prevBluePosition)
                     --lg:log("Node: "..i.." ImpactX:"..impactX.." Pre Node: "..prevBluePosition.." Pre time: "..prevBlueTime)
                     lg:log("Node: "..i.." ImpactX:"..pad(impactX,25," ").." Pre Node: "..pad(prevBluePosition,25," ").." Pre time: "..pad(prevBlueTime,15," "))
