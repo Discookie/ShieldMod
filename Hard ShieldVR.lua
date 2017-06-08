@@ -141,7 +141,7 @@ maxAccelRight = 7     -- Right hand max acceleration => change this if too fast
 factAccelRight = 0.6  -- Right hand factor - shouldn't touch
 minAccelRight = 0     -- Right hand min acceleration - mustn't touch
 
-impactX_Scaler = 1.6  -- Armspan multiplier => change this if too wide
+impactX_Scaler = 1.7  -- Armspan multiplier => change this if too wide
 
 minSpacingSeconds = 0 -- Minimum spacing => change this if too dense
 
