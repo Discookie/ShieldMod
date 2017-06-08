@@ -1,12 +1,13 @@
 var DiffCalc = {
     // NO TOUCHY HERE
-    ver: "0.40a",
+    ver: "0.40c",
     mod: "insane",
     br: "dev",
     recentChanges: [
         "Added Noncentered Doubles"
         , "Refactored source"
         , "Thanks /u/Zerkses"
+        , "c: Fixed blueMinX"
     ],
     create: function () {
         return this;
