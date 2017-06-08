@@ -7,7 +7,7 @@ var DiffCalc = {
         "Added Noncentered Doubles"
         , "Refactored source"
         , "Thanks /u/Zerkses"
-        , "c: Fixed blueMinX"
+        , "c: This is fine gif"
     ],
     create: function () {
         return this;
