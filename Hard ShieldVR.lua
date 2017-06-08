@@ -846,7 +846,7 @@ function InitMeteors()
             local oBS2 = (otherBlock + 0.05 - impactX) / math.abs(otherBlock + 0.05 - impactX)
             local modRand = rand()*(bound1+bound2)-bound1
             if (oB1>bound1 and oBS1<0 and oB2>bound2 and oBS2>0) then 
-                return false, 0, 0, 0
+                return false, 0, 0
             end
             
             if (oB1>bound1) then
@@ -925,8 +925,16 @@ function InitMeteors()
         elseif (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
             if chainType=='blue' then
                 mirrorThisChain, prevRedPosition, prevRedTime = CalculateNaturalMirror(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+                if mirrorThisChain then
+                    mirrorScale = redScale
+                    mirrorColor = redColor
+                end
             else
                 mirrorThisChain, prevBluePosition, prevBlueTime = CalculateNaturalMirror(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+                if mirrorThisChain then
+                    mirrorScale = blueScale
+                    mirrorColor = blueColor
+                end
             end
         end
         return impactX
