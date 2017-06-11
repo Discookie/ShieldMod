@@ -854,11 +854,9 @@ function InitMeteors()
             elseif (oB2>bound2) then
                 bound2 = min(oB1, bound2)
             else
-                modRand = rand()*(bound1+bound2 - (oB2*oBS2 - oB1*oBS1))-bound1 + (oB2*oBS2 - oB1*oBS1)/2
-                if (modRand < oB1*oBS1) then
-                    modRand = modRand - (oB2*oBS2 - oB1*oBS1) / 2 
-                else
-                    modRand = modRand + (oB2*oBS2 - oB1*oBS1) / 2
+                modRand = rand()*(bound1+bound2 - (oB2*oBS2 - oB1*oBS1))-bound1
+                if (modRand > oB1*oBS1) then
+                    modRand = modRand + (oB2*oBS2 - oB1*oBS1)
                 end
             end
             
