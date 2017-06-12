@@ -836,8 +836,8 @@ function InitMeteors()
         
         function CalculateNaturalMirror(i, prevNodeTime, prevNodePosition, colorMinX,colorSpanX, otherBlock)
             local delta = math.pow(track[i].seconds - prevNodeTime, 2)
-            prevNodeTime = myChainEndTimes[nodeLeaders[i]]
             local impactX = prevNodePosition
+            
             local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
             local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
             local oB1 = math.pow(( (math.abs(otherBlock - 0.2 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
@@ -846,9 +846,10 @@ function InitMeteors()
             local oBS2 = (otherBlock + 0.2 - impactX) / math.abs(otherBlock + 0.2 - impactX)
             local modRand = rand()*(bound1+bound2)-bound1
             if (oB1>bound1 and oBS1<0 and oB2>bound2 and oBS2>0) then 
-                return false, 0, 0
+                return false, prevNodePosition, prevNodeTime, otherBlock
             end
             
+            prevNodeTime = myChainEndTimes[nodeLeaders[i]]
             if (oB1>bound1) then
                 bound1 = min(oB2, bound1)
             elseif (oB2>bound2) then
@@ -921,13 +922,13 @@ function InitMeteors()
             prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
         elseif (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
             if chainType=='blue' then
-                mirrorThisChain, prevRedPosition, prevRedTime = CalculateNaturalMirror(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
+                mirrorThisChain, prevRedPosition, prevRedTime, impactX = CalculateNaturalMirror(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
                 if mirrorThisChain then
                     mirrorScale = redScale
                     mirrorColor = redColor
                 end
             else
-                mirrorThisChain, prevBluePosition, prevBlueTime = CalculateNaturalMirror(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
+                mirrorThisChain, prevBluePosition, prevBlueTime, impactX = CalculateNaturalMirror(i,prevBlueTime,prevBluePosition,blueMinX, blueSpanX, impactX)
                 if mirrorThisChain then
                     mirrorScale = blueScale
                     mirrorColor = blueColor
