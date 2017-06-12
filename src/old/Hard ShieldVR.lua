@@ -840,8 +840,8 @@ function InitMeteors()
             local impactX = prevNodePosition
             local bound1 = math.max(0, math.min(1, math.pow(( ((impactX - colorMinX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
             local bound2 = math.max(0, math.min(1, math.pow(( ((colorSpanX + colorMinX - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight) ))
-            local oB1 = math.pow(( (math.abs(otherBlock + 0.2 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
-            local oBS1 = (otherBlock + 0.2 - impactX) / math.abs(otherBlock + 0.2 - impactX)
+            local oB1 = math.pow(( (math.abs(otherBlock - 0.2 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
+            local oBS1 = (otherBlock - 0.2 - impactX) / math.abs(otherBlock - 0.2 - impactX)
             local oB2 = math.pow(( (math.abs(otherBlock + 0.2 - impactX) / delta) - minAccelRight) / maxAccelRight, 1/factAccelRight)
             local oBS2 = (otherBlock + 0.2 - impactX) / math.abs(otherBlock + 0.2 - impactX)
             local modRand = rand()*(bound1+bound2)-bound1
