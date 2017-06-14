@@ -9,8 +9,6 @@ Released under the MIT license
 https://matekos17.f.fazekas.hu/shield/
 
 Special thanks to: /u/Zerkses, /u/Flatlander57
-
-Version 0.40a, last modified: 2017.05.29.
 --]]
 
 
