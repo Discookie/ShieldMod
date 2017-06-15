@@ -1,5 +1,4 @@
 --[[
-
 INSANE MOD - created by Discookie
 
 Based on Normal ShieldVR and Expert mods
