@@ -1,4 +1,5 @@
 Events = {
+    "ALL" = -1,
     "ERR" = 0,
     "FRAME" = 1,
     "INIT" = 2,
@@ -6,29 +7,28 @@ Events = {
     "PRE_TRAFFIC" = 4,
     "TRAFFIC" = 5,
     "PRE_SKIN" = 6,
-    "START" = 7,
-    "PAUSE" = 8,
-    "RESUME" = 9,
-    "END" = 10,
-    "SCORE" = 11
+    "POST_SKIN" = 7,
+    "START" = 8,
+    "PAUSE" = 9,
+    "RESUME" = 10,
+    "END" = 11,
+    "SCORE" = 12
 }
 
 Event = {}
-Event.__index = EventHandler
+Event.__index = Event
 setmetatable(Event, {
         __call = function(cls, ...)
             return cls.init(...)
         end,
 })
 
-function Event.init(args)
+function Event.init(eventID, data)
     local self = setmetatable({}, Event)
     self.type = "Event"
     self.logger = Logger(self.type)
-    self.eventType = args.eventType
-    self.frames = args.frames
-    self.seconds = args.seconds
-    self.state = args.state
+    self.id = eventID
+    self.data = data
     return self
 end
 
@@ -39,9 +39,11 @@ setmetatable(EventHandler, {
             return cls.init(...)
         end,
 })
+EventHandler.instance = EventHandler(true)
 
-function EventHandler.init()
+function EventHandler.init(isInstance)
     local self = setmetatable({}, EventHandler)
+    self.isInstance = isInstance or false
     self.type = "EventHandler"
     self.logger = Logger(self.type)
     self:reset()
@@ -49,19 +51,48 @@ function EventHandler.init()
 end
 
 function EventHandler:reset()
-    self._intervals
+    if not self.isInstance then
+        if (self._id ~= nil) then
+            EventHandler.instance:delete(self._id)
+        end
+        EventHandler.instance:add("ALL", self:event)
+    end
+    self.events = []
+    self.eventLinks = {}
+    for (k, v) in Events do
+        if v != Events.ERR then
+            self.eventLinks[k] = []
+        end
+    end
+    return false
 end
 
-function EventHandler:add(event, callback)
-
+function EventHandler:on(eventID, callback)
+    return EventHandler:add(eventID, callback)
+end
+function EventHandler:add(eventID, callback)
+    self.events[#self.events+1] = [true, callback, eventID, 0]
+    self.eventLinks[eventID][#self.eventLinks[eventID] + 1] = #self.events
+    self.events[#self.events][4] = #self.eventLinks[eventID]
+    return #self.events
 end
 
 function EventHandler:disable(id)
-
+    if self.events[id] != nil then
+        self.events[id][1] = false
+        return false
+    else
+        return true
+    end
 end
 
 function EventHandler:enable(id)
-
+    if self.events[id] != nil then
+        self.events[id][1] = true
+        return false
+    else
+        return true
+    end
 end
 
 function EventHandler:delete(id)
@@ -69,17 +100,19 @@ function EventHandler:delete(id)
 end
 
 function EventHandler:remove(id)
-
-end
-
-function EventHandler:addInterval(seconds, callback)
-
-end
-
-function EventHandler:removeInterval(id)
-
+    if self.events ~= nil then
+        self.eventLinks[self.events[id][3]][self.events[id][4]] = nil
+        self.events[id] = nil
+        return false
+    else
+        return true
+    end
 end
 
 function EventHandler:event(event)
-
+    for (k, v) in self.eventLinks[event.type] do
+        if self.events[v] ~= nil and self.events[v][0] then
+            self.events[v][1]()
+        end
+    end
 end
