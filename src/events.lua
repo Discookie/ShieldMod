@@ -1,3 +1,5 @@
+require("utils/bind")
+
 Events = {
     "ALL" = -1,
     "ERR" = 0,
@@ -55,7 +57,7 @@ function EventHandler:reset()
         if (self._id ~= nil) then
             EventHandler.instance:delete(self._id)
         end
-        EventHandler.instance:add("ALL", self:event)
+        EventHandler.instance:add("ALL", self.event, self)
     end
     self.events = []
     self.eventLinks = {}
