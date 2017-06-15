@@ -1,5 +1,6 @@
 require("copyright")
 
+require("requtils")
 -- Object requires
 require("logger")
 require("events")
@@ -10,8 +11,5 @@ require("node")
 require("diff")
 -- End of variable requires
 
--- require_d("test-data")
+require_d("test-data")
 
--- Require object initializations
-local eventHandler = EventHandler()
--- End of require object initializations
