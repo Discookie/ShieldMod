@@ -9,7 +9,7 @@ setmetatable(Node, {
 function Node.init()
     local self = setmetatable({}, Node)
     self.type = "Node"
-
+    self.logger = Logger(self.type)
     return self
 end
 
@@ -26,6 +26,6 @@ setmetatable(NodeContainer, {
 function NodeContainer.init()
     local self = setmetatable({}, NodeContainer)
     self.type = "NodeContainer"
-
+    self.logger = Logger(self.type)
     return self
 end

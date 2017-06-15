@@ -43,6 +43,7 @@ setmetatable(EventHandler, {
 function EventHandler.init()
     local self = setmetatable({}, EventHandler)
     self.type = "EventHandler"
+    self.logger = Logger(self.type)
     self:reset()
     return self
 end
