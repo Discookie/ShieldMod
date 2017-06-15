@@ -1,4 +1,5 @@
 require("events")
+require("logger")
 
 GameStates = {
     "ERR" = 0,

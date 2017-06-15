@@ -1,3 +1,5 @@
+require("logger")
+
 Node = {}
 Node.__index = Node
 setmetatable(Node, {

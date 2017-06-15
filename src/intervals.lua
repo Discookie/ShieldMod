@@ -1,6 +1,8 @@
 require("events")
 require("tick")
 require("utils/bind")
+require("logger")
+
 Intervals = {}
 Intervals.__index = Intervals
 setmetatable(Intervals, {

@@ -1,4 +1,5 @@
 require("utils/bind")
+require("logger")
 
 Events = {
     "ALL" = -1,
