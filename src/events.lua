@@ -67,14 +67,20 @@ function EventHandler:reset()
     return false
 end
 
-function EventHandler:on(eventID, callback)
-    return EventHandler:add(eventID, callback)
+function EventHandler:on(eventID, callback, object)
+    return EventHandler:add(eventID, callback, object)
 end
-function EventHandler:add(eventID, callback)
-    self.events[#self.events+1] = [true, callback, eventID, 0]
+function EventHandler:add(eventID, callback, object)
+    if object ~= nil then
+        self.events[#self.events+1] = [true, bindFunc(object, callback), eventID, 0]
+    else
+        self.events[#self.events+1] = [true, callback, eventID, 0]
+    end
     self.eventLinks[eventID][#self.eventLinks[eventID] + 1] = #self.events
     self.events[#self.events][4] = #self.eventLinks[eventID]
     return #self.events
+end
+
 end
 
 function EventHandler:disable(id)
@@ -112,7 +118,7 @@ end
 function EventHandler:event(event)
     for (k, v) in self.eventLinks[event.type] do
         if self.events[v] ~= nil and self.events[v][0] then
-            self.events[v][1]()
+            self.events[v][1](event)
         end
     end
 end
