@@ -111,17 +111,17 @@ function Diff:loadValues(values)
     self.spanX = values.spanX or ((values.maxX or self.maxX) - (values.minX  or self.minX )) or self.spanX
     self.maxX  = values.maxX  or ((values.minX or self.minX) + (value.spanX  or self.spanX)) or self.maxX
 
-    self.maxAccelLeft  = values.maxAccelLeft  or values.maxAccel  or values.maxAccelRight  or self.defaults.maxAccelLeft
-    self.factAccelLeft = values.factAccelLeft or values.factAccel or values.factAccelRight or self.defaults.factAccelLeft
-    self.minAccelLeft  = values.minAccelLeft  or values.minAccel  or values.minAccelRight  or self.defaults.minAccelLeft
+    self.maxAccelLeft  = values.maxAccelLeft  or values.maxAccel  or values.maxAccelRight  or self.maxAccelLeft
+    self.factAccelLeft = values.factAccelLeft or values.factAccel or values.factAccelRight or self.factAccelLeft
+    self.minAccelLeft  = values.minAccelLeft  or values.minAccel  or values.minAccelRight  or self.minAccelLeft
 
-    self.maxAccelRight  = values.maxAccelRight  or values.maxAccel  or values.maxAccelLeft  or self.defaults.maxAccelRight
-    self.factAccelRight = values.factAccelRight or values.factAccel or values.factAccelLeft or self.defaults.factAccelRight
-    self.minAccelRight  = values.minAccelRight  or values.minAccel  or values.minAccelLeft  or self.defaults.minAccelRight
+    self.maxAccelRight  = values.maxAccelRight  or values.maxAccel  or values.maxAccelLeft  or self.maxAccelRight
+    self.factAccelRight = values.factAccelRight or values.factAccel or values.factAccelLeft or self.factAccelRight
+    self.minAccelRight  = values.minAccelRight  or values.minAccel  or values.minAccelLeft  or self.minAccelRight
 
-    self.maxAccel  = values.maxAccel  or ((values.maxAccelLeft  + values.maxAccelRight ) / 2)
-    self.factAccel = values.factAccel or ((values.factAccelLeft + values.factAccelRight) / 2)
-    self.minAccel  = values.minAccel  or ((values.minAccelLeft  + values.minAccelRight ) / 2)
+    self.maxAccel  = values.maxAccel  or (((values.maxAccelLeft  or self.maxAccel) + (values.maxAccelRight  or self.maxAccel)) / 2)
+    self.factAccel = values.factAccel or (((values.factAccelLeft or self.maxAccel) + (values.factAccelRight or self.maxAccel)) / 2)
+    self.minAccel  = values.minAccel  or (((values.minAccelLeft  or self.maxAccel) + (values.minAccelRight  or self.maxAccel)) / 2)
 
     self.spanScale         = values.spanScale         or self.spanScale
     self.minSpacingSeconds = values.minSpacingSeconds or self.minSpacingSeconds
