@@ -2,16 +2,16 @@ require("events")
 require("logger")
 
 GameStates = {
-    "ERR" = 0,
-    "PRE_TRACK" = 0x00,
-    "PRE_TRAFFIC" = 0x01,
-    "PRE_SKIN" = 0x02,
-    "PRE_START" = 0x03,
-    "PRE_SONG" = 0x13,
-    "PLAYING" = 0x14,
-    "PAUSED" = 0x04,
-    "ENDED" = 0x05,
-    "current" = GameStates.PRE_TRACK
+    ERR = -1,
+    PRE_TRACK = 0x00,
+    PRE_TRAFFIC = 0x01,
+    PRE_SKIN = 0x02,
+    PRE_START = 0x03,
+    PRE_SONG = 0x13,
+    PLAYING = 0x14,
+    PAUSED = 0x04,
+    ENDED = 0x05,
+    current = GameStates.PRE_TRACK
 }
 
 function GameStates.eventChange(event)

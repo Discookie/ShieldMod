@@ -2,20 +2,20 @@ require("utils/bind")
 require("logger")
 
 Events = {
-    "ALL" = -1,
-    "ERR" = 0,
-    "FRAME" = 1,
-    "INIT" = 2,
-    "TRACK" = 3,
-    "PRE_TRAFFIC" = 4,
-    "TRAFFIC" = 5,
-    "PRE_SKIN" = 6,
-    "POST_SKIN" = 7,
-    "START" = 8,
-    "PAUSE" = 9,
-    "RESUME" = 10,
-    "END" = 11,
-    "SCORE" = 12
+    ALL = -1,
+    ERR = 0,
+    FRAME = 1,
+    INIT = 2,
+    TRACK = 3,
+    PRE_TRAFFIC = 4,
+    TRAFFIC = 5,
+    PRE_SKIN = 6,
+    POST_SKIN = 7,
+    START = 8,
+    PAUSE = 9,
+    RESUME = 10,
+    END = 11,
+    SCORE = 12
 }
 
 Event = {}
