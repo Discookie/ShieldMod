@@ -11,8 +11,9 @@ GameStates = {
     PLAYING = 0x14,
     PAUSED = 0x04,
     ENDED = 0x05,
-    current = GameStates.PRE_TRACK
 }
+
+GameStates.current = GameStates.PRE_TRACK
 
 function GameStates.eventChange(event)
     if (event.id == Events.TRACK) then
