@@ -63,7 +63,7 @@ function EventHandler:reset()
     self.events = {}
     self.eventLinks = {}
     for k, v in ipairs(Events) do
-        if v != Events.ERR then
+        if v ~= Events.ERR then
             self.eventLinks[k] = {}
         end
     end
@@ -75,19 +75,17 @@ function EventHandler:on(eventID, callback, object)
 end
 function EventHandler:add(eventID, callback, object)
     if object ~= nil then
-        self.events[#self.events+1] = [true, bindFunc(object, callback), eventID, 0]
+        self.events[#self.events+1] = {true, bindFunc(object, callback), eventID, 0}
     else
-        self.events[#self.events+1] = [true, callback, eventID, 0]
+        self.events[#self.events+1] = {true, callback, eventID, 0}
     end
     self.eventLinks[eventID][#self.eventLinks[eventID] + 1] = #self.events
     self.events[#self.events][4] = #self.eventLinks[eventID]
     return #self.events
 end
 
-end
-
 function EventHandler:disable(id)
-    if self.events[id] != nil then
+    if self.events[id] ~= nil then
         self.events[id][1] = false
         return false
     else
@@ -96,7 +94,7 @@ function EventHandler:disable(id)
 end
 
 function EventHandler:enable(id)
-    if self.events[id] != nil then
+    if self.events[id] ~= nil then
         self.events[id][1] = true
         return false
     else

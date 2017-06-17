@@ -19,9 +19,9 @@ function GameStates.eventChange(event)
         GameStates.current = GameStates.PRE_TRAFFIC
     elseif (event.id == Events.TRAFFIC) then
         GameStates.current = GameStates.PRE_SKIN
-    elseif (event.id == Events.POST_SKIN)
+    elseif (event.id == Events.POST_SKIN) then
         GameStates.current = GameStates.PRE_START
-    elseif (event.id == Events.FRAME)
+    elseif (event.id == Events.FRAME) then
         if event.data.dt > 0 and seconds >= 0 then
             GameStates.current = GameStates.PLAYING
         elseif events.data.dt == 0 then
