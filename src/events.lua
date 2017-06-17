@@ -60,11 +60,11 @@ function EventHandler:reset()
         end
         EventHandler.instance:add("ALL", self.event, self)
     end
-    self.events = []
+    self.events = {}
     self.eventLinks = {}
     for (k, v) in Events do
         if v != Events.ERR then
-            self.eventLinks[k] = []
+            self.eventLinks[k] = {}
         end
     end
     return false
