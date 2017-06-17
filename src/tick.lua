@@ -42,8 +42,6 @@ setmetatable(Tick, {
         end,
 })
 
-Tick.instance = Tick()
-
 function Tick.init(args)
     local self = setmetatable({}, Tick)
     self.type = "Tick"
@@ -78,3 +76,5 @@ end
 function Tick:onFrame(event)
     self:frame(event.data.dt)
 end
+
+Tick.instance = Tick()

@@ -42,7 +42,6 @@ setmetatable(EventHandler, {
             return cls.init(...)
         end,
 })
-EventHandler.instance = EventHandler(true)
 
 function EventHandler.init(isInstance)
     local self = setmetatable({}, EventHandler)
@@ -123,3 +122,5 @@ function EventHandler:event(event)
         end
     end
 end
+
+EventHandler.instance = EventHandler(true)

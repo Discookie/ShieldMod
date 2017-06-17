@@ -10,7 +10,6 @@ setmetatable(Intervals, {
             return cls.init(...)
         end,
 })
-Intervals.instance = Intervals()
 
 function Intervals.init()
     local self = setmetatable({}, Intervals)
@@ -67,3 +66,5 @@ function Intervals:onFrame(event)
         end
     end
 end
+
+Intervals.instance = Intervals()
