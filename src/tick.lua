@@ -59,7 +59,7 @@ function Tick:reset()
 end
 
 function Tick.isPaused()
-    return GameStates.current & 0x10 == 0
+    return GameStates.current < 16
 end
 
 function Tick:getAbsoluteTime()
