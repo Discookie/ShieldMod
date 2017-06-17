@@ -60,7 +60,7 @@ end
 
 function Intervals:onFrame(event)
     local floor = math.floor
-    for (k, v) in self._intervals do
+    for k, v in ipairs(self._intervals) do
         while (not v[2] and (v[5] < floor((Tick.instance:getAbsoluteTime() - v[4]) / v[1]))) or (v[2] and (v[5] < floor((Tick.instance:getRelativeTime() - v[4]) / v[1]))) do
             v[3]()
             v[5] = v[5] + 1
