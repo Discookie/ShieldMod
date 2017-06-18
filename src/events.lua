@@ -70,7 +70,7 @@ function EventHandler:reset()
 end
 
 function EventHandler:on(eventID, callback, object)
-    return EventHandler:add(eventID, callback, object)
+    return self:add(eventID, callback, object)
 end
 function EventHandler:add(eventID, callback, object)
     if object ~= nil then
