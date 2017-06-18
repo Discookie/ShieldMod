@@ -116,6 +116,11 @@ function EventHandler:remove(id)
 end
 
 function EventHandler:event(event)
+    for k, v in pairs(self.eventLinks[Events.ALL]) do
+        if self.events[v] ~= nil and self.events[v][0] then
+            self.events[v][1](event)
+        end
+    end
     for k, v in pairs(self.eventLinks[event.type]) do
         if self.events[v] ~= nil and self.events[v][0] then
             self.events[v][1](event)
