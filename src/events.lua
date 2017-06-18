@@ -61,7 +61,7 @@ function EventHandler:reset()
     end
     self.events = {}
     self.eventLinks = {}
-    for k, v in ipairs(Events) do
+    for k, v in pairs(Events) do
         if v ~= Events.ERR then
             self.eventLinks[v] = {}
         end
@@ -116,7 +116,7 @@ function EventHandler:remove(id)
 end
 
 function EventHandler:event(event)
-    for k, v in ipairs(self.eventLinks[event.type]) do
+    for k, v in pairs(self.eventLinks[event.type]) do
         if self.events[v] ~= nil and self.events[v][0] then
             self.events[v][1](event)
         end
