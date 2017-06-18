@@ -20,6 +20,14 @@ function Intervals.init()
     return self
 end
 
+function Intervals:reset()
+    if (self._id ~= nil) then
+        EventHandler.instance:remove(self._id)
+    end
+    EventHandler.instance:on(Events.FRAME, self.onFrame, self)
+    self._intervals = {}
+end
+
 function Intervals:addInterval(timeout, isRelativeTime, callback, object)
     if object ~= nil then
         self._intervals[#self.intervals + 1] = {
