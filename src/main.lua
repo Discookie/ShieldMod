@@ -1,6 +1,7 @@
 require("copyright")
 
 require("utils/requtils")
+require("utils/dump")
 -- Object requires
 require("logger")
 require("events")
