@@ -53,14 +53,12 @@ function Logger:warn(msg)
 end
 
 function Logger:log(msg)
-    if self.enabled then
-        return self:info(msg)
-    end
+    return self:info(msg)
 end
 function Logger:info(msg)
     if logLevel > 3 and self.enabled then
-        --print(self:getDate() .. " [INFO] <" .. self.name .. ">: " .. msg)
-        print(msg)
+        print(self:getDate() .. " [INFO] <" .. self.name .. ">: " .. msg)
+        -- print(msg)
     end
     return false
 end
