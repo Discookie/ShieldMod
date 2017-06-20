@@ -129,11 +129,13 @@ function EventHandler.init(isInstance)
     self.isInstance = isInstance or false
     self.type = "EventHandler"
     self.logger = Logger(self.type)
+    self.logger:trace("Init!", 2)
     self:reset()
     return self
 end
 
 function EventHandler:reset()
+    self.logger:trace("Reset!", 3)
     if not self.isInstance then
         if (self._id ~= nil) then
             EventHandler.instance:delete(self._id)
@@ -161,14 +163,17 @@ function EventHandler:add(eventID, callback, object)
     end
     self.eventLinks[eventID][#self.eventLinks[eventID] + 1] = #self.events
     self.events[#self.events][4] = #self.eventLinks[eventID]
+    self.logger:trace("New event for " .. eventID .. ": ID " .. #self.events, 3)
     return #self.events
 end
 
 function EventHandler:disable(id)
     if self.events[id] ~= nil then
         self.events[id][1] = false
+        self.logger:trace("Event ID " .. id .. " disabled", 3)
         return false
     else
+        self.logger:trace("Event ID " .. id .. ": Can't disable!", 3)
         return true
     end
 end
@@ -176,8 +181,10 @@ end
 function EventHandler:enable(id)
     if self.events[id] ~= nil then
         self.events[id][1] = true
+        self.logger:trace("Event ID " .. id .. " enabled", 3)
         return false
     else
+        self.logger:trace("Event ID " .. id .. ": Can't enable!", 3)
         return true
     end
 end
@@ -190,8 +197,10 @@ function EventHandler:remove(id)
     if self.events ~= nil then
         self.eventLinks[self.events[id][3]][self.events[id][4]] = nil
         self.events[id] = nil
+        self.logger:trace("Event ID " .. id .. " removed", 3)
         return false
     else
+        self.logger:trace("Event ID " .. id .. ": Can't remove!", 3)
         return true
     end
 end
@@ -200,6 +209,7 @@ function EventHandler:throw(event)
     return self:event(event)
 end
 function EventHandler:event(event)
+    self.logger:trace("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events", 1)
     if event.id == Events.ALL or event.id == Events.ERR then
         return true
     end
@@ -208,7 +218,7 @@ function EventHandler:event(event)
             self.events[v][1](event)
         end
     end
-    for k, v in pairs(self.eventLinks[event.type]) do
+    for k, v in pairs(self.eventLinks[event.id]) do
         if self.events[v] ~= nil and self.events[v][0] then
             self.events[v][1](event)
         end
