@@ -200,6 +200,9 @@ function EventHandler:throw(event)
     return self:event(event)
 end
 function EventHandler:event(event)
+    if event.id == Events.ALL or event.id == Events.ERR then
+        return true
+    end
     for k, v in pairs(self.eventLinks[Events.ALL]) do
         if self.events[v] ~= nil and self.events[v][0] then
             self.events[v][1](event)
@@ -210,6 +213,7 @@ function EventHandler:event(event)
             self.events[v][1](event)
         end
     end
+    return false
 end
 
 EventHandler.instance = EventHandler(true)
