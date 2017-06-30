@@ -910,7 +910,6 @@ function InitMeteors()
                 else
                    impactX = minRequiredStrafeForMirroring + .01
                 end
-                AssignImpactMirror(chainType, impactX)
             end
             mirrorThisChain = true
             impactX = math.max(-1*maxMirroredX, math.min(maxMirroredX, impactX))
@@ -920,8 +919,12 @@ function InitMeteors()
             -- since this is a mirror both previous red and blue should be the same
             prevRedTime = myChainEndTimes[nodeLeaders[i] ]
             prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
-        elseif (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
-            if chainType=='blue' then
+        elseif naturalMirror and (intensityFactors[i] > .75) and (rand() < doubleFactor) then 
+            mirrorThisChain = true
+            AssignImpactMirror(chainType,  impactX)
+            prevRedTime = myChainEndTimes[nodeLeaders[i] ]
+            prevBlueTime = myChainEndTimes[nodeLeaders[i] ]
+            --[[if chainType=='blue' then
                 mirrorThisChain, prevRedPosition, prevRedTime, impactX = CalculateNaturalMirror(i,prevRedTime,prevRedPosition,redMinX, redSpanX, impactX)
                 if mirrorThisChain then
                     mirrorScale = redScale
@@ -933,7 +936,7 @@ function InitMeteors()
                     mirrorScale = blueScale
                     mirrorColor = blueColor
                 end
-            end
+            end--]]
         end
         return impactX
     end
