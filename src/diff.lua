@@ -8,6 +8,19 @@ setmetatable(Diff, {
         end,
 })
 
+-- TODO: Finish copypasting from LuaMods.cs and understand it better
+
+Diff.JumpModes = {
+    NONE = "none",
+    AUTO = "auto",
+    MANUAL = "manual",
+    RAMPS = "ramps",
+    PRESS = "button_press",
+    BTN = "button",
+    WAKE = "wake",
+    WAKE_BTN = "wake_or_button",
+}
+
 Diff.defaults = {
     maxAccel  = 10,
     factAccel =  0.6,
@@ -51,7 +64,97 @@ Diff.defaults = {
     minDoubleSpan = 0.2,
     maxCrosshandSpan = 0.6,
 
-    musicCutOnFail = false
+    musicCutOnFail = false,
+    advancedSteepAlgo = true,
+    downhillOnly = false,
+
+    minSpeed = 0.1,
+    avgSpeed = 1.5,
+    maxSpeed = 2.9,
+
+    gravity = -0.45,
+    uphillScale = 0.8,
+    downhillScale = 1.55,
+    uphillSmoother = 0.03,
+    downhillSmoother = 0.06,
+
+    jumpMode = Diff.JumpModes.NONE,
+
+    calcAntiTraffic = false,
+    autoCollisions = true,
+    multiLane = true,
+
+    puzzleGrid = false,
+    puzzleRows = 7,
+    puzzleCols = 3,
+    useTraffic = false,
+    easyTraffic = false,
+
+    colorCount = 1,
+    greyPercent = 0.3,
+    randomGreys = false,
+
+    autoOverfillClear = false,
+    clearOnlyOverfilledColumn = false,
+    fullGridGraceTime = 0,
+
+    blockEnterTime = 0.35,
+    blockFallTime = 0.1,
+    matchTime = 1.5,
+
+    minBlockCount = 0,
+    greyType = 5,
+    normalType = 6,
+    invertType = 7,
+
+    blocksInLanes = true,
+    usePinatas = false,
+    useAirBlocks = false,
+    useCaterpillars = false,
+
+    displayScoreboard = true,
+    showXInARowText = false,
+
+    airStrafing = false,
+    canCrash = false,
+    canPush = false,
+    canScoop = false,
+    smoothStrafeToWake = false,
+
+    useJumpMarkers = false,
+    minJumpTime = 2.5,
+    jumpFixScaler = 1,
+    minStrafeSpeed = -1,
+    minAirTime = 0.9,
+    minHeight = 3.5,
+    autoStartJumps = true,
+
+    clearGridOnLanding = true,
+    noGraysWhenLanding = true,
+    useBlockTrailToOptimalJumps = false,
+    removeBlocksNearOptimalJumps = 0,
+
+    minMultiplier = 0,
+    launchMultiplier = 1,
+    matchMultiplier = 1,
+    stealthMultiplier = 1,
+
+    startingScore = 0,
+    ptsPerGray = 0,
+    ptsPerColor = 0,
+
+    matchSizes = [],
+    matchSize = 3,
+
+    maxTricksPerJump = 99,
+    finishGamepadJumps = true,
+    finishMouseJumps = false,
+    timeToSquat = 0,
+
+    gamepadRSSteering = false,
+    sideView = false,
+
+    towRopes = false
 }
 
 function Diff.init(values)
@@ -66,6 +169,10 @@ function Diff.init(values)
 end
 
 function Diff:loadDefaults()
+    for (k, v) in pairs(Diff.defaults) do
+        self[k] = v
+    end
+
     self.minX  = self.defaults.minX  or (self.defaults.maxX - self.defaults.spanX)
     self.spanX = self.defaults.spanX or (self.defaults.maxX - self.defaults.minX )
     self.maxX  = self.defaults.maxX  or (self.defaults.minX + self.defaults.spanX)
@@ -81,32 +188,15 @@ function Diff:loadDefaults()
     self.maxAccel  = self.defaults.maxAccel  or ((self.maxAccelLeft  + self.maxAccelRight ) / 2)
     self.factAccel = self.defaults.factAccel or ((self.factAccelLeft + self.factAccelRight) / 2)
     self.minAccel  = self.defaults.minAccel  or ((self.minAccelLeft  + self.minAccelRight ) / 2)
-
-    self.spanScale         = self.defaults.spanScale
-    self.minSpacingSeconds = self.defaults.minSpacingSeconds
-    self.self.doubleFactor = self.defaults.self.doubleFactor
-
-    self.spanY        = self.defaults.spanY
-    self.spanY_random = self.defaults.spanY_random
-    self.spanZ        = self.defaults.spanZ
-
-    self.chestHeight = self.defaults.chestHeight
-    self.meteorSpeed = self.defaults.meteorSpeed
-
-    self.maxDoubleSpan    = self.defaults.maxDoubleSpan
-    self.minDoubleSpan    = self.defaults.minDoubleSpan
-    self.maxCrosshandSpan = self.defaults.maxCrosshandSpan
-
-    self.curveFactorX         = self.defaults.curveFactorX
-    self.curveFactorY         = self.defaults.curveFactorY
-    self.curveY_max           = self.defaults.curveY_max
-    self.curveY_min           = self.defaults.curveY_min
-    self.curveY_tiltInfluence = self.defaults.curveY_tiltInfluence
-
-    self.musicCutOnFail = self.defaults.musicCutOnFail
 end
 
 function Diff:loadValues(values)
+    for (k, v) in pairs(values) do
+        if type(v) == "string" and (v == "" or v == "default") then
+            self[k] = Diff[k]
+        end
+        self[k] = v
+    end
     self.minX  = values.minX  or ((values.maxX or self.maxX) - (values.spanX or self.spanX)) or self.minX
     self.spanX = values.spanX or ((values.maxX or self.maxX) - (values.minX  or self.minX )) or self.spanX
     self.maxX  = values.maxX  or ((values.minX or self.minX) + (value.spanX  or self.spanX)) or self.maxX
@@ -122,27 +212,4 @@ function Diff:loadValues(values)
     self.maxAccel  = values.maxAccel  or (((values.maxAccelLeft  or self.maxAccel) + (values.maxAccelRight  or self.maxAccel)) / 2)
     self.factAccel = values.factAccel or (((values.factAccelLeft or self.maxAccel) + (values.factAccelRight or self.maxAccel)) / 2)
     self.minAccel  = values.minAccel  or (((values.minAccelLeft  or self.maxAccel) + (values.minAccelRight  or self.maxAccel)) / 2)
-
-    self.spanScale         = values.spanScale         or self.spanScale
-    self.minSpacingSeconds = values.minSpacingSeconds or self.minSpacingSeconds
-    self.doubleFactor      = values.doubleFactor      or self.doubleFactor
-
-    self.spanY        = values.spanY        or self.spanY
-    self.spanY_random = values.spanY_random or self.spanY_random
-    self.spanZ        = values.spanZ        or self.spanZ
-
-    self.chestHeight = values.chestHeight or self.chestHeight
-    self.meteorSpeed = values.meteorSpeed or self.meteorSpeed
-
-    self.maxDoubleSpan    = values.maxDoubleSpan    or self.maxDoubleSpan
-    self.minDoubleSpan    = values.minDoubleSpan    or self.minDoubleSpan
-    self.maxCrosshandSpan = values.maxCrosshandSpan or self.maxCrosshandSpan
-
-    self.curveFactorX         = values.curveFactorX         or self.curveFactorX
-    self.curveFactorY         = values.curveFactorY         or self.curveFactorY
-    self.curveY_max           = values.curveY_max           or self.curveY_max
-    self.curveY_min           = values.curveY_min           or self.curveY_min
-    self.curveY_tiltInfluence = values.curveY_tiltInfluence or self.curveY_tiltInfluence
-
-    self.musicCutOnFail = values.musicCutOnFail or self.musicCutOnFail
 end
