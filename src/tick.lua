@@ -24,6 +24,10 @@ function GameStates.eventChange(event)
         GameStates.current = GameStates.PRE_START
     elseif (event.id == Events.FRAME) then
         if event.data.dt > 0 and seconds >= 0 then
+            if seconds > -0.0056 and seconds < 0.0056 then
+                local ev = Event(Events.START, event.data)
+                EventHandler.instance:throw(ev)
+            end
             GameStates.current = GameStates.PLAYING
         elseif events.data.dt == 0 then
             GameStates.current = GameStates.PAUSED
@@ -52,7 +56,7 @@ function Tick.init(args)
 end
 
 function Tick:reset()
-    self.seconds = 0
+    self.seconds = -5
     self.ticks = 0
     if self.id then EventHandler.instance:remove(self.id) end
     self.id = EventHandler.instance:add(Events.FRAME, self.onFrame, self)
