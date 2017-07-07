@@ -47,6 +47,7 @@ function Tick.init(args)
     local self = setmetatable({}, Tick)
     self.type = "Tick"
     self.logger = Logger(self.type)
+    self:reset()
     return self
 end
 
