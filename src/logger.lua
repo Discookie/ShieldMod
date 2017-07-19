@@ -93,6 +93,21 @@ function Logger:changeName(name)
     end
 end
 
+function Logger:disable()
+    self.enabled = false
+    return false
+end
+
+function Logger:enable()
+    self.enabled = true
+    return false
+end
+
+function Logger:toggle()
+    self.enabled = true
+    return false
+end
+
 function Logger.init(name)
     local self = setmetatable({}, Logger)
     self.type = "Logger"
