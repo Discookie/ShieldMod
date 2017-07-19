@@ -39,12 +39,13 @@ Node.RenderTypes = {
     UPDATE = 3
 }
 
-function Node.init()
+function Node.init(obj)
     local self = setmetatable({}, Node)
     self.type = "Node"
     self.logger = Logger(self.type)
     self.id = -1
     self:reset()
+    self:set(obj)
     return self
 end
 
@@ -65,7 +66,7 @@ end
 function Node:set(obj)
     if obj ~= table then return true end
     for k, v in pairs(obj) do
-        if self[k] and k ~= "PosTypes" and k ~= "lastID" and k ~= "RenderTypes" and type(v) ~= "function" then
+        if self[k] and k ~= "PosTypes" and k ~= "RenderTypes" and type(v) ~= "function" then
             self[k] = v
         end
     end
@@ -75,10 +76,11 @@ end
 function Node:get()
     local ret = {}
     for k, v in pairs(self) do
-        if k ~= "PosTypes" and k ~= "lastID" and k ~= "RenderTypes" and type(v) ~= "function" then
+        if k ~= "PosTypes" and k ~= "RenderTypes" and type(v) ~= "function" then
             ret[k] = v
         end
     end
+    return ret
 end
 
 -- Node container
