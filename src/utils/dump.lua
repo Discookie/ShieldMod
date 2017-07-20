@@ -8,7 +8,7 @@ function _dump_recur(obj, level)
   for k, v in pairs(obj) do
     if type(v) == "table" then
       ret = ret..tostring(k)..":".._dump_recur(v, level+1)..","
-    elseif type(v) == 'boolean' or type(v) == 'number' then
+    elseif type(v) == 'boolean' or type(v) == 'number' or type(v) == 'function' then
       ret = ret..tostring(k)..": "..tostring(v)..","
     else
       ret = ret..tostring(k)..": \""..v.."\","
