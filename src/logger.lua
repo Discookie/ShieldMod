@@ -12,7 +12,11 @@ function Logger:getDate()
 end
 
 function Logger.getDate()
-    return ""
+    if Tick ~= nil and Tick.instance ~= nil then
+        return Tick.instance:getAbsoluteTime()
+    else
+        return 0
+    end
     --return game.tick -- coming soon
     --return os.date("%c ") -- %c prints full "d/a/te t:i:me" and an extra space
 end
@@ -33,7 +37,7 @@ Logger.LogLevels = {
     DEBUG = 5,
     TRACE = 7,
 }
-Logger.logLevel = Logger.LogLevels.DEBUG
+Logger.logLevel = require("settings/loglevel")
 
 function Logger:exc(msg)
     self:fatal(msg)
