@@ -4,6 +4,8 @@ INSANE MOD - created by Discookie
 Based on Normal ShieldVR and Expert mods
 
 Released under the MIT license
+Additional software used:
+  * luam - MIT license
 
 https://matekos17.f.fazekas.hu/shield/
 
