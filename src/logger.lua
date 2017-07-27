@@ -18,6 +18,23 @@ function Logger.getDate()
 end
 -- Using log4j error levels, refer to self.enabled = true
 -- https://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/Level.html
+Logger.LogLevels = {
+    NONE = 0,
+    EXC = 1,
+    EXCEPTION = 1,
+    FATAL = 1,
+    ERR = 2,
+    ERROR = 2,
+    WARN = 3,
+    WARNING = 3,
+    LOG = 4,
+    INFO = 4,
+    DBG = 5,
+    DEBUG = 5,
+    TRACE = 7,
+}
+Logger.logLevel = Logger.LogLevels.DEBUG
+
 function Logger:exc(msg)
     self:fatal(msg)
 end
@@ -25,7 +42,7 @@ function Logger:exception(msg)
     self:fatal(msg)
 end
 function Logger:fatal(msg)
-    if logLevel > 0 and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.FATAL and self.enabled then
         print(self:getDate() .. " [FATAL] <" .. self.name .. ">: " .. msg)
     end
     return false
@@ -36,7 +53,7 @@ function Logger:err(msg)
     return false
 end
 function Logger:error(msg)
-    if logLevel > 1 and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.ERROR and self.enabled then
         print(self:getDate() .. " [ERROR] <" .. self.name .. ">: " .. msg)
     end
     return false
@@ -46,7 +63,7 @@ function Logger:warning(msg)
     return self:warn(msg)
 end
 function Logger:warn(msg)
-    if logLevel > 2 and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.WARN and self.enabled then
         print(self:getDate() .. " [WARN] <" .. self.name .. ">: " .. msg)
     end
     return false
@@ -56,7 +73,7 @@ function Logger:log(msg)
     return self:info(msg)
 end
 function Logger:info(msg)
-    if logLevel > 3 and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.INFO and self.enabled then
         print(self:getDate() .. " [INFO] <" .. self.name .. ">: " .. msg)
         -- print(msg)
     end
@@ -67,14 +84,14 @@ function Logger:dbg(msg)
     return self:debug(msg)
 end
 function Logger:debug(msg)
-    if logLevel > 4 and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.DEBUG and self.enabled then
         print(self:getDate() .. " [DEBUG] <" .. self.name .. ">: " .. msg)
     end
     return false
 end
 
 function Logger:trace(msg, lvl)
-    if (lvl == nil and logLevel > 6) or logLevel > 4+lvl and self.enabled then
+    if (lvl == nil and Logger.logLevel >= Logger.LogLevels.TRACE) or Logger.logLevel >= Logger.LogLevels.DEBUG + lvl and self.enabled then
         print(self:getDate() .. " [TRACE] <" .. self.name .. ">: " .. msg)
     end
     return false
