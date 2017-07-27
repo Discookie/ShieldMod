@@ -18,25 +18,25 @@ Diff.JumpModes = {
     PRESS = "button_press",
     BTN = "button",
     WAKE = "wake",
-    WAKE_BTN = "wake_or_button",
+    WAKE_BTN = "wake_or_button"
 }
 
 -- The groups do the same thing, just have different names for them
 Diff.GreyActions = {
-    CLOG      = "permanent"
-    STUCK     = "permanent"
-    PERMANENT = "permanent"
+    CLOG      = "permanent",
+    STUCK     = "permanent",
+    PERMANENT = "permanent",
 
-    ERASE_ONE    = "erasesingle"
-    ERASE_SINGLE = "erasesingle"
-    ERASE_BLOCK  = "erasesingle"
+    ERASE_ONE    = "erasesingle",
+    ERASE_SINGLE = "erasesingle",
+    ERASE_BLOCK  = "erasesingle",
 
-    ERASE_COLUMN = "erasecolumn"
+    ERASE_COLUMN = "erasecolumn",
 
-    ERASE_GRID = "eraseall"
-    ERASE_ALL  = "eraseall"
+    ERASE_GRID = "eraseall",
+    ERASE_ALL  = "eraseall",
 
-    DEFAULT      = "default"
+    DEFAULT      = "default",
     STAY_IN_GRID = "default"
 }
 
@@ -150,7 +150,6 @@ Diff.defaults = {
     jumpFixScaler = 1,
     jumpHeightScaler = 1,
     minStrafeSpeed = -1,
-    maxStrafe =
     minAirTime = 0.9,
     minHeight = 3.5,
     autoStartJumps = true,
@@ -213,7 +212,7 @@ function Diff.init(values)
 end
 
 function Diff:loadDefaults()
-    for (k, v) in pairs(Diff.defaults) do
+    for k, v in pairs(Diff.defaults) do
         self[k] = v
     end
 
@@ -235,7 +234,7 @@ function Diff:loadDefaults()
 end
 
 function Diff:loadValues(values)
-    for (k, v) in pairs(values) do
+    for k, v in pairs(values) do
         if type(v) == "nil" or (type(v) == "string" and (v == "" or v == "default")) then
             self[k] = Diff.defaults[k]
         end
