@@ -59,7 +59,7 @@ function EventHandler:reset()
         if (self._id ~= nil) then
             EventHandler.instance:delete(self._id)
         end
-        self._id = EventHandler.instance:add("ALL", self.event, self)
+        self._id = EventHandler.instance:add(Events.ALL, self.event, self)
     end
     self.events = {}
     self.eventLinks = {}
