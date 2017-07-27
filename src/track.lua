@@ -183,7 +183,7 @@ function Track:timeToNode(sec)
 
     if sec < self._seconds[lo] then
         return lo
-    elseif sec > self._seconds[hi]
+    elseif sec > self._seconds[hi] then
         return hi
     end
 
