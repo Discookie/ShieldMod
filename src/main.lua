@@ -6,7 +6,7 @@ require("utils/dump")
 require("logger")
 require("events")
 require("intervals")
-require("node")
+require("note")
 -- End of Object requires
 
 -- Variable requires
