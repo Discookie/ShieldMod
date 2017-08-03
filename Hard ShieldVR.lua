@@ -4,7 +4,7 @@ INSANE MOD - created by Discookie
 
 Based on Normal ShieldVR and Expert mods
 
-Released under CC-BY-SA 4.0
+Released under the MIT license
 
 https://matekos17.f.fazekas.hu/shield/
 
