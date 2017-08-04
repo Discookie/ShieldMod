@@ -1,5 +1,7 @@
 require("logger")
+require("diff")
 require("events")
+require("tick")
 require("utils/deepcopy")
 
 Track = {}
@@ -23,11 +25,13 @@ end
 function Track:reset()
     if self.id then
         EventHandler.instance:del(self._id)
+        EventHandler.instance:del(self._frameid)
     end
     self.track = {}
 
     self:clear()
     self._id = EventHandler.instance:on(Events.TRACK, self.onTrack, self)
+    self._frameid = EventHandler.instance:on(Events.FRAME, self.onFrame, self)
     return false
 end
 
@@ -46,7 +50,11 @@ function Track:clear()
             rot = {
                 x = 0,
                 y = 0,
-                z = 0
+                z = 0,
+
+                pan = 0,
+                tilt = 0,
+                roll = 0
             },
             funkyrot = false,
             color = {
@@ -75,6 +83,15 @@ function Track:clear()
     self._AtrafficStrength = {}
 
     self._time = {}
+
+    self.current = 0
+    self.currentNode = deepcopy(self._track[0])
+
+    self.minTilt = 0
+    self.maxTilt = 0
+
+    self._powerNodes = {}
+
     return false
 end
 
@@ -111,8 +128,8 @@ function Track:process()
             self._pos[k] = {x = 0, y = 0, z = 0}
         end
         if v.rot ~= nil then
-            self._rot[k] = v.rot
-            self._track[k].rot = v.rot
+            self._rot[k] = {x = v.rot.x, roll = v.rot.x,  y = v.rot.y, tilt = v.rot.y,  z = v.rot.z, pan = v.rot.z}
+            self._track[k].rot = {x = v.rot.x, roll = v.rot.x,  y = v.rot.y, tilt = v.rot.y,  z = v.rot.z, pan = v.rot.z}
         else
             self._rot[k] = {x = 0, y = 0, z = 0}
         end
@@ -152,11 +169,73 @@ function Track:process()
             self._time[k] = lastTime
         end
     end
+
+    local min = math.min
+
+    for i=1,self.length do
+        self.minTilt = min(self.minTilt, self._rot[i].tilt)
+        self.maxTilt = max(self.maxTilt, self._rot[i].tilt)
+    end
+
+    return false
+end
+
+function Track:calcPowerNodes()
+    local sec = {}
+    local av = {}
+
+    for i=1,self.length do
+        sec[i] = i
+        av[i] = true
+    end
+
+    function cmp(a, b)
+        return self._jumpAirTime[a] < self._jumpAirTime[b]
+    end
+    table.sort(sec, cmp)
+
+    for i=1,self.length do
+        if self._jumpAirTime[sec[i]] >= Diff.instance.minJumpAirTime then
+            if av[sec[i]] then
+                local isClear = true
+                local jumpEndTime = self._time[sec[i]] + self._jumpAirTime[sec[i]] + Diff.instance.jumpEndOffset
+                local jumpEndNode = self:timeToNode(jumpEndTime)
+
+                for j=sec[i],jumpEndNode do
+                    if not av[j] then
+                        isClear = false
+                    end
+                end
+
+                if isClear and sec[i] > 300 then
+                    local tiltBefore = 0
+                    local tiltAfter = 0
+
+                    for j=sec[i],math.max(sec[i] - Diff.instance.slopeTest, 1),-1 do
+                        tiltBefore = tiltBefore + self._rot[j].tilt
+                    end
+                    for j=sec[i],math.min(sec[i] + Diff.instance.slopeTest, self.length) do
+                        tiltAfter = tiltAfter + self._rot[j].tilt
+                    end
+
+                    tiltBefore = tiltBefore / Diff.instance.slopeTest
+                    tiltAfter = tiltAfter / Diff.instance.slopeTest
+
+                    if i == 1 or (5 < tiltBefore and tiltAfter > 15) then
+                        self._powerNodes[#self._powerNodes + 1] = sec[i]
+                    end
+                end
+            end
+        end
+        if #self._powerNodes > Diff.instance.powerNodesPerMin * self._time[self.length] / 60 then
+            break
+        end
+    end
     return false
 end
 
 function Track:load(tr)
-    if tr ~= nil then
+    if type(tr) == "table" then
         self.track = tr
     elseif GameStates.current == PRE_TRACK then
         return true
@@ -165,12 +244,8 @@ function Track:load(tr)
     end
 
     self:process()
-    return false
-end
+    self:calcPowerNodes()
 
-function Track:onTrack(ev)
-    self.track = ev.data
-    self:process()
     return false
 end
 
@@ -222,11 +297,25 @@ function Track:getNode(num)
 end
 
 function Track:get(varname)
-    if self["_" .. varname] then
+    if varname == nil then
+        return deepcopy(self._track)
+    elseif self["_" .. varname] then
         return deepcopy(self["_" .. varname])
     else
         return true
     end
+end
+
+function Track:onTrack(ev)
+    self.track = ev.data
+    self:process()
+    return false
+end
+
+function Track:onFrame(ev)
+    self.currentID = self:timeToNode(Tick.instance:getRelativeTime())
+    self.currentNode = self:getNode(currentID)
+    return false
 end
 
 Track.instance = Track()
