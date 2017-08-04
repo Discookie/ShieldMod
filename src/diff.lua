@@ -41,6 +41,9 @@ Diff.GreyActions = {
 }
 
 Diff.defaults = {
+
+    -- Used in Note
+
     maxAccel  = 10,
     factAccel =  0.6,
     minAccel  =  0,
@@ -82,6 +85,8 @@ Diff.defaults = {
     maxDoubleSpan = 0.8,
     minDoubleSpan = 0.2,
     maxCrosshandSpan = 0.6,
+
+    -- Used in GameplaySettings()
 
     musicCutOnFail = false,
     advancedSteepAlgo = true,
@@ -197,7 +202,14 @@ Diff.defaults = {
     compressWater = 0.45,
 
     numBinsForFreq = 256,
-    logSpacedFreqBins = false
+    logSpacedFreqBins = false,
+
+    -- Used in Track
+
+    minJumpAirTime = 2.5,
+    jumpEndOffset = 10,
+    powerNodesPerMin = 1,
+    slopeTest = 100
 }
 
 function Diff.init(values)
@@ -234,6 +246,9 @@ function Diff:loadDefaults()
 end
 
 function Diff:loadValues(values)
+    if type(values) ~= "table" then
+        return true
+    end
     for k, v in pairs(values) do
         if type(v) == "nil" or (type(v) == "string" and (v == "" or v == "default")) then
             self[k] = Diff.defaults[k]
@@ -343,3 +358,5 @@ function Diff:doSettings()
             freqtrafficbins_logspaced           = self.logSpacedFreqBins
         })
 end
+
+Diff.instance = Diff()
