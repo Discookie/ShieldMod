@@ -14,7 +14,7 @@ Events = {
     START = 8,
     PAUSE = 9,
     RESUME = 10,
-    END = 11,
+    FINISH = 11,
     SCORE = 12
 }
 
@@ -129,6 +129,9 @@ function EventHandler:throw(event)
 end
 function EventHandler:event(event)
     self.logger:trace("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events", 1)
+    local evStart = self.logger:getDate()
+
+    end
     if event.id == Events.ALL or event.id == Events.ERR then
         return true
     end
@@ -142,6 +145,7 @@ function EventHandler:event(event)
             self.events[v][1](event)
         end
     end
+    self.logger:trace("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s")
     return false
 end
 
