@@ -46,7 +46,7 @@ function Logger:exception(msg)
     self:fatal(msg)
 end
 function Logger:fatal(msg)
-    if Logger.logLevel >= Logger.LogLevels.FATAL and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.FATAL then
         print(self:getDate() .. " [FATAL] <" .. self.name .. ">: " .. msg)
     end
     return false
@@ -57,7 +57,7 @@ function Logger:err(msg)
     return false
 end
 function Logger:error(msg)
-    if Logger.logLevel >= Logger.LogLevels.ERROR and self.enabled then
+    if Logger.logLevel >= Logger.LogLevels.ERROR then
         print(self:getDate() .. " [ERROR] <" .. self.name .. ">: " .. msg)
     end
     return false
