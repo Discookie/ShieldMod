@@ -1,5 +1,9 @@
+function jsonify(object)
+    return _dump_recur(object, 0)
+end
+
 function dump(object)
-    print(_dump_recur(object, 0))
+    return _dump_recur(object, 0)
 end
 
 function _dump_recur(obj, level)
