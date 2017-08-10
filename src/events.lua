@@ -128,12 +128,16 @@ function EventHandler:throw(event)
     return self:event(event)
 end
 function EventHandler:event(event)
-    self.logger:debug("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events")
     local evStart = self.logger:getDate()
 
     if event.id == Events.ALL or event.id == Events.ERR then
         return true
+    elseif event.id == Events.FRAME then
+        self.logger:trace("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events", 4)
+    else
+        self.logger:debug("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events")
     end
+
     for k, v in pairs(self.eventLinks[Events.ALL]) do
         if self.events[v] ~= nil and self.events[v][0] then
             self.events[v][1](event)
@@ -144,7 +148,13 @@ function EventHandler:event(event)
             self.events[v][1](event)
         end
     end
-    self.logger:debug("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s")
+
+    if event.id == Events.FRAME then
+        self.logger:trace("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s", 4)
+    else
+        self.logger:debug("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s")
+    end
+
     return false
 end
 
