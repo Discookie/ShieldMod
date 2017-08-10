@@ -142,3 +142,7 @@ function Logger.init(name)
 
     return self
 end
+
+Logger.Global = Logger("Global")
+Logger.Global:err("LOGGER TEST - IGNORE ME")
+Logger.Global:log("Log level is " .. Logger.logLevel)
