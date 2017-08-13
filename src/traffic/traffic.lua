@@ -1,6 +1,7 @@
-require("logger")
-require("events")
-require("utils/deepcopy")
+require("../logger")
+require("../events")
+require("../utils/deepcopy")
+require("../note")
 
 Traffic = {}
 
@@ -12,6 +13,6 @@ setmetatable(Traffic, {
         end
 })
 
-function Track.init()
+function Traffic.init()
 
 end
