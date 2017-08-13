@@ -2,7 +2,7 @@ require("logger")
 require("events")
 require("tick")
 require("intervals")
-require("diff")
+require("diff/diff_export")
 require("utils/deepcopy")
 
 Note = {}

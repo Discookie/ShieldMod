@@ -10,9 +10,9 @@ require("note")
 -- End of Object requires
 
 -- Variable requires
-require("diff")
+require("diff/diff_export")
 require("track/track_export")
-require("traffic")
+require("traffic/traffic_export")
 -- End of variable requires
 
 require_d("test-data")
