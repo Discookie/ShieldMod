@@ -1,8 +1,8 @@
-require("logger")
-require("diff")
-require("events")
-require("tick")
-require("utils/deepcopy")
+require("../logger")
+require("../diff")
+require("../events")
+require("../tick")
+require("../utils/deepcopy")
 
 Track = {}
 
