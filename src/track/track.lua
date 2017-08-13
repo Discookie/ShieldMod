@@ -260,5 +260,3 @@ function Track:onFrame(ev)
     self.currentNode = self:getNode(currentID)
     return false
 end
-
-Track.instance = Track()
