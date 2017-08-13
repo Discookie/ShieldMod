@@ -22,7 +22,7 @@ function Intervals.init()
 end
 
 function Intervals:reset()
-    self.logger.trace("Reset")
+    self.logger:trace("Reset")
     if (self._id ~= nil) then
         EventHandler.instance:remove(self._id)
     end
