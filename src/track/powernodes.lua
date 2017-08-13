@@ -3,7 +3,9 @@ require("track")
 Track._beforePowerNodes_clear = Track.clear
 
 function Track:clear()
-    self:_beforePowerNodes_clear()
+    if self:_beforePowerNodes_clear() then
+        return true
+    end
 
     self._powerNodes = {}
 
@@ -67,9 +69,9 @@ end
 Track._beforePowerNodes_load = Track.load
 
 function Track:load(tr)
-    local ret = self:_beforePowerNodes_load(tr)
+    if self:_beforePowerNodes_load(tr) then
+        return true
+    end
 
-    ret = ret or self:calcPowerNodes()
-
-    return ret
+    return self:calcPowerNodes()
 end
