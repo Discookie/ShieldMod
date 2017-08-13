@@ -23,7 +23,7 @@ Event.__index = Event
 setmetatable(Event, {
         __call = function(cls, ...)
             return cls.init(...)
-        end,
+        end
 })
 
 function Event.init(eventID, data)
@@ -40,7 +40,7 @@ EventHandler.__index = EventHandler
 setmetatable(EventHandler, {
         __call = function(cls, ...)
             return cls.init(...)
-        end,
+        end
 })
 
 function EventHandler.init(isInstance)
@@ -109,7 +109,7 @@ function EventHandler:enable(id)
 end
 
 function EventHandler:delete(id)
-    self:remove(id)
+    return self:remove(id)
 end
 
 function EventHandler:remove(id)
@@ -131,6 +131,7 @@ function EventHandler:event(event)
     local evStart = self.logger:getDate()
 
     if event.id == Events.ALL or event.id == Events.ERR then
+        self.logger:err("Throw failed: Invalid ID (" .. event.id .. ")!")
         return true
     elseif event.id == Events.FRAME then
         self.logger:trace("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events", 4)
