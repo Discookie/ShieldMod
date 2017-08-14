@@ -9,7 +9,7 @@ function math.round(number, precision)
     if type(precision) == "string" then
         precision = tonumber(precision)
     end
-    if type(precision) ~= "number"
+    if type(precision) ~= "number" then
         precision = 0
     end
 
