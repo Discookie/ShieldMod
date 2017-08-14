@@ -1,3 +1,6 @@
+require("diff")
+require("../utils/tablemerge")
+
 Diff.defaults_timing = {
     useGameTime = false
 }
