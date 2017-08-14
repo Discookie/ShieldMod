@@ -1,4 +1,5 @@
 require("diff")
+require("diff_timing")
 require("diff_gamesettings")
 require("diff_accels")
 require("diff_powernodes")
