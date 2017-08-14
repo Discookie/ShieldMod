@@ -1,5 +1,5 @@
 require("../logger")
-require("../diff")
+require("../diff/diff_export")
 require("../events")
 require("../tick")
 require("../utils/deepcopy")

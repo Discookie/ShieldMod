@@ -1,4 +1,5 @@
 require("track")
+require("../diff/diff_export")
 
 Track._beforePowerNodes_clear = Track.clear
 
