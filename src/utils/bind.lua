@@ -1,7 +1,7 @@
-function bind(t, k)
-    return function(...) return t[k](t, ...) end
+function bind(func, table)
+    return function(...) return table[func](table, ...) end
 end
 
-function bindFunc(t, k)
-    return function(...) return k(t, ...) end
+function bindFunc(func, table)
+    return function(...) return func(table, ...) end
 end

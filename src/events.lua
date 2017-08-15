@@ -76,7 +76,7 @@ function EventHandler:on(eventID, callback, object)
 end
 function EventHandler:add(eventID, callback, object)
     if object ~= nil then
-        self.events[#self.events+1] = {true, bindFunc(object, callback), eventID, 0}
+        self.events[#self.events+1] = {true, bindFunc(callback, object), eventID, 0}
     else
         self.events[#self.events+1] = {true, callback, eventID, 0}
     end
