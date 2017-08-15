@@ -24,7 +24,7 @@ end
 
 function OnFreqTrafficCreated(freqTraffic)
     local ev = Event(Events.PRE_TRAFFIC, freqTraffic)
-    Eventhandler.instance:throw(ev)
+    EventHandler.instance:throw(ev)
 end
 
 function OnTrafficCreated(traffic)
