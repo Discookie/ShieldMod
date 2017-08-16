@@ -169,6 +169,7 @@ function Track:process()
     end
 
     local min = math.min
+    local max = math.max
 
     for i=1,self.length do
         self.minTilt = min(self.minTilt, self._rot[i].tilt)
@@ -199,22 +200,22 @@ function Track:timeToNode(sec)
     local floor = math.floor
 
 
-    if sec < self._seconds[lo] then
+    if sec < self._time[lo] then
         return lo
-    elseif sec > self._seconds[hi] then
+    elseif sec > self._time[hi] then
         return hi
     end
 
     while (hi - lo)>1 do
         cur = floor((hi + lo)/2)
-        if self._seconds[cur] > sec then
+        if self._time[cur] > sec then
             hi = cur
         else
             lo = cur
         end
     end
 
-    if (self._seconds[hi] - sec) > (sec - self._seconds[lo]) then
+    if (self._time[hi] - sec) > (sec - self._time[lo]) then
         return lo
     else
         return hi
@@ -223,11 +224,11 @@ end
 
 function Track:nodeToTime(num)
     if num <= 0 then
-        return self._seconds[1]
+        return self._time[1]
     elseif num <= self.length then
-        return self._seconds[num]
+        return self._time[num]
     else
-        return self._seconds[self.length]
+        return self._time[self.length]
     end
 end
 
@@ -257,6 +258,6 @@ end
 
 function Track:onFrame(ev)
     self.currentID = self:timeToNode(Tick.instance:getRelativeTime())
-    self.currentNode = self:getNode(currentID)
+    self.currentNode = self:getNode(self.currentID)
     return false
 end

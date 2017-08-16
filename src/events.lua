@@ -140,13 +140,13 @@ function EventHandler:event(event)
     end
 
     for k, v in pairs(self.eventLinks[Events.ALL]) do
-        if self.events[v] ~= nil and self.events[v][0] then
-            self.events[v][1](event)
+        if self.events[v] ~= nil and self.events[v][1] then
+            self.events[v][2](event)
         end
     end
     for k, v in pairs(self.eventLinks[event.id]) do
-        if self.events[v] ~= nil and self.events[v][0] then
-            self.events[v][1](event)
+        if self.events[v] ~= nil and self.events[v][1] then
+            self.events[v][2](event)
         end
     end
 

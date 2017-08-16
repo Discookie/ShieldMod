@@ -23,21 +23,19 @@ function GameStates.eventChange(event)
     elseif (event.id == Events.POST_SKIN) then
         GameStates.current = GameStates.PRE_START
     elseif (event.id == Events.FRAME) then
-        if event.data.dt > 0 and seconds >= 0 then
-            if seconds > -0.0056 and seconds < 0.0056 then
+        if event.data.dt > 0 and Tick.instance:getRelativeTime() >= 0 then
+            if Tick.instance:getRelativeTime() > -0.0056 and Tick.instance:getRelativeTime() < 0.0056 then
                 local ev = Event(Events.START, event.data)
                 EventHandler.instance:throw(ev)
             end
             GameStates.current = GameStates.PLAYING
-        elseif events.data.dt == 0 then
+        elseif event.data.dt == 0 then
             GameStates.current = GameStates.PAUSED
         else
             GameStates.current = GameStates.PRE_SONG
         end
     end
 end
-
-EventHandler.instance:on(Events.ALL, GameStates.eventChange)
 
 Tick = {}
 Tick.__index = Tick
@@ -84,3 +82,5 @@ function Tick:onFrame(event)
 end
 
 Tick.instance = Tick()
+
+EventHandler.instance:on(Events.ALL, GameStates.eventChange)

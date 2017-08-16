@@ -15,7 +15,7 @@ end
 
 function Logger.getDate()
     if Diff ~= nil and Diff.instance ~= nil and Diff.instance.useGameTime then
-        return math.round(getMillisecondsSinceStartup(), 0)
+        return math.round(GetMillisecondsSinceStartup(), 0)
     elseif Tick ~= nil and Tick.instance ~= nil then
         return Tick.instance:getAbsoluteTime()
     else
