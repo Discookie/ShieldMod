@@ -15,7 +15,7 @@ require("track/track_export")
 require("traffic/traffic_export")
 -- End of variable requires
 
-require_d("test-data")
+require("test-data")
 
 function OnTrackCreated(track)
     local ev = Event(Events.TRACK, track)
