@@ -2,7 +2,7 @@ require("diff")
 require("../utils/tablemerge")
 
 Diff.defaults_timing = {
-    useGameTime = false
+    useGameTime = true
 }
 
 table.merge(Diff.defaults, Diff.defaults_timing)
