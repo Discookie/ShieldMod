@@ -1,4 +1,5 @@
 require("utils/bind")
+require("utils/dump")
 require("logger")
 
 Events = {
@@ -33,6 +34,13 @@ function Event.init(eventID, data)
     self.id = eventID
     self.data = data
     return self
+end
+
+function Event:dupe()
+    return self:duplicate()
+end
+function Event:duplicate()
+    return Event(self.id, self.data)
 end
 
 EventHandler = {}
@@ -139,21 +147,50 @@ function EventHandler:event(event)
         self.logger:debug("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events")
     end
 
+    local status, err
+    local successes = 0
+    local fails = 0
     for k, v in pairs(self.eventLinks[Events.ALL]) do
         if self.events[v] ~= nil and self.events[v][1] then
-            self.events[v][2](event)
+            status, err = pcall(self.events[v][2], event:dupe())
+
+            if not status then
+                self.logger:err("Event ID " .. v .. " LUA error: " .. dump(err))
+                fails = fails + 1
+                self:disable(v)
+            elseif err then
+                self.logger:warn("Event ID " .. v .. " failed to execute")
+                fails = fails + 1
+                self:disable(v)
+            else
+                successes = successes + 1
+            end
         end
     end
     for k, v in pairs(self.eventLinks[event.id]) do
         if self.events[v] ~= nil and self.events[v][1] then
-            self.events[v][2](event)
+            status, err = pcall(self.events[v][2], event:dupe())
+
+            if not status then
+                self.logger:err("Event ID " .. v .. " LUA error: " .. dump(err))
+                fails = fails + 1
+                self:disable(v)
+            elseif err then
+                self.logger:warn("Event ID " .. v .. " failed to execute")
+                fails = fails + 1
+                self:disable(v)
+            else
+                successes = successes + 1
+            end
         end
     end
 
     if event.id == Events.FRAME then
         self.logger:trace("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s", 4)
+        self.logger:trace("Successful events: " .. successes .. ", fails: ", 4)
     else
         self.logger:debug("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s")
+        self.logger:debug("Successful events: " .. successes .. ", fails: ", 4)
     end
 
     return false
