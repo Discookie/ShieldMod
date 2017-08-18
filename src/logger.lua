@@ -15,7 +15,7 @@ end
 
 function Logger.getDate()
     if Diff ~= nil and Diff.instance ~= nil and Diff.instance.useGameTime then
-        return math.round(GetMillisecondsSinceStartup(), 0)
+        return math.round(GetMillisecondsSinceStartup(), 0)/1000
     elseif Tick ~= nil and Tick.instance ~= nil then
         return Tick.instance:getAbsoluteTime()
     else
@@ -149,4 +149,4 @@ end
 
 Logger.Global = Logger("Global")
 Logger.Global:err("LOGGER TEST - IGNORE ME")
-Logger.Global:log("Log level is " .. Logger.logLevel)
+Logger.Global:log("Init at " .. math.round(GetMillisecondsSinceStartup(), 0)/1000 .. "s GMS, log level " .. Logger.logLevel)

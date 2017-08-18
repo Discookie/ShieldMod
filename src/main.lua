@@ -51,5 +51,5 @@ function OnRequestFinalScoring()
     local ev = Event(Events.SCORE)
     EventHandler.instance:throw(ev)
 end
-
+Logger.Global:debug("Pre-init GMS time is " .. math.round(GetMillisecondsSinceStartup(), 0)/1000)
 EventHandler.instance:throw(Event(Events.INIT))
