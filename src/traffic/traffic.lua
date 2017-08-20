@@ -21,6 +21,7 @@ function Traffic.init()
     local self = setmetatable({}, Traffic)
     self.type = "Traffic"
     self.logger = Logger(self.type)
+    self.logger:log("Init")
     self:reset()
     return self
 end
@@ -42,6 +43,8 @@ function Traffic:reset()
     self._id2 = EventHandler.instance:on(Events.FRAME, self.onFrame, self)
 
     self:clear()
+
+    self.logger:log("Reset")
 
     return false
 end
@@ -118,6 +121,8 @@ function Traffic:load(array)
         return true
     end
 
+    local oldSize = self.size
+
     self:clear()
 
     for k,v in ipairs(array) do
@@ -171,6 +176,15 @@ function Traffic:load(array)
     else
         self.nextTime = 7200
     end
+
+    if oldSize == 0 then
+        self.logger:log("Loaded traffic table successfully")
+        self.logger:log("Total traffic count: " .. self.size)
+    else
+        self.logger:trace("Changed traffic table successfully", 1)
+        self.logger:trace("Added " .. (self.size - oldsize) .. " blocks, total: " .. self.size, 1)
+    end
+
     return false
 end
 
@@ -197,11 +211,12 @@ function Traffic:add(new)
 end
 function Traffic:insert(new)
     if type(new) ~= "table" or (new.time == nil and new.seconds == nil) then
+        self.logger:warn("insert: Not a valid block")
+        self.logger:debug("new = " .. dump(new))
         return true
     end
     new.active = true
     new.time = new.time or new.seconds
-    self.size = self.size + 1
     self._traffic[self.size] = new
     return self:sort()
 end
@@ -213,18 +228,17 @@ function Traffic:modify(id, mod)
     return self:change(id, mod)
 end
 function Traffic:change(id, mod)
-    if id <= 0 or id > self.length then
+    if id <= 0 or id > self.length or type(mod) ~= "table" then
+        self.logger:warn("change: Invalid ")
+        self.logger:debug("id = " .. id .. ", mod = " .. dump(mod))
         return true
     end
-    if type(mod) == "table" then
-        for k,v in mod do
-            if self["_" .. k] then
-                self["_" .. k][id] = v
-                self._traffic[id][k] = v
-            end
+
+    for k,v in mod do
+        if self["_" .. k] then
+            self["_" .. k][id] = v
+            self._traffic[id][k] = v
         end
-    else
-        return true
     end
 end
 
@@ -240,7 +254,6 @@ end
 function Traffic:delete(id)
     self._traffic[id] = self._traffic[self.size]
     self._traffic[self.size] = nil
-    self.size = self.size - 1
     return self:sort()
 end
 
@@ -250,6 +263,8 @@ function Traffic:getLast(count)
     end
 
     if self.currentID - count <= 0 then
+        self.logger:warn("getLast: invalid count")
+        self.logger:debug("count = " .. count)
         return true
     end
 
@@ -261,6 +276,8 @@ function Traffic:getNext(count)
     end
 
     if self.currentID + count >= self.size then
+        self.logger:warn("getNext: invalid count")
+        self.logger:debug("count = " .. count)
         return true
     end
 
@@ -274,6 +291,7 @@ function Traffic:getClosest(time, isRelative)
 
     if type(time) ~= "number" then
         if isRelative == false then
+            self.logger:warn("getClosest: invalid time")
             return true
         else
             return self._traffic[self.currentID] or true
@@ -301,6 +319,7 @@ function Traffic:getBefore(time, isRelative)
 
     if type(time) ~= "number" then
         if isRelative == false then
+            self.logger:warn("getBefore: invalid time")
             return true
         else
             return self._traffic[self.currentID] or true
@@ -337,9 +356,9 @@ function Traffic:getAfter(time, isRelative)
 
     if type(time) ~= "number" then
         if isRelative == false then
-            time = 0
+            self.logger:warn("getBefore: invalid time")
         else
-            time = Tick.instance:getRelativeTime()
+            return self._traffic[min(self.currentID+1, self.size)]
         end
     else
         time = math.max(time, 0)
