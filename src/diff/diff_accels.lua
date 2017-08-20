@@ -58,7 +58,7 @@ function Diff:loadValues(values)
 
     self.minX  = values.minX  or ((values.maxX or self.maxX) - (values.spanX or self.spanX)) or self.minX
     self.spanX = values.spanX or ((values.maxX or self.maxX) - (values.minX  or self.minX )) or self.spanX
-    self.maxX  = values.maxX  or ((values.minX or self.minX) + (value.spanX  or self.spanX)) or self.maxX
+    self.maxX  = values.maxX  or ((values.minX or self.minX) + (values.spanX  or self.spanX)) or self.maxX
 
     self.maxAccelLeft  = values.maxAccelLeft  or values.maxAccel  or values.maxAccelRight  or self.maxAccelLeft
     self.factAccelLeft = values.factAccelLeft or values.factAccel or values.factAccelRight or self.factAccelLeft
