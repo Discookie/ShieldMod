@@ -137,10 +137,10 @@ function Traffic:load(array)
             self._traffic[self.size].active = v.active
         end
 
-        self._time[self.size] = v.time or v.seconds
-        self._traffic[self.size].time = v.time or v.seconds
         self._node[self.size] = v.node or v.impactnode
         self._traffic[self.size].node = v.node or v.impactnode
+        self._time[self.size] = Track.instance:nodeToTime(self._node[self.size])
+        self._traffic[self.size].time = Track.instance:nodeToTime(self._node[self.size])
 
         self._start[self.size] = v.start or v.chainstart or self._node[self.size]
         self._traffic[self.size].start = v.start or v.chainstart or self._node[self.size]
@@ -162,6 +162,9 @@ function Traffic:load(array)
         self._strength[self.size] = v.strength
         self._strafe[self.size] = v.strafe
     end
+
+    self.logger:debug(dump(self._traffic[1]))
+    self.logger:debug(dump(self.traffic[1]))
 
     self:generateLogJumps()
 
@@ -317,6 +320,7 @@ function Traffic:getBefore(time, isRelative)
     local jumpCounter = #self._logBackJumps[current]
 
     while jumpCounter > 0 do
+        self.logger:debug(dump(self._logBackJumps[current]))
         if self._logBackJumps[current][jumpcounter][2] <= time then
             current = self._logBackJumps[current][jumpcounter][1]
             jumpCounter = min(jumpCounter - 1, #self._logBackJumps[current])
