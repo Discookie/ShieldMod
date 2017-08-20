@@ -7,6 +7,14 @@ function dump(object)
 end
 
 function _dump_recur(obj, level)
+    if type(v) == 'boolean' or type(v) == 'number' then
+        return tostring(v)
+    elseif type(v) == 'function' then
+        return tostring(v)
+    elseif type(v) == 'number' or type(v) == 'string' then
+        return v
+    end
+
     if not level then
         level = 1
     end
@@ -39,6 +47,14 @@ function dump_with_func(object)
 end
 
 function _dwf_recur(obj, level)
+    if type(v) == 'boolean' or type(v) == 'number' then
+        return tostring(v)
+    elseif type(v) == 'function' then
+        return tostring(v)
+    elseif type(v) == 'number' or type(v) == 'string' then
+        return v
+    end
+
     if not level then
         level = 1
     end
