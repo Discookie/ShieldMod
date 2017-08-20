@@ -305,7 +305,15 @@ function Traffic:getClosest(time, isRelative)
     id = self:getBefore(time).id
 
     if id == self.size then
-        return self._traffic[id]
+        return deepcopy(self._traffic[self.size])
+    elseif id == 0 then
+        return deepcopy(self._traffic[1])
+    else
+        if math.abs(time - self._time[id]) < math.abs(self._time[id+1]) then
+            return deepcopy(self._traffic[id])
+        else
+            return deepcopy(self._traffic[id+1])
+        end
     end
 end
 
