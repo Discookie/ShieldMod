@@ -44,11 +44,11 @@ function FreqTraffic:set(array)
 
     if type(array[1]) == "table" then
         if type(array[1][1]) == "table" then
-            for k,v in array do
+            for k,v in ipairs(array) do
                 self._size = self._size + 1
                 self._freq[self._size] = v
                 self._lengths[self._size] = 0
-                for l,b in v do
+                for l,b in ipairs(v) do
                     self._lengths[self._size] = self._lengths[self._size] + 1
                     self._total = self._total + 1
                 end
