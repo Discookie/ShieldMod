@@ -1,0 +1,4 @@
+{
+useTraffic = false,
+puzzleGrid = false
+}
