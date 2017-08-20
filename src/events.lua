@@ -187,10 +187,10 @@ function EventHandler:event(event)
 
     if event.id == Events.FRAME then
         self.logger:trace("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s", 4)
-        self.logger:trace("Successful events: " .. successes .. ", fails: ", 4)
+        self.logger:trace("Successful events: " .. successes .. ", fails: " .. fails, 4)
     else
         self.logger:debug("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s")
-        self.logger:debug("Successful events: " .. successes .. ", fails: ", 4)
+        self.logger:debug("Successful events: " .. successes .. ", fails: " .. fails, 4)
     end
 
     return false
