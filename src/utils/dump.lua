@@ -16,7 +16,7 @@ function _dump_recur(obj, level)
 
     for k, v in pairs(obj) do
         if was then
-            ret = ret .. ","
+            ret = ret .. ",\n"
         end
 
         if type(v) == "table" then
