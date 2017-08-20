@@ -90,6 +90,9 @@ function Traffic:generateLogJumps()
         local j = 1
         local k = 1
 
+        self._logJumps[i] = {}
+        self._logBackJumps[self.size + 1 - i] = {}
+
         while i + k <= self.size do
             self._logJumps[i][j] = {i+k, self._time[i+k]}
             self._logBackJumps[self.size + 1 - i][j] = {self.size + 1 - i - k, self._time[self.size + 1 - i - k]}
@@ -162,7 +165,7 @@ function Traffic:load(array)
 
     self:generateLogJumps()
 
-    self.currentID = self:getBefore(Track.instance:getRelativeTime())
+    self.currentID = self:getBefore(Tick.instance:getRelativeTime())
     if self.currentID < self.size then
         self.nextTime = self._traffic[self.currentID + 1]
     else
