@@ -49,6 +49,7 @@ end
 function Traffic:clear()
     self.size = 0
 
+    self.traffic = {}
     self._traffic = {}
 
     self._active = {}
