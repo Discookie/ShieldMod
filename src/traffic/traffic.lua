@@ -321,11 +321,11 @@ function Traffic:getBefore(time, isRelative)
 
     while jumpCounter > 0 do
         self.logger:debug(dump(self._logBackJumps[current]))
-        if self._logBackJumps[current][jumpcounter][2] <= time then
-            current = self._logBackJumps[current][jumpcounter][1]
+        if self._logBackJumps[current][jumpCounter][2] <= time then
+            current = self._logBackJumps[current][jumpCounter][1]
             jumpCounter = min(jumpCounter - 1, #self._logBackJumps[current])
         else
-            jumpCounter = jumpcounter - 1
+            jumpCounter = jumpCounter - 1
         end
     end
 
@@ -358,11 +358,11 @@ function Traffic:getAfter(time, isRelative)
     local jumpCounter = #self._logJumps[current]
 
     while jumpCounter > 0 do
-        if self._logJumps[current][jumpcounter][2] > time then
-            current = self._logJumps[current][jumpcounter][1]
+        if self._logJumps[current][jumpCounter][2] > time then
+            current = self._logJumps[current][jumpCounter][1]
             jumpCounter = min(jumpCounter - 1, #self._logJumps[current])
         else
-            jumpCounter = jumpcounter - 1
+            jumpCounter = jumpCounter - 1
         end
     end
 
