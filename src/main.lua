@@ -1,5 +1,7 @@
 require("copyright")
 
+require("test-data")
+
 require("utils/requtils")
 require("utils/dump")
 -- Object requires
@@ -14,8 +16,6 @@ require("diff/diff_export")
 require("track/track_export")
 require("traffic/traffic_export")
 -- End of variable requires
-
-require("test-data")
 
 function OnTrackCreated(track)
     local ev = Event(Events.TRACK, track)
