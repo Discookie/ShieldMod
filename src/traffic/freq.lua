@@ -37,7 +37,7 @@ end
 function FreqTraffic:load(array)
     return self:set(array)
 end
-function FreqTraffic:set(array, innerID, outerID)
+function FreqTraffic:set(array)
     if type(array) ~= "table" then
         return true
     end
