@@ -165,7 +165,7 @@ function Traffic:load(array)
 
     self:generateLogJumps()
 
-    self.currentID = self:getBefore(Tick.instance:getRelativeTime())
+    self.currentID = self:getBefore(Tick.instance:getRelativeTime()).id
     if self.currentID < self.size then
         self.nextTime = self._traffic[self.currentID + 1]
     else
