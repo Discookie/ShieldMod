@@ -163,9 +163,6 @@ function Traffic:load(array)
         self._strafe[self.size] = v.strafe
     end
 
-    self.logger:debug(dump(self._traffic[1]))
-    self.logger:debug(dump(self.traffic[1]))
-
     self:generateLogJumps()
 
     self.currentID = self:getBefore(Tick.instance:getRelativeTime())
@@ -320,7 +317,6 @@ function Traffic:getBefore(time, isRelative)
     local jumpCounter = #self._logBackJumps[current]
 
     while jumpCounter > 0 do
-        self.logger:debug(dump(self._logBackJumps[current]))
         if self._logBackJumps[current][jumpCounter][2] <= time then
             current = self._logBackJumps[current][jumpCounter][1]
             jumpCounter = min(jumpCounter - 1, #self._logBackJumps[current])
