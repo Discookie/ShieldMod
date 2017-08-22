@@ -93,6 +93,29 @@ function Track:clear()
     return false
 end
 
+function Track:generateLogJumps()
+    if self.size <= 0 then
+        return true
+    end
+
+    self._logJumps = {}
+
+    for i = 1, self.size - 1 do
+        local j = 1
+        local k = 1
+
+        self._logJumps[i] = {}
+
+        while i + k <= self.size do
+            self._logJumps[i][j] = {i+k, self._time[i+k]}
+
+            j = j + 1
+            k = k * 2
+        end
+    end
+    return false
+end
+
 function Track:process()
     self:clear()
     local lastTime = -5
@@ -105,18 +128,21 @@ function Track:process()
             self._track[k].maxAir = v.maxair
         else
             self._maxAir[k] = 0
+            self._track[k].maxAir = 0
         end
         if v.jumpairtime ~= nil then
             self._jumpAirTime[k] = v.jumpairtime
             self._track[k].jumpAirTime = v.jumpairtime
         else
             self._jumpAirTime[k] = 0
+            self._track[k].jumpAirTime = 0
         end
         if v.antiairtime ~= nil then
             self._AjumpAirTime[k] = v.antiairtime
             self._track[k].AjumpAirTime = v.antiairtime
         else
             self._AjumpAirTime[k] = 0
+            self._track[k].AjumpAirTime = 0
         end
 
         if v.pos ~= nil then
@@ -124,47 +150,60 @@ function Track:process()
             self._track[k].pos = v.pos
         else
             self._pos[k] = {x = 0, y = 0, z = 0}
+            self._track[k].pos = {x = 0, y = 0, z = 0}
         end
         if v.rot ~= nil then
             self._rot[k] = {x = v.rot.x, roll = v.rot.x,  y = v.rot.y, tilt = v.rot.y,  z = v.rot.z, pan = v.rot.z}
             self._track[k].rot = {x = v.rot.x, roll = v.rot.x,  y = v.rot.y, tilt = v.rot.y,  z = v.rot.z, pan = v.rot.z}
         else
-            self._rot[k] = {x = 0, y = 0, z = 0}
+            self._rot[k] = {x = 0, y = 0, z = 0, pan = 0, tilt = 0, roll = 0}
+            self._track[k].rot = {x = 0, y = 0, z = 0, pan = 0, tilt = 0, roll = 0}
         end
         if v.funkyrot ~= nil then
             self._funkyRot[k] = v.funkyrot
             self._track[k].funkyRot = v.funkyrot
         else
             self._funkyRot[k] = false
+            self._track[k].funkyRot = false
         end
 
         if v.color ~= nil then
             self._color[k] = v.color
+            self._track[k].color = v.color
         else
             self._color[k] = {r = 255, g = 255, b = 255, a = 0}
+            self._track[k].color = {r = 255, g = 255, b = 255, a = 0}
         end
         if v.intensity ~= nil then
             self._intensity[k] = v.intensity
+            self._track[k].intensity = v.intensity
         else
             self._intensity[k] = 0
+            self._track[k].intensity = 0
         end
 
         if v.trafficstrength ~= nil then
             self._trafficStrength[k] = v.trafficstrength
+            self._track[k].trafficStrength = v.trafficstrength
         else
             self._trafficStrength[k] = 0
+            self._track[k].trafficStrength = 0
         end
         if v.antitrafficstrength ~= nil then
             self._AtrafficStrength[k] = v.antitrafficstrength
+            self._track[k].AtrafficStrength = v.antitrafficstrength
         else
             self._AtrafficStrength[k] = 0
+            self._track[k].AtrafficStrength = 0
         end
 
         if v.seconds ~= nil then
             self._time[k] = v.seconds
+            self._track[k].time = v.seconds
             lastTime = v.seconds
         else
             self._time[k] = lastTime
+            self._track[k].time = lastTime
         end
     end
 
@@ -175,6 +214,8 @@ function Track:process()
         self.minTilt = min(self.minTilt, self._rot[i].tilt)
         self.maxTilt = max(self.maxTilt, self._rot[i].tilt)
     end
+
+    self:generateLogJumps()
 
     return false
 end
@@ -194,31 +235,22 @@ function Track:load(tr)
 end
 
 function Track:timeToNode(sec)
-    local lo = 1
-    local hi = self.length
-    local cur = 0
-    local floor = math.floor
-
-
-    if sec < self._time[lo] then
-        return lo
-    elseif sec > self._time[hi] then
-        return hi
+    if self.length <= 0 then
+        return true
     end
 
-    while (hi - lo)>1 do
-        cur = floor((hi + lo)/2)
-        if self._time[cur] > sec then
-            hi = cur
+    local min = math.min
+    local current = 1
+
+    local jumpCounter = #self._logJumps[current]
+
+    while jumpCounter > 0 do
+        if self._logJumps[current][jumpCounter][2] > sec then
+            current = self._logJumps[current][jumpCounter][1]
+            jumpCounter = min(jumpCounter - 1, #self._logJumps[current])
         else
-            lo = cur
+            jumpCounter = jumpCounter - 1
         end
-    end
-
-    if (self._time[hi] - sec) > (sec - self._time[lo]) then
-        return lo
-    else
-        return hi
     end
 end
 
