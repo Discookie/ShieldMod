@@ -89,7 +89,7 @@ function Traffic:generateLogJumps()
     self._logJumps = {}
     self._logBackJumps = {}
 
-    for i = 1, self.size - 1 do
+    for i = 1, self.size do
         local j = 1
         local k = 1
 

@@ -101,7 +101,7 @@ function Track:generateLogJumps()
 
     self._logJumps = {}
 
-    for i = 1, self.size - 1 do
+    for i = 1, self.size do
         local j = 1
         local k = 1
 
