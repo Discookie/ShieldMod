@@ -36,7 +36,7 @@ function Track:reset()
 end
 
 function Track:clear()
-    self.length = 0
+    self.size = 0
 
     self._track = {[0] = {
             type = "Node",
@@ -123,7 +123,7 @@ function Track:process()
     for k, v in ipairs(self.track) do
         self._track[k] = deepcopy(self._track[0])
 
-        self.length = self.length + 1
+        self.size = self.size + 1
         if v.maxair ~= nil then
             self._maxAir[k] = v.maxair
             self._track[k].maxAir = v.maxair
@@ -211,7 +211,7 @@ function Track:process()
     local min = math.min
     local max = math.max
 
-    for i=1,self.length do
+    for i=1,self.size do
         self.minTilt = min(self.minTilt, self._rot[i].tilt)
         self.maxTilt = max(self.maxTilt, self._rot[i].tilt)
     end
@@ -236,7 +236,7 @@ function Track:load(tr)
 end
 
 function Track:timeToNode(sec)
-    if self.length <= 0 then
+    if self.size <= 0 then
         return true
     end
 
@@ -258,15 +258,15 @@ end
 function Track:nodeToTime(num)
     if num <= 0 then
         return self._time[1]
-    elseif num <= self.length then
+    elseif num <= self.size then
         return self._time[num]
     else
-        return self._time[self.length]
+        return self._time[self.size]
     end
 end
 
 function Track:getNode(num)
-    if num > 0 and num <= self.length then
+    if num > 0 and num <= self.size then
         local ret = self._track[num]
     else
         return self._track[0]
