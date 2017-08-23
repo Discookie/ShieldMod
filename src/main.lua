@@ -9,12 +9,13 @@ require("logger")
 require("events")
 require("intervals")
 require("note")
+require("track/track_export")
+require("traffic/traffic_export")
 -- End of Object requires
 
 -- Variable requires
 require("diff/diff_export")
-require("track/track_export")
-require("traffic/traffic_export")
+require("mods/active")
 -- End of variable requires
 
 function OnTrackCreated(track)
