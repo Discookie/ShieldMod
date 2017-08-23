@@ -235,7 +235,7 @@ function Traffic:change(id, mod)
         return true
     end
 
-    for k,v in mod do
+    for k,v in pairs(mod) do
         if self["_" .. k] then
             self["_" .. k][id] = v
             self._traffic[id][k] = v
