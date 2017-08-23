@@ -15,6 +15,7 @@ require("traffic/traffic_export")
 
 -- Variable requires
 require("diff/diff_export")
+require("camera")
 require("mods/active")
 -- End of variable requires
 
