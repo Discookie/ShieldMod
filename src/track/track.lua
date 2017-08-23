@@ -39,6 +39,7 @@ function Track:clear()
     self.length = 0
 
     self._track = {[0] = {
+            type = "Node",
             maxAir = 0,
             jumpAirTime = 0,
             AjumpAirTime = 0,

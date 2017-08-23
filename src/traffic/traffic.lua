@@ -133,6 +133,7 @@ function Traffic:load(array)
 
         self._traffic[self.size] = {}
         self._traffic[self.size].id = self.size
+        self._traffic[self.size].type = "Block"
 
         if v.active == nil then
             self._active[self.size] = true
