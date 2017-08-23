@@ -206,6 +206,8 @@ function Track:process()
             self._time[k] = lastTime
             self._track[k].time = lastTime
         end
+
+        self._track[k].id = k
     end
 
     local min = math.min
@@ -253,6 +255,7 @@ function Track:timeToNode(sec)
             jumpCounter = jumpCounter - 1
         end
     end
+    return deepcopy(self._track[current])
 end
 
 function Track:nodeToTime(num)
@@ -290,7 +293,7 @@ function Track:onTrack(ev)
 end
 
 function Track:onFrame(ev)
-    self.currentID = self:timeToNode(Tick.instance:getRelativeTime())
-    self.currentNode = self:getNode(self.currentID)
+    self.currentNode = self:timeToNode(Tick.instance:getRelativeTime())
+    self.currentID = self.currentNode.id
     return false
 end
