@@ -1,4 +1,5 @@
 {
 useTraffic = false,
-puzzleGrid = false
+puzzleGrid = false,
+jumpMode = "NONE"
 }

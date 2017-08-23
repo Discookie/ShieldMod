@@ -135,7 +135,7 @@ Diff.defaults_gameSettings = {
     uphillSmoother = 0.03,
     downhillSmoother = 0.06,
 
-    jumpMode = Diff.JumpModes.NONE,
+    jumpMode = Diff.JumpModes.AUTO,
 
     calcAntiTraffic = false,
     autoCollisions = true,
