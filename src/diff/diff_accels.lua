@@ -4,7 +4,7 @@ require("diff")
 -- Used in Insane VR
 
 Diff.defaults_accels = {
-    maxAccel  = 10,
+    maxAccel  = 17,
     factAccel =  0.6,
     minAccel  =  0,
     --[[
@@ -15,9 +15,9 @@ Diff.defaults_accels = {
     factAccelRight = 0.6,
     minAccelRight = 0,
     --]]
-    spanScale = 1.7,
-    minSpacingSeconds = 0,
-    doubleFactor = 0.2,
+    minSpacing      = 0,
+    doubleFactor    = 0.2,
+    doubleIntensity = 0.75,
 
     chestHeight          =    1.3,
     curveFactorX         =  100,
@@ -25,25 +25,30 @@ Diff.defaults_accels = {
     curveY_max           =   75,
     curveY_min           =   17,
     curveY_tiltInfluence =     .8,
-    maxNodeDistShown     = 1500,
-    meteorSpeed          =     .09,
+    maxNotesShown        =  100,
+    maxDistanceShown     = 1500,
 
-    minX = -.5,
-    --spanX = 1,
-    maxX =  .5,
+    noteScale   = 1,
+    tailScale   = 1,
+    meteorSpeed =  .09,
+
+    spanX        = 1.7,
+    spanX_offset = 0,
     --[[
-    blueMinX    = -.5,
-    blueSpanX   =  1,
-    redMinX     = -.5,
-    redSpanX    =  1,
-    purpleMinX  = -.5,
-    purpleSpanX =  1,
+    blueSpanX          = 1,
+    blueSpanX_offset   = 0,
+    redSpanX           = 1,
+    redSpanX_offset    = 0,
+    purpleSpanX        = 1,
+    purpleSpanX_offset = 0,
     --]]
-    spanY = .5,
-    spanY_random = .1,
-    spanZ = .7,
-    maxDoubleSpan = 0.8,
-    minDoubleSpan = 0.2,
+    spanY        =  .5,
+    spanY_offset = 0,
+    spanY_random =  .1,
+    spanZ        =  .7,
+
+    maxDoubleSpan    = 0.8,
+    minDoubleSpan    = 0.2,
     maxCrosshandSpan = 0.6
 }
 
@@ -55,10 +60,6 @@ function Diff:loadValues(values)
     if self:_loadValues_accels(values) then
         return true
     end
-
-    self.minX  = values.minX  or ((values.maxX or self.maxX) - (values.spanX or self.spanX)) or self.minX
-    self.spanX = values.spanX or ((values.maxX or self.maxX) - (values.minX  or self.minX )) or self.spanX
-    self.maxX  = values.maxX  or ((values.minX or self.minX) + (values.spanX  or self.spanX)) or self.maxX
 
     self.maxAccelLeft  = values.maxAccelLeft  or values.maxAccel  or values.maxAccelRight  or self.maxAccelLeft
     self.factAccelLeft = values.factAccelLeft or values.factAccel or values.factAccelRight or self.factAccelLeft
@@ -81,10 +82,6 @@ function Diff:loadDefaults()
     if Diff:_loadDefaults_accels() then
         return true
     end
-
-    self.minX  = self.defaults.minX  or (self.defaults.maxX - self.defaults.spanX)
-    self.spanX = self.defaults.spanX or (self.defaults.maxX - self.defaults.minX )
-    self.maxX  = self.defaults.maxX  or (self.defaults.minX + self.defaults.spanX)
 
     self.maxAccelLeft  = self.defaults.maxAccelLeft  or self.defaults.maxAccel  or self.defaults.maxAccelRight
     self.factAccelLeft = self.defaults.factAccelLeft or self.defaults.factAccel or self.defaults.factAccelRight
