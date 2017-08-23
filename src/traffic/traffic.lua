@@ -152,8 +152,8 @@ function Traffic:load(array)
         self._traffic[self.size].start = v.start or v.chainstart or self._node[self.size]
         self._fin[self.size] = v.fin or v.chainend or (2 * self._node[self.size] - self._start[self.size])
         self._traffic[self.size].fin = v.fin or v.chainend or (2 * self._node[self.size] - self._start[self.size])
-        self._length[self.size] = self._fin[self.size] - self._start[self.size]
-        self._traffic[self.size].length = self._fin[self.size] - self._start[self.size]
+        self._length[self.size] = self._fin[self.size] - self._start[self.size] + 1
+        self._traffic[self.size].length = self._fin[self.size] - self._start[self.size] + 1
 
         self._startTime[self.size] = v.startTime or Track.instance:nodeToTime(self._start[self.size])
         self._traffic[self.size].startTime = v.startTime or Track.instance:nodeToTime(self._start[self.size])
@@ -229,7 +229,7 @@ function Traffic:modify(id, mod)
     return self:change(id, mod)
 end
 function Traffic:change(id, mod)
-    if id <= 0 or id > self.length or type(mod) ~= "table" then
+    if id <= 0 or id > self.size or type(mod) ~= "table" then
         self.logger:warn("change: Invalid ")
         self.logger:debug("id = " .. id .. ", mod = " .. dump(mod))
         return true
