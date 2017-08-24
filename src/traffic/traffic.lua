@@ -60,13 +60,13 @@ function Traffic:clear()
     self._time = {}
     self._node = {}
 
-    self._start = {}
-    self._length = {}
-    self._fin = {}
+    self._startNode = {}
+    self._lengthNode = {}
+    self._endNode = {}
 
     self._startTime = {}
     self._lengthTime = {}
-    self._finTime = {}
+    self._endTime = {}
 
     self._type = {}
     self._lane = {}
@@ -148,19 +148,19 @@ function Traffic:load(array)
         self._time[self.size] = Track.instance:nodeToTime(self._node[self.size])
         self._traffic[self.size].time = Track.instance:nodeToTime(self._node[self.size])
 
-        self._start[self.size] = v.start or v.chainstart or self._node[self.size]
-        self._traffic[self.size].start = v.start or v.chainstart or self._node[self.size]
-        self._fin[self.size] = v.fin or v.chainend or (2 * self._node[self.size] - self._start[self.size])
-        self._traffic[self.size].fin = v.fin or v.chainend or (2 * self._node[self.size] - self._start[self.size])
-        self._length[self.size] = self._fin[self.size] - self._start[self.size] + 1
-        self._traffic[self.size].length = self._fin[self.size] - self._start[self.size] + 1
+        self._startNode[self.size] = v.startNode or v.chainstart or self._node[self.size]
+        self._traffic[self.size].startNode = v.startNode or v.chainstart or self._node[self.size]
+        self._endNode[self.size] = v.endNode or v.chainend or (2 * self._node[self.size] - self._startNode[self.size])
+        self._traffic[self.size].endNode = v.endNode or v.chainend or (2 * self._node[self.size] - self._startNode[self.size])
+        self._lengthNode[self.size] = self._endNode[self.size] - self._startNode[self.size] + 1
+        self._traffic[self.size].length = self._endNode[self.size] - self._startNode[self.size] + 1
 
-        self._startTime[self.size] = v.startTime or Track.instance:nodeToTime(self._start[self.size])
-        self._traffic[self.size].startTime = v.startTime or Track.instance:nodeToTime(self._start[self.size])
-        self._finTime[self.size] = v.finTime or Track.instance:nodeToTime(self._fin[self.size])
-        self._traffic[self.size].finTime = v.finTime or Track.instance:nodeToTime(self._fin[self.size])
-        self._lengthTime[self.size] = self._finTime[self.size] - self._startTime[self.size]
-        self._traffic[self.size].lengthTime = self._finTime[self.size] - self._startTime[self.size]
+        self._startTime[self.size] = v.startTime or Track.instance:nodeToTime(self._startNode[self.size])
+        self._traffic[self.size].startTime = v.startTime or Track.instance:nodeToTime(self._startNode[self.size])
+        self._endTime[self.size] = v.endTime or Track.instance:nodeToTime(self._endNode[self.size])
+        self._traffic[self.size].endTime = v.endTime or Track.instance:nodeToTime(self._endNode[self.size])
+        self._lengthTime[self.size] = self._endTime[self.size] - self._startTime[self.size]
+        self._traffic[self.size].lengthTime = self._endTime[self.size] - self._startTime[self.size]
 
         self._type[self.size] = v.type
         self._lane[self.size] = v.lane
@@ -197,9 +197,9 @@ function Traffic:get(name)
     elseif self["_" .. name] ~= nil then
         return deepcopy(self["_" .. name])
     elseif name == "end" then
-        return deepcopy(self._fin)
+        return deepcopy(self._endNode)
     elseif name == "endTime" then
-        return deepcopy(self._finTime)
+        return deepcopy(self._endTime)
     else
         self.logger:warn("get: lookup failed")
         self.logger:debug("name = " .. name)
@@ -365,7 +365,8 @@ function Traffic:getAfter(time, isRelative)
 
     if type(time) ~= "number" then
         if isRelative == false then
-            self.logger:warn("getBefore: invalid time")
+            self.logger:warn("getAfter: invalid time")
+            return true
         else
             return self._traffic[min(self.currentID+1, self.size)]
         end
