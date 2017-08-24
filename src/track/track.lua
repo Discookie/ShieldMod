@@ -270,7 +270,7 @@ end
 
 function Track:getNode(num)
     if num > 0 and num <= self.size then
-        local ret = self._track[num]
+        return self._track[num]
     else
         return self._track[0]
     end
