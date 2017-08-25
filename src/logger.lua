@@ -149,4 +149,5 @@ end
 
 Logger.Global = Logger("Global")
 Logger.Global:err("LOGGER TEST - IGNORE ME")
+Logger.Global:log("require('version')")
 Logger.Global:log("Init at " .. math.round(GetMillisecondsSinceStartup(), 0)/1000 .. "s GMS, log level " .. Logger.logLevel)
