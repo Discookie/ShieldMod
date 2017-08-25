@@ -442,7 +442,7 @@ function NoteContainer:assignPos()
         while self._notes[lid].lengthNode < 5 do
             lid = lid + 1
         end
-        if done[lid] then
+        if not done[lid] then
             self._notes[lid]:setHand(Note.HandTypes.PURPLE)
 
             self._notes[lid].pos.x = (rand()-0.5) * Diff.instance.spanX + Diff.instance.spanX_offset
@@ -451,13 +451,15 @@ function NoteContainer:assignPos()
                 maxLocalTilt = max(maxLocalTilt, Track.instance:getNode(i).rot.y)
             end
             self._notes[lid].pos.y = math.pow((maxLocalTilt - Track.instance.minTilt) / (Track.instance.maxTilt - Track.instance.minTilt), 2) * Diff.instance.spanY + rand() * Diff.instance.spanY_random
-
+            self._notes[lid].assigned = true
             done[lid] = true
         end
     end
-
+    self.logger:debug("a")
     for k,v in ipairs(self._notes) do
+        self.logger:debug("b")
         if not done[k] then
+            self.logger:debug("c")
             local nextTime = self:getNext(self._notes[k].id, NoteContainer.FilterFlags.ENABLED_ONLY)
             if nextTime == true or nextTime.startTime - self._notes[k].endTime > 4 or (nextTime.startTime - self._notes[k].endTime > 2 and Track.instance:getNode(self._notes[k].startNode).intensity > 0.5) then
                 self._notes[k]:setHand(Note.HandTypes.LEFT + Note.HandTypes.RIGHT)
@@ -476,6 +478,7 @@ function NoteContainer:assignPos()
                     self._notes[k].span.x = self._notes[k].span.x + 2 * Diff.instance.minDoubleSpan
                 end
 
+                self._notes[k].assigned = true
             elseif self:getPrev(k, NoteContainer.FilterFlags.ENABLED_ONLY) == true or (self._notes[k].startTime - self:getPrev(k, NoteContainer.FilterFlags.ENABLED_ONLY).endTime) > Diff.instance.minSpacing then
                 if Track.instance:getNode(self._notes[k].startNode).intensity > Diff.instance.doubleIntensity and rand() < Diff.instance.doubleFactor then
                     self._notes[k]:setHand(Note.HandTypes.LEFT + Note.HandTypes.RIGHT)
@@ -495,6 +498,8 @@ function NoteContainer:assignPos()
                     if self._notes[k].span.x > 0-Diff.instance.minDoubleSpan then
                         self._notes[k].span.x = self._notes[k].span.x + 2 * Diff.instance.minDoubleSpan
                     end
+
+                    self._notes[k].assigned = true
                 else
                     if rand() < 0.5 then
                         self._notes[k]:setHand(Note.HandTypes.LEFT)
@@ -508,6 +513,8 @@ function NoteContainer:assignPos()
                         maxLocalTilt = max(maxLocalTilt, Track.instance:getNode(i).rot.y)
                     end
                     self._notes[k].pos.y = math.pow((maxLocalTilt - Track.instance.minTilt) / (Track.instance.maxTilt - Track.instance.minTilt), 2) * Diff.instance.spanY + rand() * Diff.instance.spanY_random
+
+                    self._notes[k].assigned = true
                 end
             else
                 self._notes[k]:disable()
@@ -631,7 +638,7 @@ function NoteContainer:render()
         self.logger:debug("scaled " .. tostring(brefScaledByTrack[k]))
 
         BatchRenderEveryFrame({
-                --uniqueName = self._id .. "_" .. k,
+                uniqueName = self._id .. "_" .. k,
                 prefabName = string.sub(k, 3),
                 ismeteortail     = (string.sub(k, 1, 2) == "t_"),
 
