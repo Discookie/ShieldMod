@@ -229,7 +229,7 @@ function Note:copy()
 end
 
 function Note:toBREF()
-    if not self.enabled then
+    if not self.enabled or not self.assigned then
         return {}
     end
 
@@ -247,7 +247,7 @@ function Note:toBREF()
             local outPos = {postSpanPos.x, postSpanPos.y + Diff.instance.chestHeight, curves.z}
             local outDir = {curves.roll, curves.tilt, curves.pan}
             local obj = self.objects[i] or (i ~= 1 and self.objects.tail) or self.objects.note or self.objects[1]
-            local tailedObj = (i~=1 and "t_" or "h_") .. obj
+            local tailedObj = (i==1 and "t_" or "h_") .. obj
             local peaks = {curves.peakX, curves.peakY, curves.peakZ}
 
             local purp = {
@@ -267,14 +267,14 @@ function Note:toBREF()
         end
         if floor(self.handType/2)%2==1 then
             local postSpanPos = {
-                x = preSpanPos.pos.x + preSpanPos.span.x,
-                y = preSpanPos.pos.y + preSpanPos.span.y
+                x = preSpanPos.pos.x + preSpanPos.span.x / 2,
+                y = preSpanPos.pos.y + preSpanPos.span.y / 2
             }
             local curves = self:calcCurves(postSpanPos)
             local outPos = {postSpanPos.x, postSpanPos.y + Diff.instance.chestHeight, curves.z}
             local outDir = {curves.roll, curves.tilt, curves.pan}
             local obj = self.objects[i] or (i ~= 1 and self.objects.tail) or self.objects.note or self.objects[1]
-            local tailedObj = (i ~= 1 and "h_" or "t_") .. obj
+            local tailedObj = (i == 1 and "h_" or "t_") .. obj
             local peaks = {curves.peakX, curves.peakY, curves.peakZ}
 
             local rig = {
@@ -294,14 +294,14 @@ function Note:toBREF()
         end
         if self.handType%2==1 then
             local postSpanPos = {
-                x = preSpanPos.pos.x - preSpanPos.span.x,
-                y = preSpanPos.pos.y - preSpanPos.span.y
+                x = preSpanPos.pos.x - preSpanPos.span.x / 2,
+                y = preSpanPos.pos.y - preSpanPos.span.y / 2
             }
             local curves = self:calcCurves(postSpanPos)
             local outPos = {postSpanPos.x, postSpanPos.y + Diff.instance.chestHeight, curves.z}
             local outDir = {curves.roll, curves.tilt, curves.pan}
             local obj = self.objects[i] or (i ~= 1 and self.objects.tail) or self.objects.note or self.objects[1]
-            local tailedObj = (i ~= 1 and "h_" or "t_") .. obj
+            local tailedObj = (i == 1 and "h_" or "t_") .. obj
             local peaks = {curves.peakX, curves.peakY, curves.peakZ}
 
             local lef = {
