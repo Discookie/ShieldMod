@@ -7,6 +7,7 @@ Diff.defaults_powerNodes = {
     minJumpAirTime = 2.5,
     jumpEndOffset = 10,
     powerNodesPerMin = 1,
+    extraMinsForNodes = 2,
     slopeTest = 100
 }
 
