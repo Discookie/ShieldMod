@@ -23,7 +23,7 @@ function Track.init()
 end
 
 function Track:reset()
-    if self.id then
+    if self._id then
         EventHandler.instance:del(self._id)
         EventHandler.instance:del(self._frameid)
     end
