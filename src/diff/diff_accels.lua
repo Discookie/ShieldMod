@@ -28,8 +28,8 @@ Diff.defaults_accels = {
     maxNotesShown        =  100,
     maxDistanceShown     = 1500,
 
-    noteScale   = 1,
-    tailScale   = 1,
+    noteScale   = {0.035, 0.035, 0.035},
+    tailScale   = {0.035, 0.035, 0.035},
     meteorSpeed =  .09,
 
     spanX        = 1.7,
@@ -46,6 +46,7 @@ Diff.defaults_accels = {
     spanY_offset = 0,
     spanY_random =  .1,
     spanZ        =  .7,
+    spanZ_factor =  .45,
 
     maxDoubleSpan    = 0.8,
     minDoubleSpan    = 0.2,

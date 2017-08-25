@@ -11,6 +11,7 @@ require("intervals")
 require("note")
 require("track/track_export")
 require("traffic/traffic_export")
+require("vr/vr_export")
 -- End of Object requires
 
 -- Variable requires
