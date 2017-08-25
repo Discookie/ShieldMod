@@ -248,7 +248,7 @@ function Track:timeToNode(sec)
     local jumpCounter = #self._logJumps[current]
 
     while jumpCounter > 0 do
-        if self._logJumps[current][jumpCounter][2] > sec then
+        if self._logJumps[current][jumpCounter][2] <= sec then
             current = self._logJumps[current][jumpCounter][1]
             jumpCounter = min(jumpCounter - 1, #self._logJumps[current])
         else
