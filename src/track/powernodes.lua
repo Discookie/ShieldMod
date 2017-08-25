@@ -24,7 +24,7 @@ function Track:calcPowerNodes()
     end
 
     function cmp(a, b)
-        return self._jumpAirTime[a] < self._jumpAirTime[b]
+        return self._jumpAirTime[a] > self._jumpAirTime[b]
     end
     table.sort(sec, cmp)
 
@@ -55,14 +55,18 @@ function Track:calcPowerNodes()
                     tiltBefore = tiltBefore / Diff.instance.slopeTest
                     tiltAfter = tiltAfter / Diff.instance.slopeTest
 
-                    if i == 1 or (5 < tiltBefore and tiltAfter > 15) then
+                    if i == 1 or (tiltBefore < 5 and tiltAfter > 15) then
                         self._powerNodes[#self._powerNodes + 1] = sec[i]
-                        self.logger:debug(dump(sec[i]))
+
+                        for j=sec[i],jumpEndNode do
+                            av[j] = false
+                        end
                     end
                 end
             end
         end
-        if #self._powerNodes > Diff.instance.powerNodesPerMin * self._time[self.size] / 60 then
+
+        if #self._powerNodes >= Diff.instance.powerNodesPerMin * (self._time[self.size] / 60 + Diff.instance.extraMinsForNodes) then
             break
         end
     end
