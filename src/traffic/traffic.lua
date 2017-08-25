@@ -26,11 +26,14 @@ function Traffic.init()
     return self
 end
 
-Traffic.Types = {
-    GREY = Diff.instance.greyType,
-    NORMAL = Diff.instance.normalType,
-    INVERT = Diff.instance.invertType
-}
+
+EventHandler.instance:on(Events.INIT, function(ev)
+        Traffic.Types = {
+            GREY = Diff.instance.greyType,
+            NORMAL = Diff.instance.normalType,
+            INVERT = Diff.instance.invertType
+        }
+    end)
 
 function Traffic:reset()
     if self._id ~= nil then

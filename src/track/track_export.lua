@@ -1,4 +1,6 @@
 require("track")
 require("powernodes")
 
-Track.instance = Track()
+EventHandler.instance:on(Events.INIT, function(ev)
+        Track.instance = Track()
+    end)

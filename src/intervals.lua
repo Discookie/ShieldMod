@@ -93,4 +93,6 @@ function Intervals:onFrame(event)
     self.logger:trace("Executed " .. excCount .. " out of " .. count, 5)
 end
 
-Intervals.instance = Intervals()
+EventHandler.instance:on(Events.INIT, function(ev)
+        Intervals.instance = Intervals()
+    end)

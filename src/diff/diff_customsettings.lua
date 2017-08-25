@@ -1,1 +1,5 @@
-Diff.instance:loadValues(require("../settings/diff"))
+require("diff")
+
+EventHandler.instance:on(Events.INIT, function(ev)
+        Diff.instance:loadValues(require("../settings/diff"))
+    end)

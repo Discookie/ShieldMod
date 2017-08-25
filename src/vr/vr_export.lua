@@ -1,4 +1,6 @@
 require("vr_note")
 require("vr_note_container")
 
-NoteContainer.instance = NoteContainer()
+EventHandler.instance:on(Events.INIT, function(ev)
+        NoteContainer.instance = NoteContainer()
+    end)

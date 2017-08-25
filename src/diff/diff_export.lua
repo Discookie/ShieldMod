@@ -4,6 +4,8 @@ require("diff_gamesettings")
 require("diff_accels")
 require("diff_powernodes")
 
-Diff.instance = Diff()
+EventHandler.instance:on(Events.INIT, function(ev)
+        Diff.instance = Diff()
+    end)
 
 require("diff_customsettings")

@@ -1,7 +1,12 @@
 require("freq")
 
-FreqTraffic.instance = FreqTraffic()
+EventHandler.instance:on(Events.INIT, function(ev)
+        FreqTraffic.instance = FreqTraffic()
+    end)
 
 require("traffic")
 
-Traffic.instance = Traffic()
+
+EventHandler.instance:on(Events.INIT, function(ev)
+        Traffic.instance = Traffic()
+    end)

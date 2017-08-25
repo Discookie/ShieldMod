@@ -81,6 +81,8 @@ function Tick:onFrame(event)
     self:frame(event.data.dt)
 end
 
-Tick.instance = Tick()
+EventHandler.instance:on(Events.INIT, function(ev)
+        Tick.instance = Tick()
+    end)
 
 EventHandler.instance:on(Events.ALL, GameStates.eventChange)
