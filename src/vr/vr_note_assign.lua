@@ -275,6 +275,6 @@ function NoteAssigner:assignPos()
         end
     end
 
-    self.logger:log("Assigned " .. successNotes .. "/" .. successNotes/failedNotes .. " notes")
+    self.logger:log("Assigned " .. successNotes .. "/" .. (successNotes+failedNotes) .. " notes")
     return false
 end
