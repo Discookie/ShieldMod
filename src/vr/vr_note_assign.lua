@@ -206,7 +206,7 @@ function NoteAssigner:assignPos()
         return self._container:_oldAssign()
     end
 
-    local order = self:defaultNoteOrder()
+    local order = self:defaultNoteOrder(self._container)
     local rand = math.random
     local successNotes = 0
     local failedNotes = 0
