@@ -182,7 +182,7 @@ end
 function NoteAssigner.defaultNoteOrder(self, container)
     local ret = {}
 
-    for k,v in ipairs(container:get()) do
+    for k=1,container.size do
         ret[#ret+1]=k
     end
 
