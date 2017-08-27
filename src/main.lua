@@ -1,25 +1,31 @@
 require("copyright")
 
+-- Necessary for local build testing
 require("test-data")
 
+-- Load helper utilities
 require("utils/requtils")
 require("utils/dump")
--- Object requires
+
+-- Loading base utilities
 require("logger")
 require("events")
 require("intervals")
-require("note")
+
+-- Loading settings
+require("diff/diff_export")
+require("camera")
+require("random")
+
+-- Loading core tools
 require("track/track_export")
 require("traffic/traffic_export")
 require("vr/vr_export")
--- End of Object requires
 
--- Variable requires
-require("diff/diff_export")
-require("camera")
+-- Loading current mod
 require("mods/active")
--- End of variable requires
 
+-- Bind game events to EventHandler
 function OnTrackCreated(track)
     local ev = Event(Events.TRACK, track)
     EventHandler.instance:throw(ev)
@@ -54,5 +60,7 @@ function OnRequestFinalScoring()
     local ev = Event(Events.SCORE)
     EventHandler.instance:throw(ev)
 end
+
+-- Loading done.
 Logger.Global:debug("Pre-init GMS time is " .. math.round(GetMillisecondsSinceStartup(), 0)/1000)
 EventHandler.instance:throw(Event(Events.INIT))
