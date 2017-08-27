@@ -626,23 +626,6 @@ function NoteContainer:render()
     self._renderedObjects = deepcopy(brefCount)
 
     for k,v in pairs(brefCount) do
-        self.logger:debug("prefab " .. string.sub(k, 3))
-        self.logger:debug("ismeteortail " .. tostring(string.sub(k, 1, 2) == "t_"))
-        self.logger:debug("locations " .. brefNodes[k][1])
-        self.logger:debug("maxshown " .. brefMaxNodes[k])
-        self.logger:debug("emissive " .. dump(brefEmissives[k][1]))
-        self.logger:debug("colors " .. dump(brefColors[k][1]))
-        self.logger:debug("scales " .. dump(brefScales[k][1]))
-        self.logger:debug("distance " .. brefMaxDist[k])
-        self.logger:debug("broadcast " .. tostring(brefIsHittable[k]))
-        self.logger:debug("speeds " .. brefSpeeds[k][1])
-        self.logger:debug("types " .. brefHandTypes[k][1])
-        self.logger:debug("wtf " .. tostring(brefWTF))
-        self.logger:debug("impacts " .. dump(brefPos[k][1]))
-        self.logger:debug("directions " .. dump(brefDirections[k][1]))
-        self.logger:debug("curves " .. dump(brefCurvePeaks[k][1]))
-        self.logger:debug("scaled " .. tostring(brefScaledByTrack[k]))
-
         BatchRenderEveryFrame({
                 uniqueName = self._id .. "_" .. k,
                 prefabName = string.sub(k, 3),
