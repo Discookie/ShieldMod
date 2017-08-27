@@ -187,9 +187,13 @@ function Note:setHand(hand)
         if hand == 2 then
             self.pos.x = self.pos.x + self.span.x / 2
             self.pos.y = self.pos.y + self.span.y / 2
+            self.span.x = 0
+            self.span.y = 0
         else
             self.pos.x = self.pos.x - self.span.x / 2
             self.pos.y = self.pos.y - self.span.y / 2
+            self.span.x = 0
+            self.span.y = 0
         end
     end
 
