@@ -10,6 +10,6 @@ local defaultSeed = 133742069
 SetSeed(defaultSeed)
 
 EventHandler.instance:on(Events.PRE_TRAFFIC, function(ev)
-        SetSeed(Track.instance._time[Track.instance.size])
+        SetSeed(math.floor(Track.instance._time[Track.instance.size]*1000000000))
     end
 )
