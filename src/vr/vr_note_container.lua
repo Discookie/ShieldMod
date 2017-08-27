@@ -455,11 +455,9 @@ function NoteContainer:assignPos()
             done[lid] = true
         end
     end
-    self.logger:debug("a")
+
     for k,v in ipairs(self._notes) do
-        self.logger:debug("b")
-        if not done[k] then
-            self.logger:debug("c")
+        if not done[k] and self._notes[k].enabled then
             local nextTime = self:getNext(self._notes[k].id, NoteContainer.FilterFlags.ENABLED_ONLY)
             if nextTime == true or nextTime.startTime - self._notes[k].endTime > 4 or (nextTime.startTime - self._notes[k].endTime > 2 and Track.instance:getNode(self._notes[k].startNode).intensity > 0.5) then
                 self._notes[k]:setHand(Note.HandTypes.LEFT + Note.HandTypes.RIGHT)
@@ -521,6 +519,7 @@ function NoteContainer:assignPos()
             end
         end
     end
+    return false
 end
 
 function NoteContainer:show()
