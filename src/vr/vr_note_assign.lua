@@ -72,6 +72,7 @@ end
 function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, priority, forceReplace)
     if type(name) ~= "string" or type(generatorFunc) ~= "function" then
         self.logger:warn("add: Invalid assignment")
+        return true
     end
     if self._assigners[name] then
         if not forceReplace then
