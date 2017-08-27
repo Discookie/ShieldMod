@@ -1,11 +1,11 @@
 require("../../diff/diff_export")
 require("../../vr/vr_note_assign")
 
-function sgn_NoteSpacing_Gen(id, assigner, container)
+function sgn_NoteSpacing_gen(id, assigner, container)
     container._notes[id]:disable()
 end
 
-function sgn_NoteSpacing_Appl(id, assigner, container)
+function sgn_NoteSpacing_appl(id, assigner, container)
     if container:getPrev(k, NoteContainer.FilterFlags.ENABLED_ONLY) ~= true and container._notes[id].startTime - container:getPrev(id, NoteContainer.FilterFlags.ENABLED_ONLY).endTime < Diff.instance.minSpacing then
         return NoteAssigner.ApplicableTypes.FORCE
     else

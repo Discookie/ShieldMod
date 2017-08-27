@@ -3,7 +3,7 @@ require("../../vr/vr_export")
 require("../../vr/vr_note_assign")
 require("../helpers/auto_y")
 
-function sgn_DefaultDoubleEnd_Gen(id, assigner, container)
+function sgn_DefaultDoubleEnd_gen(id, assigner, container)
     local rand = math.random
     local currentNote = container._notes[id]
 
@@ -21,7 +21,7 @@ function sgn_DefaultDoubleEnd_Gen(id, assigner, container)
     currentNote.assigned = true
 end
 
-function sgn_DefaultDoubleEnd_Appl(id, assigner, container)
+function sgn_DefaultDoubleEnd_appl(id, assigner, container)
     local currentNote = container._notes[id]
     local nextTime = container:getNext(id, NoteContainer.FilterFlags.ENABLED_ONLY)
 

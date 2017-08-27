@@ -3,7 +3,7 @@ require("../../track/track_export")
 require("../../vr/vr_note_assign")
 require("../helpers/auto_y")
 
-function sgn_DefaultDoubleNC_Gen(id, assigner, container)
+function sgn_DefaultDoubleNC_gen(id, assigner, container)
     local rand = math.random
     local currentNote = container._notes[id]
 
@@ -20,7 +20,7 @@ function sgn_DefaultDoubleNC_Gen(id, assigner, container)
     currentNote.assigned = true
 end
 
-function sgn_DefaultDoubleNC_Appl(id, assigner, container)
+function sgn_DefaultDoubleNC_appl(id, assigner, container)
     if Track.instance:getNode(container._notes[id].startNode).intensity > Diff.instance.doubleIntensity then
         return NoteAssigner.ApplicableTypes.WEIGHT
     else
