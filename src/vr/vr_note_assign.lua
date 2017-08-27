@@ -247,13 +247,13 @@ function NoteAssigner:assignPos()
                 end
             end
             if forced ~= "" then
-                local status, err = pcall(self._assigners[forced].generatorFunc, v, self, self._container)
+                local status, err = pcall(self._assigners[forced.name].generatorFunc, v, self, self._container)
 
                 if not status then
-                    self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
+                    self.logger:err("Assigner " .. forced.name .. " LUA error: " .. dump(err))
                     failedNotes = failedNotes + 1
                 elseif err then
-                    self.logger:warn("Assigner " .. forced .. " failed to execute")
+                    self.logger:warn("Assigner " .. forced.name .. " failed to execute")
                     failedNotes = failedNotes + 1
                 else
                     successNotes = successNotes + 1
@@ -271,10 +271,10 @@ function NoteAssigner:assignPos()
                 local status, err = pcall(self._assigners[contenders[current].name].generatorFunc, v, self, self._container)
 
                 if not status then
-                    self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
+                    self.logger:err("Assigner " .. contenders[current].name .. " LUA error: " .. dump(err))
                     failedNotes = failedNotes + 1
                 elseif err then
-                    self.logger:warn("Assigner " .. forced .. " failed to execute")
+                    self.logger:warn("Assigner " .. contenders[current].name .. " failed to execute")
                     failedNotes = failedNotes + 1
                 else
                     successNotes = successNotes + 1
