@@ -69,7 +69,7 @@ end
 
 -- Generator and applicable functions both take (noteID, assigner, container) as arguments
 -- You can bind functions to a class with `bindFunc(Class.func, myClass)`
-function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceReplace)
+function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, priority, forceReplace)
     if type(name) ~= "string" or type(generatorFunc) ~= "function" then
         self.logger:warn("add: Invalid assignment")
     end
@@ -86,9 +86,13 @@ function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceRepl
         applicableFunc = function(assigner, id) return NoteAssigner.ApplicableTypes.DEFAULT end
     end
     if type(weight) ~= "number" then
-        weight = 15
+        weight = 1
     end
     weight = math.max(weight, 1)
+    if type(priority) ~= "number" then
+        priority = 15
+    end
+    priority = math.max(priority, 1)
 
     self._size = self._size + 1
     self._assigners[name] = {
@@ -96,12 +100,14 @@ function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceRepl
         generator = generatorFunc,
         applicable = applicableFunc,
         weight = weight,
+        priority = priority,
         order = self._size
     }
     self._assignerOrder[self._size] = {
         deleted = false,
         active = true,
         weight = weight,
+        priority = priority,
         name = name
     }
     self.logger:log("Loaded generator " .. name .. " successfully")
@@ -116,6 +122,10 @@ function NoteAssigner:modify(name, what)
     if what.weight then
         self._assigners[name].weight = math.max(1, what.weight)
         self._assignerOrder[self._assigners[name].order].weight = math.max(1, what.weight)
+    end
+    if what.priority or what.prio then
+        self._assigners[name].priority = math.max(1, what.what.priority or what.prio)
+        self._assignerOrder[self._assigners[name].order].priority = math.max(1, what.what.priority or what.prio)
     end
     if what.generatorFunc or what.generator then
         self._assigners[name].generatorFunc = what.generatorFunc or what.generator
@@ -202,18 +212,18 @@ function NoteAssigner:assignPos()
 
     for k,v in ipairs(order) do
         if self._container._notes[v].active then
-            local weight = -1
+            local priority = -1
             local contenders = {}
             local totalWeight = 0
             local forced = ""
             for l,u in ipairs(self._assignerOrder) do
-                if not u.deleted and u.active and (weight < 1 or weight >= u.weight) then
+                if not u.deleted and u.active and (priority < 1 or priority >= self._assigners[u].priority) then
                     local appl = self._assigners[u].applicableFunc(self, self._container, v)
                     if appl == NoteAssigner.ApplicableTypes.WEIGHT then
-                        if weight > u.weight then
+                        if priority > self._assigners[u].priority then
                             contenders = {}
                             totalWeight = 0
-                            weight = u.weight
+                            priority = self._assigners[u].priority
                             forced = ""
                         end
 
