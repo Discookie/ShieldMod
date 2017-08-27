@@ -10,6 +10,6 @@ local defaultSeed = 133742069
 SetSeed(defaultSeed)
 
 EventHandler.instance:on(Events.TRACK, function(ev)
-        SetSeed(Track.instance._time[Track.instance._size])
+        SetSeed(Track.instance._time[Track.instance.size])
     end
 )
