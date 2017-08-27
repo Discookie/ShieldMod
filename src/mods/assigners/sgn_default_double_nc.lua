@@ -8,12 +8,17 @@ function sgn_DefaultDoubleNC_gen(id, assigner, container)
     local currentNote = container._notes[id]
 
     if rand() < 0.5 then
-        currentNote:setHand(Note.HandTypes.LEFT)
-    else
-        currentNote:setHand(Note.HandTypes.RIGHT)
+        currentNote:setHand(Note.HandTypes.LEFT + Note.HandTypes.RIGHT)
     end
 
-    currentNote.pos.x = (rand()-0.5) * Diff.instance.spanX + Diff.instance.spanX_offset
+    currentNote.pos.x = (rand()-0.5) * (Diff.instance.spanX - 2 * Diff.instance.minDoubleSpan) + Diff.instance.spanX_offset
+
+    local distToBorder = (Diff.instance.spanX / 2) - math.abs(currentNote.pos.x)
+    currentNote.span.x = rand() * (math.min(Diff.instance.maxCrosshandSpan, distToBorder) + math.min(Diff.instance.maxDoubleSpan, distToBorder) - 2 * Diff.instance.minDoubleSpan) - math.min(Diff.instance.maxCrosshandSpan, distToBorder)
+
+    if currentNote.span.x > 0-Diff.instance.minDoubleSpan then
+        currentNote.span.x = currentNote.span.x + 2 * Diff.instance.minDoubleSpan
+    end
 
     AutoGenY(currentNote)
 

@@ -485,7 +485,7 @@ function NoteContainer:assignPos()
                 if Track.instance:getNode(self._notes[k].startNode).intensity > Diff.instance.doubleIntensity and rand() < Diff.instance.doubleFactor then
                     self._notes[k]:setHand(Note.HandTypes.LEFT + Note.HandTypes.RIGHT)
 
-                    self._notes[k].pos.x = (rand()-0.5) * (Diff.instance.spanX - 2 * Diff.instance.minDoubleSpan) + Diff.instance.spanX_offset
+                    self._notes[k].pos.x = (rand()-0.5) * (Diff.instance.spanX - Diff.instance.minDoubleSpan) + Diff.instance.spanX_offset
                     local maxLocalTilt = 0
                     for i=self._notes[k].startNode,self._notes[k].endNode do
                         maxLocalTilt = max(maxLocalTilt, Track.instance:getNode(i).rot.y)
