@@ -67,7 +67,7 @@ function NoteContainer:unlink()
     return false
 end
 
--- Generator and applicable functions both take (assigner, container, noteID) as arguments
+-- Generator and applicable functions both take (noteID, assigner, container) as arguments
 -- You can bind functions to a class with `bindFunc(Class.func, myClass)`
 function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceReplace)
     if type(name) ~= "string" or type(generatorFunc) ~= "function" then
@@ -236,7 +236,7 @@ function NoteAssigner:assignPos()
                 end
             end
             if forced ~= "" then
-                local status, err = pcall(self._assigners[forced].generatorFunc, self, self._container, v)
+                local status, err = pcall(self._assigners[forced].generatorFunc, v, self, self._container)
 
                 if not status then
                     self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
@@ -257,7 +257,7 @@ function NoteAssigner:assignPos()
                     cumulativeWeight = cumulativeWeight + self._assigners[contenders[current]].weight
                 end
 
-                local status, err = pcall(self._assigners[contenders[current]].generatorFunc, self, self._container, v)
+                local status, err = pcall(v, self._assigners[contenders[current]].generatorFunc, self, self._container)
 
                 if not status then
                     self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
