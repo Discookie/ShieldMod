@@ -421,12 +421,6 @@ function NoteContainer:getClosest(time, filter)
     end
 end
 
-function NoteContainer:link(assigner)
-    if assigner:get("linkID") == self._id then
-        return true
-    end
-end
-
 function NoteContainer:assignPos()
     local rand = math.random
     local abs = math.abs
