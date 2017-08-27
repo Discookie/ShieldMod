@@ -12,15 +12,15 @@ require("logger")
 require("events")
 require("intervals")
 
--- Loading settings
-require("diff/diff_export")
-require("camera")
-require("random")
-
 -- Loading core tools
 require("track/track_export")
 require("traffic/traffic_export")
 require("vr/vr_export")
+
+-- Loading settings
+require("diff/diff_export")
+require("camera")
+require("random")
 
 -- Loading current mod
 require("mods/active")
