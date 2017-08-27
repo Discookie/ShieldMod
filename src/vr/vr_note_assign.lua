@@ -98,8 +98,8 @@ function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, priority,
     self._size = self._size + 1
     self._assigners[name] = {
         active = true,
-        generator = generatorFunc,
-        applicable = applicableFunc,
+        generatorFunc = generatorFunc,
+        applicableFunc = applicableFunc,
         weight = weight,
         priority = priority,
         order = self._size
@@ -212,29 +212,29 @@ function NoteAssigner:assignPos()
     local failedNotes = 0
 
     for k,v in ipairs(order) do
-        if self._container._notes[v].active then
+        if self._container._notes[v].enabled then
             local priority = -1
             local contenders = {}
             local totalWeight = 0
             local forced = ""
             for l,u in ipairs(self._assignerOrder) do
-                if not u.deleted and u.active and (priority < 1 or priority >= self._assigners[u].priority) then
-                    local appl = self._assigners[u].applicableFunc(self, self._container, v)
+                if not u.deleted and u.active and (priority < 1 or priority >= self._assigners[u.name].priority) then
+                    local appl = self._assigners[u.name].applicableFunc(v, self, self._container)
                     if appl == NoteAssigner.ApplicableTypes.WEIGHT then
-                        if priority > self._assigners[u].priority then
+                        if priority > u.priority then
                             contenders = {}
                             totalWeight = 0
-                            priority = self._assigners[u].priority
+                            priority = u.priority
                             forced = ""
                         end
 
                         contenders[#contenders + 1] = u
-                        totalWeight = totalWeight + self._assigners[u].weight
+                        totalWeight = totalWeight + self._assigners[u.name].weight
                     elseif appl == NoteAssigner.ApplicableTypes.FORCE then
-                        if weight > u.weight then
+                        if priority > u.priority then
                             contenders = {}
                             totalWeight = 0
-                            weight = u.weight
+                            priority = u.priority
                             forced = ""
                         end
 
@@ -261,14 +261,14 @@ function NoteAssigner:assignPos()
             elseif #contenders ~= 0 then
                 local randomWeight = rand()*totalWeight
                 local current = 1
-                local cumulativeWeight = self._assigners[contenders[current]].weight
+                local cumulativeWeight = contenders[current].weight
 
                 while cumulativeWeight < randomWeight do
                     current = current + 1
-                    cumulativeWeight = cumulativeWeight + self._assigners[contenders[current]].weight
+                    cumulativeWeight = cumulativeWeight + contenders[current].weight
                 end
 
-                local status, err = pcall(v, self._assigners[contenders[current]].generatorFunc, self, self._container)
+                local status, err = pcall(self._assigners[contenders[current].name].generatorFunc, v, self, self._container)
 
                 if not status then
                     self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))

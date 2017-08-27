@@ -3,6 +3,7 @@ require("../../track/track_export")
 require("../../vr/vr_export")
 
 function AutoGenY(note)
+    local max = math.max
     local maxLocalTilt = 0
     for i=note.startNode,note.endNode do
         maxLocalTilt = max(maxLocalTilt, Track.instance:getNode(i).rot.y)
