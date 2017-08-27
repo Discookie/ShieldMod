@@ -98,10 +98,11 @@ function NoteContainer:reset()
     self._scaledByTrack = true
 
     self._freshLogJumps = false
+
+    self.logger:log("Reset")
 end
 
 function NoteContainer:load(pos)
-    self.logger:log("Loading...")
     if self._state == NoteContainer.States.RENDERED then
         self.logger:warn("Tried to add notes while rendered")
         return true
@@ -111,15 +112,21 @@ function NoteContainer:load(pos)
         altpos = {pos}
         pos = altpos
     end
+
+    local failedNotes = 0
+
     for k,v in pairs(pos) do
         local newnote = Note(v)
         if newnote ~= true then
             self.size = self.size + 1
             self._notes[self.size] = newnote
             self._notes[self.size].id = self.size
+        else
+            failedNotes = failedNotes + 1
         end
     end
     self:sort()
+    self.logger:log("Loaded " .. self.size .. "/" .. (self.size + failedNotes) .. " notes")
 end
 
 function NoteContainer:sort()
@@ -427,10 +434,13 @@ function NoteContainer:assignPos()
     local min = math.min
     local max = math.max
     local done = {}
+
+    self.logger:log("Using default positioning for " .. self.size .. " notes")
+
     for k,v in ipairs(self._notes) do
         done[k] = false
     end
-    self.logger:debug("Powernodes: " .. dump(Track.instance:get("powerNodes")))
+
     for k,v in ipairs(Track.instance:get("powerNodes")) do
         local lid = self:getBefore(Track.instance:getNode(v).time).id
         while self._notes[lid].lengthNode < 5 do
@@ -552,6 +562,8 @@ function NoteContainer:render()
 
     local brefWTF = 9
 
+    local totalCount = 0
+
     for k,v in ipairs(self._notes) do
         local brefWannabe = self._notes[k]:toBREF()
         if #brefWannabe ~= 0 then
@@ -605,6 +617,7 @@ function NoteContainer:render()
 
                 brefDirections[u.tailedObject][brefCount[u.tailedObject]] = u.direction
                 brefCurvePeaks[u.tailedObject][brefCount[u.tailedObject]] = u.curvePeak
+                totalCount = totalCount + 1
             end
         end
     end
@@ -655,6 +668,7 @@ function NoteContainer:render()
                 afternodereached_numbernodesrendered = brefWTF
         })
     end
+    self.logger:log("Rendered " .. totalCount .. " notes via BatchRenderEveryFrame")
 end
 
 function NoteContainer:onTraffic(ev)
