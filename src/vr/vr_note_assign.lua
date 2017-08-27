@@ -1,6 +1,7 @@
 require("vr_note_container")
 require("../utils/bind")
 require("../utils/deepcopy")
+require("../utils/dump")
 
 NoteAssigner = {}
 NoteAssigner.__index = NoteAssigner
@@ -39,6 +40,7 @@ function NoteAssigner:reset()
     self._size = 0
     self._assigners = {}
     self._assignerOrder = {}
+    self.logger:log("Reset")
 end
 
 function NoteAssigner:bind(container)
@@ -69,11 +71,11 @@ end
 -- You can bind functions to a class with `bindFunc(Class.func, myClass)`
 function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceReplace)
     if type(name) ~= "string" or type(generatorFunc) ~= "function" then
-        self.logger:warn("Invalid assignment")
+        self.logger:warn("add: Invalid assignment")
     end
     if self._assigners[name] then
         if not forceReplace then
-            self.logger:warn("Assigner already exists")
+            self.logger:warn("add: Assigner already exists")
             return true
         else
             self:remove(name)
@@ -102,12 +104,13 @@ function NoteAssigner:add(name, generatorFunc, applicableFunc, weight, forceRepl
         weight = weight,
         name = name
     }
-
+    self.logger:log("Loaded generator " .. name .. " successfully")
     return false
 end
 
 function NoteAssigner:modify(name, what)
     if type(what) ~= "table" or type(name) ~= "string" or not self._assigners[name] then
+        self.logger:warn("modify: Does not exist!")
         return true
     end
     if what.weight then
@@ -127,10 +130,12 @@ function NoteAssigner:delete(name)
 end
 function NoteAssigner:remove(name)
     if type(name) ~= "string" or not self._assigners[name] then
+        self.logger:warn("remove: Does not exist!")
         return true
     else
         self._assignerOrder[self._assigners[name].order] = {deleted = true}
         self._assigners[name] = nil
+        self.logger:log("Removed " .. name)
     end
 end
 
@@ -192,6 +197,8 @@ function NoteAssigner:assignPos()
 
     local order = self:makeNoteOrder()
     local rand = math.random
+    local successNotes = 0
+    local failedNotes = 0
 
     for k,v in ipairs(order) do
         if self._container._notes[v].active then
@@ -229,27 +236,45 @@ function NoteAssigner:assignPos()
                 end
             end
             if forced ~= "" then
-                if self._assigners[forced].generatorFunc(self, self._container, v) then
+                local status, err = pcall(self._assigners[forced].generatorFunc, self, self._container, v)
+
+                if not status then
+                    self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
                     failedNotes = failedNotes + 1
+                elseif err then
+                    self.logger:warn("Assigner " .. forced .. " failed to execute")
+                    failedNotes = failedNotes + 1
+                else
+                    successNotes = successNotes + 1
                 end
-            else
+            elseif #contenders ~= 0 then
                 local randomWeight = rand()*totalWeight
                 local current = 1
                 local cumulativeWeight = self._assigners[contenders[current]].weight
+
                 while cumulativeWeight < randomWeight do
                     current = current + 1
                     cumulativeWeight = cumulativeWeight + self._assigners[contenders[current]].weight
                 end
-                if self._assigners[forced].generatorFunc(self, self._container, v) then
+
+                local status, err = pcall(self._assigners[contenders[current]].generatorFunc, self, self._container, v)
+
+                if not status then
+                    self.logger:err("Assigner " .. forced .. " LUA error: " .. dump(err))
                     failedNotes = failedNotes + 1
+                elseif err then
+                    self.logger:warn("Assigner " .. forced .. " failed to execute")
+                    failedNotes = failedNotes + 1
+                else
+                    successNotes = successNotes + 1
                 end
+            else
+                successNotes = successNotes + 1
+                self._container._notes[v]:disable()
             end
         end
     end
 
+    self.logger:log("Assigned " .. successNotes .. "/" .. successNotes/failedNotes .. " notes")
     return false
-end
-
-function NoteAssigner:onFrame()
-
 end
