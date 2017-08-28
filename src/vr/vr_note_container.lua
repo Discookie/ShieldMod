@@ -1,6 +1,5 @@
 require("../traffic/traffic_export")
-require("note")
-require("../utils/bit")
+require("vr_note")
 
 NoteContainer = {}
 NoteContainer.__index = NoteContainer
