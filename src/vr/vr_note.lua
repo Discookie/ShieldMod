@@ -208,12 +208,21 @@ function Note:setHand(hand)
     return false
 end
 
+--[[
+Returns true if
+    - there's the hand OR
+    - there's a purple
+
+Exclusive mode:
+Returns true ONLY if
+    - there's exactly the hand
+--]]
 function Note:hasHands(hands, excHands)
     local floor = math.floor
     return (
-        hands%2 == self.handType%2 or (not excHands and self.handType%2 == 0)
+        (hands%2 == self.handType%2 or (not excHands and self.handType%2 == 0)) or (not excHands and floor(self.handType/4)%2 == 0)
     ) and (
-        floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 0)
+        floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 0) or (not excHands and floor(self.handType/4)%2 == 0)
     ) and (
         floor(hands/4)%2 == floor(self.handType/4)%2 or (not excHands and floor(self.handType/4)%2 == 0)
     )
