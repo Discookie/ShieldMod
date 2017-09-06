@@ -41,16 +41,18 @@ end
 
 function Note:reset()
     self.enabled = true
-    self.startTime = 0
-    self.startNode = 0
+    self.startTime = -5
+    self.startNode = 1
     self.lengthTime = 0
     self.lengthNode = 1
-    self.endTime = 0
-    self.endNode = 0
+    self.endTime = -5
+    self.endNode = 1
     self.handType = Note.HandTypes.AUTO
     self.stack = 1 -- meteors in the same position
     self.pos = {x = 0, y = 0} -- assign manual positions here
     self.span = {x = 0, y = 0}
+    self.endPos = {x = 0, y = 0}
+    self.endSpan = {x = 0, y = 0}
     self.offsetFunc = Note.defaultOffset
     self.assigned = false
     self.curve = {roll = 0, tilt = 0, pan = -1} -- The next one should be pan-tilt-roll? More testing is needed
@@ -86,6 +88,10 @@ function Note:set(obj)
         self.handType = obj.handType
         self.stack = obj.stack
         self.pos = deepcopy(obj.pos)
+        self.span = deepcopy(obj.span)
+        self.endPos = deepcopy(obj.endPos)
+        self.endSpan = deepcopy(obj.endSpan)
+        self.offsetFunc = obj.offsetFunc
         self.assigned = obj.assigned
         self.curve = deepcopy(obj.curve)
         self.autoCurve = obj.autoCurve
@@ -211,6 +217,19 @@ function Note:hasHands(hands, excHands)
     ) and (
         floor(hands/4)%2 == floor(self.handType/4)%2 or (not excHands and floor(self.handType/4)%2 == 0)
     )
+end
+
+function Note:finishAssign()
+    return self:finalize()
+end
+function Note:markAssigned()
+    return self:finalize()
+end
+function Note:finalize()
+    local endVals = self.offsetFunc(self.lengthNode, self.pos, self.span, self.handType)
+    self.endPos = endVals.pos
+    self.endSpan = endVals.span
+    self.assigned = true
 end
 
 function Note:calcCurves(realPos)
