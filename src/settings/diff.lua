@@ -1,5 +1,5 @@
 {
 useTraffic = false,
 puzzleGrid = false,
-jumpMode = "NONE"
+jumpMode = Diff.JumpModes.NONE
 }

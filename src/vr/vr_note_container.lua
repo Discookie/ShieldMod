@@ -22,9 +22,10 @@ NoteContainer.FilterFlags = {
     DEFAULT = 0,
     UNASSIGNED = 1,
     ASSIGNED = 1 + 2,
-    HAS_LEFT = 4 + 8,
-    HAS_RIGHT = 4 + 16,
-    HAS_PURPLE = 4 + 32,
+    FILTER_HANDS = 4,
+    HAS_LEFT = 8,
+    HAS_RIGHT = 16,
+    HAS_PURPLE = 32,
     EXCLUSIVE_HANDS = 64,
     ENABLED_ONLY = 128
 }

@@ -25,6 +25,7 @@ end
 function sgn_DefaultPurple_appl(id, assigner, container)
     if sgn_DefaultPurple_sorted[sgn_DefaultPurple_current] and sgn_DefaultPurple_sorted[sgn_DefaultPurple_current] < container._notes[id].startNode and container._notes[id].lengthNode > 5 then
         return NoteAssigner.ApplicableTypes.FORCE
+        sgn_DefaultPurple_current = sgn_DefaultPurple_current + 1
     else
         return NoteAssigner.ApplicableTypes.DISABLE
     end

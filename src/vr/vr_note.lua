@@ -222,7 +222,7 @@ function Note:hasHands(hands, excHands)
     return (
         (hands%2 == self.handType%2 or (not excHands and self.handType%2 == 0)) or (not excHands and floor(self.handType/4)%2 == 0)
     ) and (
-        floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 0) or (not excHands and floor(self.handType/4)%2 == 0)
+        (floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 0)) or (not excHands and floor(self.handType/4)%2 == 0)
     ) and (
         floor(hands/4)%2 == floor(self.handType/4)%2 or (not excHands and floor(self.handType/4)%2 == 0)
     )
@@ -279,7 +279,7 @@ function Note:toBREF()
             local outPos = {postSpanPos.x, postSpanPos.y + Diff.instance.chestHeight, curves.z}
             local outDir = {curves.roll, curves.tilt, curves.pan}
             local obj = self.objects[i] or (i ~= 1 and self.objects.tail) or self.objects.note or self.objects[1]
-            local tailedObj = (i==1 and "t_" or "h_") .. obj
+            local tailedObj = (i==1 and "h_" or "t_") .. obj
             local peaks = {curves.peakX, curves.peakY, curves.peakZ}
 
             local purp = {
