@@ -276,20 +276,21 @@ function NoteContainer:getPrev(which, filter, count)
     end
 
     local floor = math.floor
-    local filterAssign = filter % 2 == 1
+    local filterAssign = filter % 2 ~= 1
     local assigned = (floor(filter / 2) % 2) == 1
-    local filterHands = (floor(filter / 4) % 2) == 1
+    local filterHands = (floor(filter / 4) % 2) ~= 1
     local hands = floor(filter/8) % 8
     local excHands = floor(filter/64)%2 == 1
-    local enOnly = floor(filter/128)%2 == 1
+    local enOnly = floor(filter/128)%2 ~= 1
 
     while count > 0 and which > 1 do
         which = which - 1
-        if ((not filterAssign or assigned == self._notes[which].assigned) and (not filterHands or self._notes[which]:hasHands(hands, excHands)) and (not enOnly or self._notes[which].enabled)) then -- don't question it, it works, i tested it thoroughly, fuck you, split lines by parentheses if you dont believe me
+        if ((filterAssign or assigned == self._notes[which].assigned) and (filterHands or self._notes[which]:hasHands(hands, excHands)) and (enOnly or self._notes[which].enabled)) then -- don't question it, it works, i tested it thoroughly, fuck you, split lines by parentheses if you dont believe me
             count = count - 1
         end
     end
-    if which <= 1 then
+
+    if count ~= 0 then
         return true
     else
         return self._notes[which]:copy()

@@ -219,12 +219,13 @@ Returns true ONLY if
 --]]
 function Note:hasHands(hands, excHands)
     local floor = math.floor
+
     return (
-        (hands%2 == self.handType%2 or (not excHands and self.handType%2 == 0)) or (not excHands and floor(self.handType/4)%2 == 0)
+        (hands%2 == self.handType%2 or (not excHands and self.handType%2 == 1)) or (not excHands and floor(self.handType/4)%2 == 1)
     ) and (
-        (floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 0)) or (not excHands and floor(self.handType/4)%2 == 0)
+        (floor(hands/2)%2 == floor(self.handType/2)%2 or (not excHands and floor(self.handType/2)%2 == 1)) or (not excHands and floor(self.handType/4)%2 == 1)
     ) and (
-        floor(hands/4)%2 == floor(self.handType/4)%2 or (not excHands and floor(self.handType/4)%2 == 0)
+        floor(hands/4)%2 == floor(self.handType/4)%2 or (not excHands and floor(self.handType/4)%2 == 1)
     )
 end
 
