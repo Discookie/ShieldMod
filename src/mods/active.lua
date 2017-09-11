@@ -1,1 +1,1 @@
-require("default/default_export")
+require("insane/insane_export")

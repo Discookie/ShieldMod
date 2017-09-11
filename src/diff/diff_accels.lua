@@ -4,7 +4,7 @@ require("diff")
 -- Used in Insane VR
 
 Diff.defaults_accels = {
-    maxAccel  = 17,
+    maxAccel  = 30,
     factAccel =  0.6,
     minAccel  =  0,
     --[[
@@ -48,9 +48,9 @@ Diff.defaults_accels = {
     spanZ        =  .7,
     spanZ_factor =  .45,
 
-    maxDoubleSpan    = 0.8,
-    minDoubleSpan    = 0.2,
-    maxCrosshandSpan = 0.6
+    maxDoubleSpan    = 3.0,
+    minDoubleSpan    = 1.0,
+    maxCrosshandSpan = 2.0
 }
 
 table.merge(Diff.defaults, Diff.defaults_accels)
