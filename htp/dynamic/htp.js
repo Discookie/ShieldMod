@@ -1,13 +1,14 @@
 var DiffCalc = {
     // NO TOUCHY HERE
-    ver: "0.40c",
+    ver: "0.50a",
     mod: "insane",
     br: "dev",
     recentChanges: [
-        "Added Noncentered Doubles"
-        , "Refactored source"
-        , "Thanks /u/Zerkses"
-        , "c: This is fine gif"
+        "Full refactor, rework",
+        "Include compile tools",
+        "",
+        "Issues, feature requests on GitHub",
+        "Change and test accel/span values",
     ],
     create: function () {
         return this;
