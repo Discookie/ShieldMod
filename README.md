@@ -11,6 +11,8 @@ INSTEAD of changing the default values, paste the values you wish to change into
 
 The most important task right now is to __report bugs__ and __find optimal accel values__ - the README's bounds are no longer accurate!
 
+If you encounter any errors, don't forget to attach **output logs** to your bug reports!
+
 ## MOSTLY DONE
 
 This is a temporary repository where I attempt to rewrite the entire mod using [luam](https://github.com/Discookie/luam).
