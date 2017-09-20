@@ -40,7 +40,10 @@ function sgn_AccelV1DoubleEnd_gen(id, assigner, container)
         min = Diff.instance.minDoubleSpan
     }
 
-    CalculateAccelCenteredPos(currentNote.startTime, prevLeftTable, prevRightTable, spans)
+    local retPos = CalculateAccelCenteredPos(currentNote.startTime, prevLeftTable, prevRightTable, spans)
+
+    currentNote.pos.x = retPos.pos
+    currentNote.span.x = retPos.span
 
     AutoGenY(currentNote)
 
