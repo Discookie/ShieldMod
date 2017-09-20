@@ -29,36 +29,78 @@ require("mods/active")
 function OnTrackCreated(track)
     local ev = Event(Events.TRACK, track)
     EventHandler.instance:throw(ev)
+
+    if TrackReturn ~= nil then
+        local retValue = TrackReturn
+        TrackReturn = nil
+        return retValue
+    end
 end
 
 function OnFreqTrafficCreated(freqTraffic)
     local ev = Event(Events.PRE_TRAFFIC, freqTraffic)
     EventHandler.instance:throw(ev)
+
+    if PreTrafficReturn ~= nil then
+        local retValue = PreTrafficReturn
+        PreTrafficReturn = nil
+        return retValue
+    end
 end
 
 function OnTrafficCreated(traffic)
     local ev = Event(Events.TRAFFIC, traffic)
     EventHandler.instance:throw(ev)
+
+    if TrafficReturn ~= nil then
+        local retValue = TrafficReturn
+        TrafficReturn = nil
+        return retValue
+    end
 end
 
 function OnRequestLoadObjects(track)
     local ev = Event(Events.PRE_SKIN, track)
     EventHandler.instance:throw(ev)
+
+    if PreSkinReturn ~= nil then
+        local retValue = PreSkinReturn
+        PreSkinReturn = nil
+        return retValue
+    end
 end
 
 function OnSkinLoaded()
     local ev = Event(Events.POST_SKIN)
     EventHandler.instance:throw(ev)
+
+    if PostSkinReturn ~= nil then
+        local retValue = PostSkinReturn
+        PostSkinReturn = nil
+        return retValue
+    end
 end
 
 function Update(dt, location, strafe, inputs, height)
     local ev = Event(Events.FRAME, {dt = dt, location = location, strafe = strafe, inputs = inputs, height = height})
     EventHandler.instance:throw(ev)
+
+    if FrameReturn ~= nil then
+        local retValue = FrameReturn
+        FrameReturn = nil
+        return retValue
+    end
 end
 
 function OnRequestFinalScoring()
     local ev = Event(Events.SCORE)
     EventHandler.instance:throw(ev)
+
+    if ScoreReturn ~= nil then
+        local retValue = ScoreReturn
+        ScoreReturn = nil
+        return retValue
+    end
 end
 
 -- Loading done.
