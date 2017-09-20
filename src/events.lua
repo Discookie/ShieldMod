@@ -37,9 +37,12 @@ function Event.init(eventID, data)
 end
 
 function Event:dupe()
-    return self:duplicate()
+    return self:copy()
 end
 function Event:duplicate()
+    return self:copy()
+end
+function Event:copy()
     return Event(self.id, self.data)
 end
 
@@ -152,7 +155,7 @@ function EventHandler:event(event)
     local fails = 0
     for k, v in pairs(self.eventLinks[Events.ALL]) do
         if self.events[v] ~= nil and self.events[v][1] then
-            status, err = pcall(self.events[v][2], event:dupe())
+            status, err = pcall(self.events[v][2], event:copy())
 
             if not status then
                 self.logger:err("Event ID " .. v .. " LUA error: " .. dump(err))
@@ -169,7 +172,7 @@ function EventHandler:event(event)
     end
     for k, v in pairs(self.eventLinks[event.id]) do
         if self.events[v] ~= nil and self.events[v][1] then
-            status, err = pcall(self.events[v][2], event:dupe())
+            status, err = pcall(self.events[v][2], event:copy())
 
             if not status then
                 self.logger:err("Event ID " .. v .. " LUA error: " .. dump(err))
