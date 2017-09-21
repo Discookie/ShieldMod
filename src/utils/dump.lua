@@ -7,9 +7,9 @@ function dump(object)
 end
 
 function _dump_recur(obj, level)
-    if type(obj) == 'boolean' or type(obj) == 'number' or type(obj) == 'function' then
+    if type(obj) == 'boolean' or type(obj) == 'number' or type(obj) == 'function' or type(obj) == 'userdata' then
         return tostring(obj)
-    elseif type(obj) == 'number' or type(obj) == 'string' then
+    elseif type(obj) == 'string' then
         return obj
     end
 
@@ -47,9 +47,9 @@ end
 function _dwf_recur(obj, level)
     if type(obj) == 'boolean' or type(obj) == 'number' then
         return tostring(obj)
-    elseif type(obj) == 'function' then
+    elseif type(obj) == 'function' or type(obj) == 'userdata' then
         return _dwf_f2h(obj)
-    elseif type(obj) == 'number' or type(obj) == 'string' then
+    elseif type(obj) == 'string' then
         return obj
     end
 
