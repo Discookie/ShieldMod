@@ -78,7 +78,7 @@ function sgn_AccelV1Purple_gen(id, assigner, container)
 end
 
 function sgn_AccelV1Purple_appl(id, assigner, container)
-    if sgn_AccelV1Purple_sorted[sgn_AccelV1Purple_current] and sgn_AccelV1Purple_sorted[sgn_AccelV1Purple_current] < container._notes[id].startNode and container._notes[id].lengthNode > 5 then
+    if sgn_AccelV1Purple_sorted[sgn_AccelV1Purple_current] and sgn_AccelV1Purple_sorted[sgn_AccelV1Purple_current] < container._notes[id].endNode and container._notes[id].lengthNode > 5 then
         sgn_AccelV1Purple_current = sgn_AccelV1Purple_current + 1
         return NoteAssigner.ApplicableTypes.FORCE
     else
