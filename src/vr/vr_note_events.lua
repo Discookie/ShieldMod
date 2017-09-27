@@ -85,7 +85,7 @@ end
 function NoteEvents:onFrame(event)
     if not self.bound then return true end
     if self.nextTime < Tick.instance:getRelativeTime() then
-        local ev = Event(Events.NOTE, self.container.currentID)
+        local ev = Event(Events.NOTE, self.nextNote:copy())
         EventHandler.instance:throw(ev)
 
         self.nextNote = self.container:getNext(self.nextNote.id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.ENABLED_ONLY)
