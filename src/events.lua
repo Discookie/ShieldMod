@@ -20,6 +20,7 @@ Events = {
 }
 Events.LastIndex = 12
 
+Events._logger = Logger("Events")
 Events.Register = function(name)
     return Events.AddEvent(name)
 end
@@ -35,6 +36,7 @@ Events.AddEvent = function(name)
     else
         Events.LastIndex = Events.LastIndex + 1
         Events[name] = Events.LastIndex
+        Events._logger:log("New event type " .. name .. ": ID " .. Events.LastIndex)
         return Events.LastIndex
     end
 end
