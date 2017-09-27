@@ -96,11 +96,6 @@ function EventHandler:reset()
     end
     self.events = {}
     self.eventLinks = {}
-    for k, v in pairs(Events) do
-        if v ~= Events.ERR then
-            self.eventLinks[v] = {}
-        end
-    end
     return false
 end
 
@@ -113,6 +108,8 @@ function EventHandler:add(eventID, callback, object)
     else
         self.events[#self.events+1] = {true, callback, eventID, 0}
     end
+
+    self.eventLinks[eventID] = self.eventLinks[eventID] or {}
     self.eventLinks[eventID][#self.eventLinks[eventID] + 1] = #self.events
     self.events[#self.events][4] = #self.eventLinks[eventID]
     self.logger:trace("New event for " .. eventID .. ": ID " .. #self.events)
@@ -146,13 +143,13 @@ function EventHandler:delete(id)
 end
 
 function EventHandler:remove(id)
-    if self.events ~= nil then
+    if self.events[id] ~= nil then
         self.eventLinks[self.events[id][3]][self.events[id][4]] = nil
         self.events[id] = nil
         self.logger:trace("Event ID " .. id .. " removed")
         return false
     else
-        self.logger:trace("Event ID " .. id .. ": Can't remove!")
+        self.logger:trace("Event ID " .. id .. ": Already removed!")
         return true
     end
 end
@@ -162,7 +159,9 @@ function EventHandler:throw(event)
 end
 function EventHandler:event(event)
     local evStart = self.logger:getDate()
-
+    if event.id > Events.ERR and event.id <= Events.LastIndex then
+        self.eventLinks[event.id] = self.eventLinks[event.id] or {}
+    end
     if event.id == Events.ALL or event.id == Events.ERR then
         self.logger:err("Throw failed: Invalid ID (" .. event.id .. ")!")
         return true
