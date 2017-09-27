@@ -185,7 +185,7 @@ function Traffic:load(array)
         self.logger:log("Total traffic count: " .. self.size)
     else
         self.logger:trace("Changed traffic table successfully", 1)
-        self.logger:trace("Added " .. (self.size - oldsize) .. " blocks, total: " .. self.size, 1)
+        self.logger:trace("Added " .. (self.size - oldSize) .. " blocks, total: " .. self.size, 1)
     end
 
     return false
@@ -398,6 +398,7 @@ end
 
 function Traffic:onTraffic(event)
     self:load(event.data)
+    self:sort()
 end
 
 function Traffic:onFrame(event)

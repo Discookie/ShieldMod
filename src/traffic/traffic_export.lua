@@ -5,7 +5,7 @@ EventHandler.instance:on(Events.INIT, function(ev)
     end)
 
 require("traffic")
-
+require("traffic_events")
 
 EventHandler.instance:on(Events.INIT, function(ev)
         Traffic.instance = Traffic()

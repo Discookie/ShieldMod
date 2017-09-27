@@ -52,9 +52,9 @@ function TrafficEvents:bind(traffic)
     self.bound = true
     self.traffic = traffic
     self.oldSort = self.traffic.sort
-    self.traffic.sort = function(traffic)
-        local ret = self.oldSort(traffic)
-        local ret2 = self:onTrafficChange()
+    self.traffic.sort = function(traf)
+        local ret = self.oldSort(traf)
+        local ret2 = bindFunc(self.onTrafficChange, self)()
         return ret or ret2
     end
     self._id = EventHandler.instance:on(Events.FRAME, self.onFrame, self)
@@ -84,5 +84,6 @@ function TrafficEvents:onFrame(event)
     if self.nextTime < Tick.instance:getRelativeTime() then
         local ev = Event(Events.BLOCK, self.traffic.currentID)
         EventHandler.instance:throw(ev)
+        self.nextTime = self.traffic.nextTime
     end
 end
