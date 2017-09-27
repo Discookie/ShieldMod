@@ -36,7 +36,7 @@ Events.AddEvent = function(name)
     else
         Events.LastIndex = Events.LastIndex + 1
         Events[name] = Events.LastIndex
-        Events._logger:log("New event type " .. name .. ": ID " .. Events.LastIndex)
+        Events._logger:trace("New event type " .. name .. ": ID " .. Events.LastIndex)
         return Events.LastIndex
     end
 end
