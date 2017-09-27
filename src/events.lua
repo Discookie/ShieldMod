@@ -18,6 +18,26 @@ Events = {
     FINISH = 11,
     SCORE = 12
 }
+Events.LastIndex = 12
+
+Events.Register = function(name)
+    return Events.AddEvent(name)
+end
+Events.RegisterEvent = function(name)
+    return Events.AddEvent(name)
+end
+Events.Add = function(name)
+    return Events.AddEvent(name)
+end
+Events.AddEvent = function(name)
+    if Events[name] then
+        return Events[name]
+    else
+        Events.LastIndex = Events.LastIndex + 1
+        Events[name] = Events.LastIndex
+        return Events.LastIndex
+    end
+end
 
 Event = {}
 Event.__index = Event
