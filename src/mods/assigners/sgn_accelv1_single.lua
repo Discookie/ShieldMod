@@ -45,13 +45,13 @@ function sgn_AccelV1Single_gen(id, assigner, container)
         end
 
         prevTable = {
-            x = prevNote.endPos.x - prevNote.endSpan.x / 2,
+            x = prevNote.endPos.x + prevNote.endSpan.x / 2,
             time = prevNote.endTime,
             max = Diff.instance.maxAccelRight,
             fact = Diff.instance.factAccelRight
         }
         prevOtherTable = {
-            x = prevOtherNote.endPos.x + prevOtherNote.endSpan.x / 2,
+            x = prevOtherNote.endPos.x - prevOtherNote.endSpan.x / 2,
             time = prevNote.endTime,
             max = Diff.instance.maxAccelLeft,
             fact = Diff.instance.factAccelLeft
