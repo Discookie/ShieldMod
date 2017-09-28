@@ -21,7 +21,6 @@ require("vr/vr_export")
 require("diff/diff_export")
 require("camera")
 require("random")
-require("default-score")
 
 -- Loading current mod
 require("mods/active")
