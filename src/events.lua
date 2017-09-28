@@ -165,7 +165,7 @@ function EventHandler:event(event)
     if event.id == Events.ALL or event.id == Events.ERR then
         self.logger:err("Throw failed: Invalid ID (" .. event.id .. ")!")
         return true
-    elseif event.id == Events.FRAME then
+    elseif event.id == Events.FRAME or event.id > Events.SCORE then
         self.logger:trace("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events", 4)
     else
         self.logger:debug("Throw! ID " .. event.id .. ", calling " .. #self.eventLinks[Events.ALL] .. " + " .. #self.eventLinks[event.id] .. " events")
@@ -209,7 +209,7 @@ function EventHandler:event(event)
         end
     end
 
-    if event.id == Events.FRAME then
+    if event.id == Events.FRAME or event.id > Events.SCORE then
         self.logger:trace("ID " .. event.id .. " finished in " .. (self.logger:getDate() - evStart) .. "s", 4)
         self.logger:trace("Successful events: " .. successes .. ", fails: " .. fails, 4)
     else
