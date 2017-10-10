@@ -3,7 +3,7 @@ useTraffic = false,
 puzzleGrid = false,
 jumpMode = Diff.JumpModes.NONE,
 
-maxAccel  = 30,
+maxAccel  = 18,
 factAccel =  0.6,
 minAccel  =  0,
 
