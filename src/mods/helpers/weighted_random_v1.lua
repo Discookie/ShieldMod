@@ -14,8 +14,8 @@ function WeightedRandom(x, span, left, right, factor)
         right = temp
     end
 
-    left = min(span, max(left, -span))
-    right = min(span, max(right, -span))
+    left = min(span/2, max(left, -span/2))
+    right = min(span/2, max(right, -span/2))
 
     local leftBound = pow(abs((left - x) / span), 1/factor)
     local leftSign = sgn(left - x)
@@ -50,15 +50,15 @@ function WeightedRandomWithHole(x, span, left, right, factor, leftHole, rightHol
         rightHole = temp
     end
 
-    left = min(span, max(left, -span))
-    right = min(span, max(right, -span))
+    left = min(span/2, max(left, -span/2))
+    right = min(span/2, max(right, -span/2))
 
     if right <= leftHole then                  -- |---|  XxxxxX
         return WeightedRandom(x, span, left, right, factor)
+    elseif rightHole <= left then              -- XxxxxX |----|
+        return WeightedRandom(x, span, left, right, factor)
     elseif leftHole <= left then
-        if rightHole <= left then              -- XxxxxX |----|
-            return WeightedRandom(x, span, left, right, factor)
-        elseif right <= rightHole then         -- Xxx|xxxxx|xxX
+        if right <= rightHole then             -- Xxx|xxxxx|xxX
             return true
         else                                   -- Xxx|xX------|
             return WeightedRandom(x, span, rightHole, right, factor)
@@ -81,18 +81,18 @@ function WeightedRandomWithHole(x, span, left, right, factor, leftHole, rightHol
     local rightHoleBound = pow(abs((rightHole - x) / span), 1/factor)
     local rightHoleSign = sgn(rightHole - x)
 
-    local leftSegment = leftHole*leftHoleSign - left*leftSign
-    local deadSegment = rightHole*rightHoleSign - leftHole*leftHoleSign
-    local rightSegment = right*rightSign - rightHole*rightHoleSign
+    local leftSegment = leftHoleBound*leftHoleSign - leftBound*leftSign
+    local deadSegment = rightHoleBound*rightHoleSign - leftHoleBound*leftHoleSign
+    local rightSegment = rightBound*rightSign - rightHoleBound*rightHoleSign
 
-    local randOut = rand()*(leftSegment+rightSegment) - left
+    local randOut = (rand()*(leftSegment+rightSegment)) + (leftBound*leftSign)
     if leftHoleBound*leftHoleSign < randOut then
         randOut = randOut + deadSegment
+        randSign = sgn(randOut)
     end
     local randSign = sgn(randOut)
 
-    local returnPos = x + pow(abs(randOut), 2) * randSign * span
-
+    local returnPos = x + pow(abs(randOut), factor) * randSign * span
     return returnPos
 end
 
@@ -112,8 +112,8 @@ function WeightedRandomWithSegment(x, span, left, right, factor, leftSeg, rightS
         rightSeg = temp
     end
 
-    left = min(span, max(left, -span))
-    right = min(span, max(right, -span))
+    left = min(span/2, max(left, -span/2))
+    right = min(span/2, max(right, -span/2))
 
     if rightSeg < left or right < leftSeg then -- AaaaaA  |-----|
         return true

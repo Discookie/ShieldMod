@@ -40,7 +40,10 @@ function sgn_AccelV1DoubleNC_gen(id, assigner, container)
     }
 
     local retPos = CalculateAccelDoublePos(currentNote.startTime, prevLeftTable, prevRightTable, spans)
-
+    if retPos.hand == Note.HandTypes.AUTO then
+        currentNote:disable()
+        return false
+    end
     currentNote:setHand(retPos.hand)
 
     currentNote.pos.x = retPos.pos

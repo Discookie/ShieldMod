@@ -12,6 +12,8 @@ and a much more realistic set of difficulty parameters.
 Refer to the README for more info.
 --]]
 
+AccelLog = Logger("AccelCalcV1")
+
 function CalculateAccelBounds(x, time, max)
     local pow = math.pow
 
@@ -27,6 +29,7 @@ function GetAccelValue(start, fin, time)
     return math.abs(fin - start) / math.pow(time, 2)
 end
 
+--
 function CalculateAccelPos(time, prev, other, hand, spans)
     local prevBounds = CalculateAccelBounds(prev.x, time - prev.time, prev.max)
 
@@ -39,7 +42,7 @@ function CalculateAccelPos(time, prev, other, hand, spans)
         otherBounds.right = otherBounds.right + spans.normal
     end
 
-    local retPos = WeightedRandomWithSegment(prev.x, spans.total/2, prevBounds.left, prevBounds.right, prev.fact, otherBounds.left, otherBounds.right)
+    local retPos = WeightedRandomWithSegment(prev.x, spans.total, prevBounds.left, prevBounds.right, prev.fact, otherBounds.left, otherBounds.right)
 
     return retPos
 end
@@ -52,7 +55,22 @@ function CalculateAccelDoublePos(time, left, right, spans)
 
     if right.time < left.time then
         local leftPos = CalculateAccelPos(time, left, right, Note.HandTypes.LEFT, spans)
-        local rightPos = WeightedRandomWithHole(right.x, spans.total/2, max(leftBounds.left, rightBounds.left - spans.normal), min(leftBounds.right, rightBounds.right + spans.crosshand), right.fact, leftPos - spans.min/2, leftPos + spans.min/2)
+        if leftPos == true then
+            return {
+                hand = Note.HandTypes.AUTO,
+                pos = 0,
+                span = 0
+            }
+        end
+        if min(leftBounds.right, rightBounds.right + spans.crosshand) < max(leftBounds.left, rightBounds.left - spans.normal) then
+            return {
+                hand = Note.HandTypes.LEFT,
+                pos = leftPos,
+                span = 0
+            }
+        end
+
+        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(leftBounds.left, rightBounds.left - spans.normal), min(leftBounds.right, rightBounds.right + spans.crosshand), right.fact, leftPos - spans.min/2, leftPos + spans.min/2)
         if rightPos == true then
             return {
                 hand = Note.HandTypes.LEFT,
@@ -68,7 +86,22 @@ function CalculateAccelDoublePos(time, left, right, spans)
         end
     else
         local rightPos = CalculateAccelPos(time, right, left, Note.HandTypes.RIGHT, spans)
-        local leftPos = WeightedRandomWithHole(left.x, spans.total/2, max(rightBounds.left, leftBounds.left - spans.crosshand), min(rightBounds.right, leftBounds.right + spans.normal), left.fact, rightPos - spans.min/2, rightPos + spans.min/2)
+        if rightPos == true then
+            return {
+                hand = Note.HandTypes.AUTO,
+                pos = 0,
+                span = 0
+            }
+        end
+        if min(rightBounds.right, leftBounds.right + spans.normal) < max(rightBounds.left, leftBounds.left - spans.crosshand) then
+            return {
+                hand = Note.HandTypes.RIGHT,
+                pos = rightPos,
+                span = 0
+            }
+        end
+
+        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(rightBounds.left, leftBounds.left - spans.crosshand), min(rightBounds.right, leftBounds.right + spans.normal), left.fact, rightPos - spans.min/2, rightPos + spans.min/2)
         if leftPos == true then
             return {
                 hand = Note.HandTypes.RIGHT,
@@ -99,7 +132,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
     rightBounds.right = max(min(rightBounds.right, spans.normal / 2), -spans.crosshand / 2)
 
     if GetAccelValue(leftBounds.x, 0, time - left.time) > GetAccelValue(rightBounds.x, 0, time - right.time)  then
-        local leftPos = WeightedRandomWithHole(left.x, spans.total/2, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min/2, spans.min/2)
+        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min/2, spans.min/2)
         if leftPos ~= true then
             local rightPos = -leftPos
             return {
@@ -108,7 +141,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
             }
         end
 
-        local rightPos = WeightedRandomWithHole(right.x, spans.total/2, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min/2, spans.min/2)
+        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min/2, spans.min/2)
         if rightPos ~= true then
             leftPos = -rightPos
             return {
@@ -125,7 +158,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
             span = (rightPos - leftPos)
         }
     else
-        local rightPos = WeightedRandomWithHole(right.x, spans.total/2, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min/2, spans.min/2)
+        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min/2, spans.min/2)
         if rightPos ~= true then
             local leftPos = -rightPos
             return {
@@ -134,7 +167,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
             }
         end
 
-        local leftPos = WeightedRandomWithHole(left.x, spans.total/2, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min/2, spans.min/2)
+        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min/2, spans.min/2)
         if leftPos ~= true then
             rightPos = -leftPos
             return {
