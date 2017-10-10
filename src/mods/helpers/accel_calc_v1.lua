@@ -70,7 +70,7 @@ function CalculateAccelDoublePos(time, left, right, spans)
             }
         end
 
-        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(leftBounds.left, rightBounds.left - spans.normal), min(leftBounds.right, rightBounds.right + spans.crosshand), right.fact, leftPos - spans.min/2, leftPos + spans.min/2)
+        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(leftPos - spans.crosshand, rightBounds.left), min(leftPos + spans.normal, rightBounds.right), right.fact, leftPos - spans.min/2, leftPos + spans.min/2)
         if rightPos == true then
             return {
                 hand = Note.HandTypes.LEFT,
@@ -101,7 +101,7 @@ function CalculateAccelDoublePos(time, left, right, spans)
             }
         end
 
-        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(rightBounds.left, leftBounds.left - spans.crosshand), min(rightBounds.right, leftBounds.right + spans.normal), left.fact, rightPos - spans.min/2, rightPos + spans.min/2)
+        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(rightPos - spans.normal, leftBounds.left), min(rightPos + spans.crosshand, leftBounds.right), left.fact, rightPos - spans.min/2, rightPos + spans.min/2)
         if leftPos == true then
             return {
                 hand = Note.HandTypes.RIGHT,
