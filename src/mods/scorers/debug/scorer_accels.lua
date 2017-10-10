@@ -34,7 +34,7 @@ EventHandler.instance:on(Events.INIT, function(ev)
                 end
 
                 local id = ev.data.id
-                local prevNote = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_LEFT)
+                local prevNote = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_LEFT + NoteContainer.FilterFlags.ENABLED_ONLY)
 
                 if prevNote ~= true then
                     local prevAccel = GetAccelValue(prevNote.endPos.x - prevNote.endSpan.x/2, ev.data.pos.x - ev.data.span.x/2, prevNote.endTime - ev.data.startTime)
