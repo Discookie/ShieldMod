@@ -210,7 +210,7 @@ function NoteAssigner:assignPos()
     local rand = math.random
     local successNotes = 0
     local failedNotes = 0
-
+    local usedGenerators = {}
     for k,v in ipairs(order) do
         if self._container._notes[v].enabled then
             local priority = -1
@@ -247,6 +247,8 @@ function NoteAssigner:assignPos()
                 end
             end
             if forced ~= "" then
+                self._container._notes[v].generator = forced.name
+                usedGenerators[forced.name] = usedGenerators[forced.name] and (usedGenerators[forced.name] + 1) or 1
                 local status, err = pcall(self._assigners[forced.name].generatorFunc, v, self, self._container)
 
                 if not status then
@@ -268,6 +270,8 @@ function NoteAssigner:assignPos()
                     cumulativeWeight = cumulativeWeight + contenders[current].weight
                 end
 
+                self._container._notes[v].generator = contenders[current].name
+                usedGenerators[contenders[current].name] = usedGenerators[contenders[current].name] and (usedGenerators[contenders[current].name] + 1) or 1
                 local status, err = pcall(self._assigners[contenders[current].name].generatorFunc, v, self, self._container)
 
                 if not status then
@@ -287,5 +291,7 @@ function NoteAssigner:assignPos()
     end
 
     self.logger:log("Assigned " .. successNotes .. "/" .. (successNotes+failedNotes) .. " notes")
+
+    self.logger:debug("Used generators: " .. dump(usedGenerators))
     return false
 end

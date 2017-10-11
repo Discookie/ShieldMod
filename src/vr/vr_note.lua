@@ -63,6 +63,7 @@ function Note:reset()
     self.speeds = {Diff.instance.meteorSpeed} -- || --
     self.colors = {{53, 141, 255}, {255, 52, 0}, {103, 53, 176}}
     self.emissives = self.colors
+    self.generator = "none"
 end
 
 function Note:modify(obj)
@@ -100,6 +101,7 @@ function Note:set(obj)
         self.speeds = deepcopy(obj.speeds)
         self.colors = deepcopy(obj.colors)
         self.emissives = (obj.colors == obj.emissives) and self.colors or deepcopy(obj.emissives)
+        self.generator = obj.generator
         return false
     end
 
@@ -158,6 +160,10 @@ function Note:set(obj)
         end
     elseif obj.emissives then
         self.emissives = deepcopy(obj.emissives)
+    end
+
+    if obj.generator then
+        self.generator = obj.generator
     end
 
     return false

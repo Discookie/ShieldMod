@@ -516,7 +516,7 @@ function NoteContainer:assignPos()
                         maxLocalTilt = max(maxLocalTilt, Track.instance:getNode(i).rot.y)
                     end
                     self._notes[k].pos.y = math.pow((maxLocalTilt - Track.instance.minTilt) / (Track.instance.maxTilt - Track.instance.minTilt), 2) * Diff.instance.spanY + rand() * Diff.instance.spanY_random
-
+                    self._notes[k].generator = "vr_note_container"
                     self._notes[k].assigned = true
                 end
             else
