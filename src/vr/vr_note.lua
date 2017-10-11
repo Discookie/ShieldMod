@@ -270,7 +270,7 @@ function Note:toBREF()
 
     local ret = {}
     for i=1,(self.lengthNode) do
-        local preSpanPos = self.offsetFunc(i, self.pos, self.span, Note.HandTypes.PURPLE)
+        local preSpanPos = self.offsetFunc(i - 1, self.pos, self.span, Note.HandTypes.PURPLE)
         if floor(self.handType/4)%2==1 then
             local postSpanPos = {
                 x = preSpanPos.pos.x,
