@@ -18,6 +18,7 @@ Diff.defaults_accels = {
     minSpacing      = 0,
     doubleFactor    = 0.2,
     doubleIntensity = 0.75,
+    ballchainSpeed  =  .025,
 
     chestHeight          =    1.3,
     curveFactorX         =  100,
