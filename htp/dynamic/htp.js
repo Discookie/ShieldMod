@@ -1,14 +1,14 @@
 var DiffCalc = {
     // NO TOUCHY HERE
-    ver: "0.50a",
+    ver: "0.50b",
     mod: "insane",
     br: "dev",
     recentChanges: [
         "Full refactor, rework",
-        "Include compile tools",
-        "",
+        "Fix spans and values",
+        "Add ballchains, advanced logging",
+        "Added Meteor Events API",
         "Issues, feature requests on GitHub",
-        "Change and test accel/span values",
         "Send me output logs!"
     ],
     create: function () {
@@ -41,7 +41,7 @@ var DiffCalc = {
         diffs.className = "diffWindow";
         el.appendChild(diffs);
         var overall = document.createElement("h1");
-        var oaVal = (Math.round((Math.pow((diff.maxDiff * (diff.armspan / 1.5)), 0.85) + 3) * Math.pow(diff.avgDiff / 10, 0.6) * (2 + diff.multiDiff / 10) * 100 / (Math.pow(diff.trillDiff * 4, 3) + 1)) / 100).toFixed(2);
+        var oaVal = (Math.round((Math.pow(diff.maxDiff, 0.85) + 3) * Math.pow(diff.avgDiff / 10, 0.6) * (2 + diff.multiDiff / 10) * 80 / (Math.pow(diff.trillDiff * 4, 3) + 1)) / 100).toFixed(2);
         if (oaVal < 15) {
             overall.className = "gd diff";
         } else if (oaVal < 21) {
@@ -76,7 +76,7 @@ var DiffCalc = {
         var maxDisplay = document.createElement("div");
         t = document.createTextNode(diff.maxDiff);
         maxDisplay.className = "maxinner slin";
-        maxDisplay.style = "width: " + Math.floor(diff.maxDiff * 250 / 16) + "px;";
+        maxDisplay.style = "width: " + Math.floor(diff.maxDiff * 250 / 30) + "px;";
         maxDisplay.appendChild(t);
         maxSlider.appendChild(maxDisplay);
         var avgDisplay = document.createElement("div");

@@ -9,7 +9,7 @@ You have no other task, than to run `make.bat`. It will create the entire mod fo
 
 INSTEAD of changing the default values, paste the values you wish to change into `settings/diff.lua`, then re-run `make.bat`.
 
-The most important task right now is to __report bugs__ and __find optimal accel values__ - the README's bounds are no longer accurate!
+The most important task right now is to __report bugs__ and __playtest as much as you can__ - we're polishing the build for an upcoming STABLE release!
 
 If you encounter any errors, don't forget to attach **output logs** to your bug reports!
 
