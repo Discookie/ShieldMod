@@ -28,19 +28,21 @@ function Intervals:reset()
     end
     EventHandler.instance:on(Events.FRAME, self.onFrame, self)
     self._intervals = {}
+    self._count = 0
 end
 
 function Intervals:addInterval(timeout, isRelativeTime, callback, object)
+    self._count = self._count + 1
     if object ~= nil then
-        self._intervals[#self.intervals + 1] = {
+        self._intervals[self._count] = {
             timeout,
             isRelativeTime,
-            bindFunc(object, callback),
+            bindFunc(callback, object),
             Tick.instance:getAbsoluteTime(),
             0
         }
     else
-        self._intervals[#self.intervals + 1] = {
+        self._intervals[self._count] = {
             timeout,
             isRelativeTime,
             callback,
@@ -49,13 +51,13 @@ function Intervals:addInterval(timeout, isRelativeTime, callback, object)
         }
     end
     if isRelativeTime then
-        self._intervals[#self.intervals][4] = Tick.instance:getRelativeTime()
+        self._intervals[self._count][4] = Tick.instance:getRelativeTime()
 
-        self.logger:trace("New interval ID " .. #self.intervals .. " with relative start " .. self._intervals[#self.intervals][4] .. " loop " .. self._intervals[#self.intervals][1])
+        self.logger:trace("New interval ID " .. self._count .. " with relative start " .. self._intervals[self._count][4] .. " loop " .. self._intervals[self._count][1], 3)
     else
-        self.logger:trace("New interval ID " .. #self.intervals .. " with absolute start " .. self._intervals[#self.intervals][4] .. " loop " .. self._intervals[#self.intervals][1])
+        self.logger:trace("New interval ID " .. self._count .. " with absolute start " .. self._intervals[self._count][4] .. " loop " .. self._intervals[self._count][1], 3)
     end
-    return #self._intervals
+    return self._count
 end
 
 function Intervals:del(id)
@@ -69,11 +71,11 @@ function Intervals:removeInterval(id)
 end
 function Intervals:delInterval(id)
     if self._intervals[id] == nil then
-        self.logger:trace("Interval ID " .. id .. ": Can't remove!")
+        self.logger:warn("Interval ID " .. tostring(id) .. ": Can't remove!")
         return true
     else
         self._intervals[id] = nil
-        self.logger:trace("Interval ID " .. id .. " removed")
+        self.logger:trace("Interval ID " .. id .. " removed", 3)
         return false
     end
 end
