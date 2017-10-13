@@ -73,8 +73,10 @@ function Tick:getRelativeTime()
 end
 
 function Tick:frame(dt)
-    self.ticks = self.ticks + 1
-    self.seconds = self.seconds + dt
+    if (dt > 0) then
+        self.ticks = self.ticks + 1
+        self.seconds = self.seconds + dt
+    end
 end
 
 function Tick:onFrame(event)
