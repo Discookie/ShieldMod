@@ -4,6 +4,8 @@ require("diff")
 -- Used in Insane VR
 
 Diff.defaults_accels = {
+    scoreMode = "SHIELD",
+
     maxAccel  = 24,
     factAccel =  0.6,
     minAccel  =  0,
