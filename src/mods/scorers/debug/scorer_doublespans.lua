@@ -35,7 +35,7 @@ sc_DoubleSpans_EventIDs = {}
 sc_DoubleSpans_Count = 0
 sc_DoubleSpans_Logger = Logger("DoubleSpanTracker")
 sc_DoubleSpans_TotalFailed = 0
-sc_DoubleSpans_Mode = "Min"
+sc_DoubleSpans_Mode = "Current"
 sc_DoubleSpans_Timer = 1
 
 function sc_DoubleSpans_RemoveNote(tid)
@@ -106,14 +106,14 @@ function sc_DoubleSpans_RefreshScore()
         final = -sc_DoubleSpans_Active[sc_DoubleSpans_Count]
     end
 
-    if final == 0 then
+    if (final or 0) == 0 then
 	    SetScoreboardNote({
-			text = sc_DoubleSpans_Mode .. " span: " .. final,
+			text = sc_DoubleSpans_Mode .. " span: 0",
 			color = sc_DoubleSpans_Colors[-1]
 		})
     else
         local localColor = {}
-        if isMaxNormal or isMinNormal or isAvgNormal or isCurrentNormal or (final > 0 and isCurrent) then
+        if isMaxNormal or isMinNormal or isAvgNormal or isCurrentNormal or (isCurrent and (final > 0)) then
             if final < Diff.instance.minDoubleSpan then
                 localColor = sc_DoubleSpans_Colors[0]
             elseif final > Diff.instance.maxDoubleSpan then
@@ -121,10 +121,10 @@ function sc_DoubleSpans_RefreshScore()
             else
                 localColor = sc_DoubleSpans_Colors[math.floor(4*(final - Diff.instance.minDoubleSpan) / (Diff.instance.maxDoubleSpan - Diff.instance.minDoubleSpan))+1]
             end
-        elseif isMaxCrosshand or isMinCrosshand or isAvgCrosshand or isCurrentCrosshand or (final < 0 and isCurrent) then
-            if final < Diff.instance.minDoubleSpan then
+        elseif isMaxCrosshand or isMinCrosshand or isAvgCrosshand or isCurrentCrosshand or (isCurrent and (final < 0)) then
+            if abs(final) < Diff.instance.minDoubleSpan then
                 localColor = sc_DoubleSpans_Colors[0]
-            elseif final > Diff.instance.maxCrosshandSpan then
+            elseif abs(final) > Diff.instance.maxCrosshandSpan then
                 localColor = sc_DoubleSpans_Colors[5]
             else
                 localColor = sc_DoubleSpans_Colors[math.floor(4*(abs(final) - Diff.instance.minDoubleSpan) / (Diff.instance.maxCrosshandSpan - Diff.instance.minDoubleSpan))+1]
@@ -155,8 +155,63 @@ EventHandler.instance:on(Events.INIT, function(ev)
                     sc_DoubleSpans_Active[sc_DoubleSpans_Count] = ev.data.span.x
                     sc_DoubleSpans_Overall[sc_DoubleSpans_Count] = ev.data.span.x
                     sc_DoubleSpans_EventIDs[sc_DoubleSpans_Count] = Intervals.instance:addInterval(sc_DoubleSpans_Timer, true, sc_DoubleSpans_RemoveNote, {sc_DoubleSpans_Count})
+                    if math.abs(ev.data.span.x) < Diff.instance.minDoubleSpan then
+                        sc_DoubleSpans_Logger:error("Very small doublespan: " .. ev.data.span.x .. "!")
+
+                        local prevLeft = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_LEFT + NoteContainer.FilterFlags.ENABLED_ONLY)
+                        local prevRight = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_RIGHT + NoteContainer.FilterFlags.ENABLED_ONLY)
+
+                        if prevLeft ~= true and prevRight ~= true and prevLeft.id == prevRight.id then
+                            sc_DoubleSpans_Logger:debug("Previous double note: " .. dump(prevLeft))
+                        else
+                            if prevLeft ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous left note: " .. dump(prevLeft))
+                            end
+                            if prevRight ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous right note: " .. dump(prevRight))
+                            end
+                        end
+                        sc_DoubleSpans_Logger:debug("Current note: " .. dump(ev.data))
+                        sc_DoubleSpans_TotalFailed = sc_DoubleSpans_TotalFailed + 1
+                    elseif ev.data.span.x > Diff.instance.maxDoubleSpan then
+                        sc_DoubleSpans_Logger:error("Very large normal span: " .. ev.data.span.x .. "!")
+
+                        local prevLeft = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_LEFT + NoteContainer.FilterFlags.ENABLED_ONLY)
+                        local prevRight = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_RIGHT + NoteContainer.FilterFlags.ENABLED_ONLY)
+
+                        if prevLeft ~= true and prevRight ~= true and prevLeft.id == prevRight.id then
+                            sc_DoubleSpans_Logger:debug("Previous double note: " .. dump(prevLeft))
+                        else
+                            if prevLeft ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous left note: " .. dump(prevLeft))
+                            end
+                            if prevRight ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous right note: " .. dump(prevRight))
+                            end
+                        end
+                        sc_DoubleSpans_Logger:debug("Current note: " .. dump(ev.data))
+                        sc_DoubleSpans_TotalFailed = sc_DoubleSpans_TotalFailed + 1
+                    elseif ev.data.span.x < -Diff.instance.maxCrosshandSpan then
+                        sc_DoubleSpans_Logger:error("Very large crosshand span: " .. ev.data.span.x .. "!")
+
+                        local prevLeft = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_LEFT + NoteContainer.FilterFlags.ENABLED_ONLY)
+                        local prevRight = NoteContainer.instance:getPrev(id, NoteContainer.FilterFlags.ASSIGNED + NoteContainer.FilterFlags.FILTER_HANDS + NoteContainer.FilterFlags.HAS_RIGHT + NoteContainer.FilterFlags.ENABLED_ONLY)
+
+                        if prevLeft ~= true and prevRight ~= true and prevLeft.id == prevRight.id then
+                            sc_DoubleSpans_Logger:debug("Previous double note: " .. dump(prevLeft))
+                        else
+                            if prevLeft ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous left note: " .. dump(prevLeft))
+                            end
+                            if prevRight ~= true then
+                                sc_DoubleSpans_Logger:debug("Previous right note: " .. dump(prevRight))
+                            end
+                        end
+                        sc_DoubleSpans_Logger:debug("Current note: " .. dump(ev.data))
+                        sc_DoubleSpans_TotalFailed = sc_DoubleSpans_TotalFailed + 1
+                    end
+                    sc_DoubleSpans_RefreshScore()
                 end
-                sc_DoubleSpans_RefreshScore()
                 return false
             end
         )
