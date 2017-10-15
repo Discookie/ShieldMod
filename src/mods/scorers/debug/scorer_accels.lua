@@ -101,6 +101,7 @@ EventHandler.instance:on(Events.INIT, function(ev)
                     if prevAccelLeft > 0 then
                         sc_Accels_Count = sc_Accels_Count + 1
                         sc_Accels_Active[sc_Accels_Count] = prevAccelLeft
+                        sc_Accels_Overall[sc_Accels_Count] = prevAccelLeft
                         sc_Accels_EventIDs[sc_Accels_Count] = Intervals.instance:addInterval(sc_Accels_Timer, true, sc_Accels_RemoveNote, {sc_Accels_Count})
 
                         if prevAccelLeft > Diff.instance.maxAccelLeft then
@@ -123,6 +124,7 @@ EventHandler.instance:on(Events.INIT, function(ev)
                     if prevAccelRight > 0 then
                         sc_Accels_Count = sc_Accels_Count + 1
                         sc_Accels_Active[sc_Accels_Count] = prevAccelRight
+                        sc_Accels_Overall[sc_Accels_Count] = prevAccelRight
                         sc_Accels_EventIDs[sc_Accels_Count] = Intervals.instance:addInterval(sc_Accels_Timer, true, sc_Accels_RemoveNote, {sc_Accels_Count})
 
                         if prevAccelRight > Diff.instance.maxAccelRight then
