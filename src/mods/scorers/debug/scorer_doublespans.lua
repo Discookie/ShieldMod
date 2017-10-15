@@ -13,10 +13,10 @@ sc_DoubleSpans_Colors = {
         0, 128, 255
     },
     [1] = {
-        0, 255, 64
+        0, 255, 0
     },
     [2] = {
-        64, 255, 0
+        128, 255, 0
     },
     [3] = {
         255, 128, 0
@@ -35,31 +35,32 @@ sc_DoubleSpans_EventIDs = {}
 sc_DoubleSpans_Count = 0
 sc_DoubleSpans_Logger = Logger("DoubleSpanTracker")
 sc_DoubleSpans_TotalFailed = 0
-sc_DoubleSpans_Mode = "Current"
-sc_DoubleSpans_Timer = 1
 
 function sc_DoubleSpans_RemoveNote(tid)
     local id = tid[1]
 	sc_DoubleSpans_Active[id] = nil
-	sc_DoubleSpans_RefreshScore()
 	Intervals.instance:remove(sc_DoubleSpans_EventIDs[id])
 	sc_DoubleSpans_EventIDs[id] = nil
+
+    if Diff.instance.debugDoubleSpanDisplay then
+	   sc_DoubleSpans_RefreshScore()
+    end
 end
 
 function sc_DoubleSpans_RefreshScore()
 	local final = 0
-	local isMax = sc_DoubleSpans_Mode == "Max"
-	local isMaxNormal = sc_DoubleSpans_Mode == "Max Normal"
-	local isMaxCrosshand = sc_DoubleSpans_Mode == "Max Crosshand"
-	local isMin = sc_DoubleSpans_Mode == "Min"
-	local isMinNormal = sc_DoubleSpans_Mode == "Min Normal"
-	local isMinCrosshand = sc_DoubleSpans_Mode == "Min Crosshand"
-	local isAvg = sc_DoubleSpans_Mode == "Avg"
-	local isAvgNormal = sc_DoubleSpans_Mode == "Avg Normal"
-	local isAvgCrosshand = sc_DoubleSpans_Mode == "Avg Crosshand"
-	local isCurrent = sc_DoubleSpans_Mode == "Current"
-	local isCurrentNormal = sc_DoubleSpans_Mode == "Current Normal"
-	local isCurrentCrosshand = sc_DoubleSpans_Mode == "Current Crosshand"
+	local isMax = Diff.instance.debugDoubleSpanDisplay == "Max"
+	local isMaxNormal = Diff.instance.debugDoubleSpanDisplay == "Max Normal"
+	local isMaxCrosshand = Diff.instance.debugDoubleSpanDisplay == "Max Crosshand"
+	local isMin = Diff.instance.debugDoubleSpanDisplay == "Min"
+	local isMinNormal = Diff.instance.debugDoubleSpanDisplay == "Min Normal"
+	local isMinCrosshand = Diff.instance.debugDoubleSpanDisplay == "Min Crosshand"
+	local isAvg = Diff.instance.debugDoubleSpanDisplay == "Avg"
+	local isAvgNormal = Diff.instance.debugDoubleSpanDisplay == "Avg Normal"
+	local isAvgCrosshand = Diff.instance.debugDoubleSpanDisplay == "Avg Crosshand"
+	local isCurrent = Diff.instance.debugDoubleSpanDisplay == "Current"
+	local isCurrentNormal = Diff.instance.debugDoubleSpanDisplay == "Current Normal"
+	local isCurrentCrosshand = Diff.instance.debugDoubleSpanDisplay == "Current Crosshand"
 	local fullCount = 0
 	local max = math.max
     local min = math.min
@@ -108,7 +109,7 @@ function sc_DoubleSpans_RefreshScore()
 
     if (final or 0) == 0 then
 	    SetScoreboardNote({
-			text = sc_DoubleSpans_Mode .. " span: 0",
+			text = Diff.instance.debugDoubleSpanDisplay .. " span: 0",
 			color = sc_DoubleSpans_Colors[-1]
 		})
     else
@@ -139,7 +140,7 @@ function sc_DoubleSpans_RefreshScore()
             end
         end
 	    SetScoreboardNote({
-			text = sc_DoubleSpans_Mode .. " span: " .. final,
+			text = Diff.instance.debugDoubleSpanDisplay .. " span: " .. final,
 			color = localColor
 		})
     end
@@ -150,11 +151,11 @@ EventHandler.instance:on(Events.INIT, function(ev)
 
                 local id = ev.data.id
 
-				if ev.data:hasHands(Note.HandTypes.LEFT + Note.HandTypes.RIGHT) then
+				if ev.data:hasHands(Note.HandTypes.LEFT + Note.HandTypes.RIGHT) and not ev.data:hasHands(Note.HandTypes.PURPLE, true) then
                     sc_DoubleSpans_Count = sc_DoubleSpans_Count + 1
                     sc_DoubleSpans_Active[sc_DoubleSpans_Count] = ev.data.span.x
                     sc_DoubleSpans_Overall[sc_DoubleSpans_Count] = ev.data.span.x
-                    sc_DoubleSpans_EventIDs[sc_DoubleSpans_Count] = Intervals.instance:addInterval(sc_DoubleSpans_Timer, true, sc_DoubleSpans_RemoveNote, {sc_DoubleSpans_Count})
+                    sc_DoubleSpans_EventIDs[sc_DoubleSpans_Count] = Intervals.instance:addInterval(Diff.instance.debugDoubleSpanTimer, true, sc_DoubleSpans_RemoveNote, {sc_DoubleSpans_Count})
                     if math.abs(ev.data.span.x) < Diff.instance.minDoubleSpan then
                         sc_DoubleSpans_Logger:error("Very small doublespan: " .. ev.data.span.x .. "!")
 
@@ -210,7 +211,10 @@ EventHandler.instance:on(Events.INIT, function(ev)
                         sc_DoubleSpans_Logger:debug("Current note: " .. dump(ev.data))
                         sc_DoubleSpans_TotalFailed = sc_DoubleSpans_TotalFailed + 1
                     end
-                    sc_DoubleSpans_RefreshScore()
+
+                    if Diff.instance.debugDoubleSpanDisplay then
+                        sc_DoubleSpans_RefreshScore()
+                    end
                 end
                 return false
             end
