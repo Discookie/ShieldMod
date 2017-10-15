@@ -137,41 +137,47 @@ var DiffCalc = {
         var t = document.createElement("h1");
         t.className = "modtext";
         var stats = document.createElement("p");
-        try {
-            if (xmlHttp !== null) {
-                xmlHttp.open("GET", "http://matekos17.f.fazekas.hu/shield/pings/vercheck?mod=" + this.mod + "&ver=" + this.br, false);
-                xmlHttp.send();
-                if (xmlHttp.status == 200) {
-                    resp = xmlHttp.responseText;
-                    if (resp.localeCompare(this.ver) == 0 && this.br == "stable") {
-                        el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
-                        t.appendChild(document.createTextNode("NO UPDATE"));
-                        stats.appendChild(document.createTextNode("Thank you for playing!"));
-                    } else if (resp.localeCompare(this.ver) > 0) {
-                        el.getElementsByTagName("img")[0].src = "dynamic/imgs/yellow.png";
-                        t.appendChild(document.createTextNode("UPDATE"));
-                        stats.appendChild(document.createTextNode("New version: "));
-                        var link = document.createElement("a");
-                        link.className = "button";
-                        link.appendChild(document.createTextNode(resp));
-                        link.href = "https://matekos17.f.fazekas.hu/shield/download?ver=" + this.br;
-                        stats.appendChild(link);
+        if (this.br != "private") {
+            try {
+                if (xmlHttp !== null) {
+                    xmlHttp.open("GET", "http://matekos17.f.fazekas.hu/shield/pings/vercheck?mod=" + this.mod + "&ver=" + this.br, false);
+                    xmlHttp.send();
+                    if (xmlHttp.status == 200) {
+                        resp = xmlHttp.responseText;
+                        if (resp.localeCompare(this.ver) == 0 && this.br == "stable") {
+                            el.getElementsByTagName("img")[0].src = "dynamic/imgs/green.png";
+                            t.appendChild(document.createTextNode("NO UPDATE"));
+                            stats.appendChild(document.createTextNode("Thank you for playing!"));
+                        } else if (resp.localeCompare(this.ver) > 0) {
+                            el.getElementsByTagName("img")[0].src = "dynamic/imgs/yellow.png";
+                            t.appendChild(document.createTextNode("UPDATE"));
+                            stats.appendChild(document.createTextNode("New version: "));
+                            var link = document.createElement("a");
+                            link.className = "button";
+                            link.appendChild(document.createTextNode(resp));
+                            link.href = "https://matekos17.f.fazekas.hu/shield/download?ver=" + this.br;
+                            stats.appendChild(link);
+                        } else {
+                            el.getElementsByTagName("img")[0].src = "dynamic/imgs/blue.png";
+                            t.appendChild(document.createTextNode("DEV"));
+                            stats.appendChild(document.createTextNode("Thank you for testing!"));
+                        }
                     } else {
-                        el.getElementsByTagName("img")[0].src = "dynamic/imgs/blue.png";
-                        t.appendChild(document.createTextNode("DEV"));
-                        stats.appendChild(document.createTextNode("Thank you for testing!"));
+                        el.getElementsByTagName("img")[0].src = "dynamic/imgs/missing.png";
+                        t.appendChild(document.createTextNode("NO INTERNET"));
                     }
                 } else {
                     el.getElementsByTagName("img")[0].src = "dynamic/imgs/missing.png";
-                    t.appendChild(document.createTextNode("NO INTERNET"));
+                    t.appendChild(document.createTextNode("ERROR"));
                 }
-            } else {
+            } catch (e) {
                 el.getElementsByTagName("img")[0].src = "dynamic/imgs/missing.png";
-                t.appendChild(document.createTextNode("ERROR"));
+                t.appendChild(document.createTextNode("NO INTERNET"));
             }
-        } catch (e) {
-            el.getElementsByTagName("img")[0].src = "dynamic/imgs/missing.png";
-            t.appendChild(document.createTextNode("NO INTERNET"));
+        } else {
+            el.getElementsByTagName("img")[0].src = "dynamic/imgs/blue.png";
+            t.appendChild(document.createTextNode("PRIVATE"));
+            stats.appendChild(document.createTextNode("Thank you for testing!"));
         }
         el.appendChild(t);
         stats.appendChild(document.createElement("br"));
