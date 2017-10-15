@@ -70,9 +70,9 @@ function sc_Accels_RefreshScore()
         final = sc_Accels_Active[sc_Accels_Count]
     end
 
-    if final == 0 then
+    if (final or 0) == 0 then
 	   SetScoreboardNote({
-			text = Diff.instance.debugAccelMode .. " Acceleration: " .. final,
+			text = Diff.instance.debugAccelMode .. " Acceleration: 0",
 			color = sc_Accels_Colors[-1]
 		})
     else
