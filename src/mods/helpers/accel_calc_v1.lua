@@ -1,5 +1,6 @@
 require("../../diff/diff_export")
 require("../../vr/vr_export")
+require("../../utils/sign")
 require("weighted_random_v1")
 
 --[[
@@ -122,6 +123,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
     local max = math.max
     local min = math.min
     local abs = math.abs
+    local sgn = math.sign
     local leftBounds = CalculateAccelBounds(left.x, time - left.time, left.max)
     local rightBounds = CalculateAccelBounds(right.x, time - right.time, right.max)
 
@@ -151,6 +153,9 @@ function CalculateAccelCenteredPos(time, left, right, spans)
         end
 
         leftPos = max(min(left.x, spans.crosshand / 2), -spans.normal / 2)
+        if abs(leftPos) < spans.min/2 then
+            leftPos = spans.min/2 * sgn(leftPos)
+        end
         rightPos = -leftPos
 
         return {
@@ -158,7 +163,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
             span = (rightPos - leftPos)
         }
     else
-        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min, spans.min)
+        local rightPos = WeightedRandomWithHole(right.x, spans.total, max(rightBounds.left, -leftBounds.right), min(rightBounds.right, -leftBounds.left), right.fact, -spans.min/2, spans.min/2)
         if rightPos ~= true then
             local leftPos = -rightPos
             return {
@@ -167,7 +172,7 @@ function CalculateAccelCenteredPos(time, left, right, spans)
             }
         end
 
-        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min, spans.min)
+        local leftPos = WeightedRandomWithHole(left.x, spans.total, max(leftBounds.left, -rightBounds.right), min(leftBounds.right, -rightBounds.left), left.fact, -spans.min/2, spans.min/2)
         if leftPos ~= true then
             rightPos = -leftPos
             return {
@@ -177,6 +182,9 @@ function CalculateAccelCenteredPos(time, left, right, spans)
         end
 
         rightPos = max(min(right.x, spans.normal / 2), -spans.crosshand / 2)
+        if abs(rightPos) < spans.min/2 then
+            rightPos = spans.min/2 * sgn(rightPos)
+        end
         leftPos = -rightPos
 
         return {
