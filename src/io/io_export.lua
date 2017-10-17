@@ -4,7 +4,7 @@ require("../utils/round")
 IOEnabled = false
 
 -- Optional: in previous versions, this will load the IO library
-require("io_sandex")
+require_d("io_sandex")
 
 require("io_check")
 
