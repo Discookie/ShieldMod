@@ -11,6 +11,7 @@ require("utils/dump")
 require("logger")
 require("events")
 require("intervals")
+require("io/io_export")
 
 -- Loading core tools
 require("track/track_export")
