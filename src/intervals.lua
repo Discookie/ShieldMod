@@ -36,7 +36,7 @@ function Intervals:addInterval(timeout, isRelativeTime, callback, object)
     if object ~= nil then
         self._intervals[self._count] = {
             timeout,
-            isRelativeTime,
+            isRelativeTime ~= false,
             bindFunc(callback, object),
             Tick.instance:getAbsoluteTime(),
             0
@@ -44,13 +44,13 @@ function Intervals:addInterval(timeout, isRelativeTime, callback, object)
     else
         self._intervals[self._count] = {
             timeout,
-            isRelativeTime,
+            isRelativeTime ~= false,
             callback,
             Tick.instance:getAbsoluteTime(),
             0
         }
     end
-    if isRelativeTime then
+    if isRelativeTime ~= false then
         self._intervals[self._count][4] = Tick.instance:getRelativeTime()
 
         self.logger:trace("New interval ID " .. self._count .. " with relative start " .. self._intervals[self._count][4] .. " loop " .. self._intervals[self._count][1], 3)
