@@ -4,6 +4,5 @@ var diff = {
                     // avgDiff = 1 / (factAccel + 1)
 
     multiDiff: 2,   // This is the multi-note chance, times 10
-    trillDiff: 0,   // This is the min note spacing value, the same number.
-    armspan: 1.7    // This is the armspan value, the same number.
+    trillDiff: 0   // This is the min note spacing value, the same number.
 };
