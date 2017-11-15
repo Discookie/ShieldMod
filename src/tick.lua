@@ -15,6 +15,10 @@ GameStates = {
 
 GameStates.current = GameStates.PRE_TRACK
 
+function GameStates.isPaused()
+    return GameStates.current < 0x10
+end
+
 function GameStates.eventChange(event)
     if (event.id == Events.TRACK) then
         GameStates.current = GameStates.PRE_TRAFFIC
@@ -60,10 +64,6 @@ function Tick:reset()
     self.id = EventHandler.instance:add(Events.FRAME, self.onFrame, self)
 end
 
-function Tick.isPaused()
-    return GameStates.current < 16
-end
-
 function Tick:getAbsoluteTime()
     return self.ticks/90
 end
@@ -73,7 +73,7 @@ function Tick:getRelativeTime()
 end
 
 function Tick:frame(dt)
-    if (dt > 0) then
+    if not GameStates.isPaused() then
         self.ticks = self.ticks + 1
         self.seconds = self.seconds + dt
     end
