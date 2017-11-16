@@ -1,0 +1,7 @@
+{
+    "maxAccel": 18,
+    "factAccel": 0.6,
+    "maxDoubleSpan": 1.5,
+    "maxCrosshandSpan": 1.0,
+    "minDoubleSpan": 0.5
+}
