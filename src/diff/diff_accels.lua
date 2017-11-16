@@ -56,7 +56,60 @@ Diff.defaults_accels = {
     maxCrosshandSpan = 2.0
 }
 
+Diff.external_accels = {
+
+    maxAccel  = true,
+    factAccel = true,
+    minAccel  = true,
+
+    maxAccelLeft = true,
+    factAccelLeft = true,
+    minAccelLeft = true,
+    maxAccelRight = true,
+    factAccelRight = true,
+    minAccelRight = true,
+
+    minSpacing      = true,
+    doubleFactor    = true,
+    doubleIntensity = true,
+    ballchainSpeed  = true,
+
+    chestHeight          = true,
+    curveFactorX         = true,
+    curveFactorY         = true,
+    curveY_max           = true,
+    curveY_min           = true,
+    curveY_tiltInfluence = true,
+    maxNotesShown        = true,
+    maxDistanceShown     = true,
+
+    noteScale   = true,
+    tailScale   = true,
+    meteorSpeed = true,
+
+    spanX        = true,
+    spanX_offset = true,
+
+    blueSpanX          = true,
+    blueSpanX_offset   = true,
+    redSpanX           = true,
+    redSpanX_offset    = true,
+    purpleSpanX        = true,
+    purpleSpanX_offset = true,
+
+    spanY        = true,
+    spanY_offset = true,
+    spanY_random = true,
+    spanZ        = true,
+    spanZ_factor = true,
+
+    maxDoubleSpan    = true,
+    minDoubleSpan    = true,
+    maxCrosshandSpan = true
+}
+
 table.merge(Diff.defaults, Diff.defaults_accels)
+table.merge(Diff.external, Diff.external_accels)
 
 Diff._loadValues_accels = Diff.loadValues
 

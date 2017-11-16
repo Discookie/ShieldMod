@@ -238,7 +238,24 @@ Diff.defaults_gameSettings = {
     logSpacedFreqBins = false
 }
 
+Diff.external_gameSettings = {
+	musicCutOnFail = true,
+
+	minSpeed = true,
+	maxSpeed = true,
+
+    gravity = true,
+    uphillScale = true,
+    downhillScale = true,
+    uphillSmoother = true,
+    downhillSmoother = true,
+
+	displayScoreboard = true,
+	showComboText = true
+}
+
 table.merge(Diff.defaults, Diff.defaults_gameSettings)
+table.merge(Diff.external, Diff.external_gameSettings)
 
 function Diff:doSettings()
     local gsTable = {}

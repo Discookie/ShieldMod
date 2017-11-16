@@ -9,6 +9,7 @@ setmetatable(Diff, {
 })
 
 Diff.defaults = {}
+Diff.external = {}
 
 function Diff.init(values)
     local self = setmetatable({}, Diff)
@@ -41,4 +42,18 @@ function Diff:loadValues(values)
     end
 
     return false
+end
+
+function Diff:loadExternal(values)
+    if type(values) ~= "table" then
+        return true
+    end
+	local valid = {}
+    for k,v in pairs(values) do
+        if Diff.external[k] then
+			valid[k] = v
+        end
+    end
+
+    return self:loadValues(valid)
 end
