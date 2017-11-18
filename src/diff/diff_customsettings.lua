@@ -7,17 +7,71 @@ EventHandler.instance:on(Events.INIT, function(ev)
 
         if IOEnabled then
             local lg = Logger("CustomDiff")
-            lg:log("Loading settings from 'Audioshield\\settings\\diff.json'...")
 
-            local df, err = io.open("settings\\diff.json", "rb")
+            local settingsPath = "settings"
 
-            if df == nil then
-                lg:log("File open failed: " .. tostring(err))
+            lg:log("Loading settings from 'Audioshield\\" .. settingsPath .. "\\game.json'...")
+
+            local settingsFile, err = io.open(settingsPath .. "\\game.json", "rb")
+
+            if settingsFile == nil then
+                if err == settingsPath .. "\\game.json: No such file or directory" then
+
+                    lg:log("File not found! Creating file...")
+                    settingsFile, err = io.open(settingsPath .. "\\game.json", "wb")
+
+                    if settingsFile == nil then
+                        lg:err("Failed to create file! Make sure there is a 'settings' folder in your Audioshield directory!")
+
+                        return true
+                    else
+                        local defaultSettings = "{\n    "
+                        defaultSettings = defaultSettings .. "\"maxAccel\": " .. Diff.instance.maxAccel .. ",\n    "
+                        defaultSettings = defaultSettings .. "\"factAccel\": " .. Diff.instance.factAccel .. ",\n    \n    "
+                        defaultSettings = defaultSettings .. "\"minDoubleSpan\": " .. Diff.instance.minDoubleSpan .. ",\n    "
+                        defaultSettings = defaultSettings .. "\"maxDoubleSpan\": " .. Diff.instance.maxDoubleSpan .. ",\n    "
+                        defaultSettings = defaultSettings .. "\"maxCrosshandSpan\": " .. Diff.instance.maxCrosshandSpan .. ",\n    \n    "
+                        defaultSettings = defaultSettings .. "\"spanX\": " .. Diff.instance.spanX .. ",\n    \n    "
+                        defaultSettings = defaultSettings .. "\"chestHeight\": " .. Diff.instance.chestHeight .. ",\n    \n    "
+                        defaultSettings = defaultSettings .. "\"ballchainSpeed\": " .. Diff.instance.ballchainSpeed .. ",\n    "
+                        defaultSettings = defaultSettings .. "\"meteorSpeed\": " .. Diff.instance.meteorSpeed .. "\n}"
+
+                        settingsFile:write(defaultSettings)
+                        settingsFile:close()
+                    end
+                else
+                    lg:log("File open failed: " .. tostring(err))
+                end
                 return false
             end
 
-            local valstr = df:read("*all")
-            df:close()
+            local valstr = settingsFile:read("*all")
+            settingsFile:close()
+
+            if valstr == "" then
+                lg:log("File is empty! Creating file...")
+                settingsFile, err = io.open(settingsPath .. "\\game.json", "wb")
+
+                if settingsFile == nil then
+                    lg:err("Failed to create file! Make sure there is a 'settings' folder in your Audioshield directory!")
+
+                    return true
+                else
+                    local defaultSettings = "{\n    "
+                    defaultSettings = defaultSettings .. "\"maxAccel\": " .. Diff.instance.maxAccel .. ",\n    "
+                    defaultSettings = defaultSettings .. "\"factAccel\": " .. Diff.instance.factAccel .. ",\n    \n    "
+                    defaultSettings = defaultSettings .. "\"minDoubleSpan\": " .. Diff.instance.minDoubleSpan .. ",\n    "
+                    defaultSettings = defaultSettings .. "\"maxDoubleSpan\": " .. Diff.instance.maxDoubleSpan .. ",\n    "
+                    defaultSettings = defaultSettings .. "\"maxCrosshandSpan\": " .. Diff.instance.maxCrosshandSpan .. ",\n    \n    "
+                    defaultSettings = defaultSettings .. "\"spanX\": " .. Diff.instance.spanX .. ",\n    \n    "
+                    defaultSettings = defaultSettings .. "\"chestHeight\": " .. Diff.instance.chestHeight .. ",\n    \n    "
+                    defaultSettings = defaultSettings .. "\"ballchainSpeed\": " .. Diff.instance.ballchainSpeed .. ",\n    "
+                    defaultSettings = defaultSettings .. "\"meteorSpeed\": " .. Diff.instance.meteorSpeed .. "\n}"
+
+                    settingsFile:write(defaultSettings)
+                    settingsFile:close()
+                end
+            end
 
             local valid, vals = pcall(json.decode, valstr)
             if not valid then
