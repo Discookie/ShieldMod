@@ -119,11 +119,19 @@ var DiffCalc = {
         trillSlider.appendChild(t);
         var stats = document.createElement("p");
         stats.appendChild(document.createElement("br"));
-        stats.appendChild(document.createTextNode("Keep in mind that these aren't synced to the LUA file!"));
-        stats.appendChild(document.createElement("br"));
-        stats.appendChild(document.createTextNode("To get your difficulty, change values in"));
-        stats.appendChild(document.createElement("br"));
-        stats.appendChild(document.createTextNode("dynamic/htp.js!"));
+        if (diff.synced) {
+            stats.appendChild(document.createTextNode("This scoreboard is synced to your live difficulty settings."));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("Keep in mind that each change syncs instantly, but this display only refreshes on the second restart!"));
+        } else {
+            stats.appendChild(document.createTextNode("Keep in mind that these aren't synced to the LUA file!"));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("To get your difficulty, change values in"));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("dynamic/htp.js, or use the setting"));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("' \"updateHowToPlay\": true '"));
+        }
         el.appendChild(stats);
     },
     testMsgs: {
