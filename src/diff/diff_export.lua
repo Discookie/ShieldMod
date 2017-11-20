@@ -4,6 +4,7 @@ require("diff_gamesettings")
 require("diff_accels")
 require("diff_powernodes")
 require("diff_debug")
+require("diff_scorer")
 
 EventHandler.instance:on(Events.INIT, function(ev)
         Diff.instance = Diff()
