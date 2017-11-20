@@ -56,6 +56,7 @@ end
 
 function ScorerV1:scorerTimeout(data)
     local floor = math.floor
+    local min = math.min
 	local currentNote = data:copy()
     local handType = currentNote.handType
 
@@ -71,11 +72,11 @@ function ScorerV1:scorerTimeout(data)
 	local handsUsed = 0
 
 	if currentNote:hasHands(Note.HandTypes.LEFT) then
-		leftComponent = self.getScore(currentNote.startTime - prevLeft.endTime, GetAccelValue(prevLeft.pos.x - prevLeft.span.x/2, currentNote.pos.x - currentNote.span.x/2, currentNote.startTime - prevLeft.endTime))
+		leftComponent = self.getScore(currentNote.startTime - prevLeft.endTime, min(Diff.instance.maxAccelLeft, GetAccelValue(prevLeft.pos.x - prevLeft.span.x/2, currentNote.pos.x - currentNote.span.x/2, currentNote.startTime - prevLeft.endTime)))
 		handsUsed = handsUsed + 1
 	end
 	if currentNote:hasHands(Note.HandTypes.RIGHT) then
-		rightComponent = self.getScore(currentNote.startTime - prevRight.endTime, GetAccelValue(prevRight.pos.x + prevRight.span.x/2, currentNote.pos.x + currentNote.span.x/2, currentNote.startTime - prevRight.endTime))
+		rightComponent = self.getScore(currentNote.startTime - prevRight.endTime, min(Diff.instance.maxAccelRight, GetAccelValue(prevRight.pos.x + prevRight.span.x/2, currentNote.pos.x + currentNote.span.x/2, currentNote.startTime - prevRight.endTime)))
 		handsUsed = handsUsed + 1
 	end
 
