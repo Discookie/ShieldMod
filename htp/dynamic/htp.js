@@ -122,22 +122,21 @@ var DiffCalc = {
         if (diff.synced) {
             stats.appendChild(document.createTextNode("This scoreboard is synced to your live difficulty settings."));
             stats.appendChild(document.createElement("br"));
-            stats.appendChild(document.createTextNode("Keep in mind that each change syncs instantly, but this display only refreshes on the second restart!"));
+            stats.appendChild(document.createTextNode("To change the game's difficulty, change the file"));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("'Audioshield/settings/diff.json'."));
+            stats.appendChild(document.createElement("br"));
+            stats.appendChild(document.createTextNode("More info on the wiki on GitHub!"));
         } else {
-            stats.appendChild(document.createTextNode("Keep in mind that these aren't synced to the LUA file!"));
+            stats.appendChild(document.createTextNode("This scoreboard is NOT synced to your live difficulty settings."));
             stats.appendChild(document.createElement("br"));
             stats.appendChild(document.createTextNode("To get your difficulty, change values in"));
             stats.appendChild(document.createElement("br"));
-            stats.appendChild(document.createTextNode("dynamic/htp.js, or use the setting"));
+            stats.appendChild(document.createTextNode("'ShieldVR/dynamic/htp.js', or use the setting"));
             stats.appendChild(document.createElement("br"));
             stats.appendChild(document.createTextNode("' \"updateHowToPlay\": true '"));
         }
         el.appendChild(stats);
-    },
-    testMsgs: {
-        test: "TESTING",
-        nc: "NO CHANGE",
-        nw: "NOT WORKING"
     },
     density: function (el) {
         var resp = '';
