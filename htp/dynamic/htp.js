@@ -1,15 +1,13 @@
 var DiffCalc = {
     // NO TOUCHY HERE
-    ver: "0.50b",
+    ver: "0.50c",
     mod: "insane",
     br: "dev",
     recentChanges: [
-        "Full refactor, rework",
-        "Fix spans and values",
-        "Add ballchains, advanced logging",
-        "Added Meteor Events API",
-        "Issues, feature requests on GitHub",
-        "Send me output logs!"
+        "Custom scorer",
+		"External settings",
+        "Send me output logs!",
+        "Issues, feature requests on GitHub"
     ],
     create: function () {
         return this;

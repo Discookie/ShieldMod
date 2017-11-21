@@ -1,1 +1,1 @@
-Version: 0.50b, last modified: 2017-10-11
+Version: 0.50c, last modified: 2017-11-21
