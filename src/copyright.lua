@@ -9,6 +9,7 @@ Additional software used:
   * json.lua - MIT license
 
 https://matekos17.f.fazekas.hu/shield/
+https://github.com/Discookie/ShieldMod/
 
 Special thanks to: /u/Zerkses, /u/Flatlander57
 
